@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    environment:
+      MONGO_USERNAME: ${MONGO_USERNAME}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
