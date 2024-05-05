@@ -1,4 +1,6 @@
-﻿namespace Db
+﻿using System.Linq.Expressions;
+
+namespace Db
 {
     /// <summary>
     /// Interface to a database, supports CRUD operations, used so that different database can be
@@ -13,5 +15,6 @@
         Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType> where IdType : IComparable;
         Task<EntityType> GetAsync<EntityType, IdType>(IdType id);
         Task<IEnumerable<EntityType>> GetAsync<EntityType, IdType>();
+        Task<IEnumerable<EntityType>> GetAsync<EntityType>(Expression<Func<EntityType, bool>> expression);
     }
 }

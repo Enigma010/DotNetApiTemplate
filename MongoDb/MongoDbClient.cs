@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using SharpCompress.Common;
+using System.Linq.Expressions;
 
 namespace MongoDb
 {
@@ -87,6 +88,14 @@ namespace MongoDb
                 throw new DbEntityNotFoundException<IdType>(id);
             }
             return entities.First();
+        }
+
+        public async Task<IEnumerable<EntityType>> GetAsync<EntityType>(Expression<Func<EntityType, bool>> expression)
+        {
+            var collection = GetCollection<EntityType>();
+            var filter = Builders<EntityType>.Filter.Where(expression);
+            var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
+            return entities;
         }
 
         public async Task<IEnumerable<EntityType>> GetAsync<EntityType, IdType>()

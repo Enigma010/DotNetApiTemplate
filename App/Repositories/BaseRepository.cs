@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace App.Repositories
     {
         Task<EntityType> GetAsync(IdType id);
         Task<IEnumerable<EntityType>> GetAsync();
+        Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityType, bool>> expression);
         Task<EntityType> InsertAsync(EntityType entity);
         Task<EntityType> UpdateAsync(EntityType entity);
         Task DeleteAsync(IdType id);
@@ -83,6 +85,18 @@ namespace App.Repositories
         {
             return await _client.GetAsync<EntityType, IdType>(id);
         }
+
+        /// <summary>
+        /// Gets entities based on an expression
+        /// </summary>
+        /// <typeparam name="EntityType">The entity type</typeparam>
+        /// <param name="expression">The filter expression</param>
+        /// <returns>The entities that match the expression</returns>
+        public virtual async Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityType, bool>> expression)
+        {
+            return await _client.GetAsync(expression);
+        }
+
         /// <summary>
         /// Gets all entities
         /// </summary>
