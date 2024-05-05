@@ -1,10 +1,5 @@
-﻿using App.ActionModels;
+﻿using App.Commands;
 using App.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppTests.Entities
 {
@@ -17,7 +12,7 @@ namespace AppTests.Entities
         {
             Config config = new Config();
             bool enabled = config.Enabled;
-            config.Change(new ConfigChangeActionModel()
+            config.Change(new ChangeConfigCmd()
             {
                 Name = newName,
                 Enabled = config.Enabled
@@ -32,7 +27,7 @@ namespace AppTests.Entities
         {
             Config config = new Config();
             string name = config.Name;
-            config.Change(new ConfigChangeActionModel()
+            config.Change(new ChangeConfigCmd()
             {
                 Name = config.Name,
                 Enabled = enabled

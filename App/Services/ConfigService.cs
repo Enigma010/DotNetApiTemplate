@@ -1,13 +1,7 @@
-﻿using App.ActionModels;
+﻿using App.Commands;
 using App.Entities;
 using App.Repositories;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App.Services
 {
@@ -17,11 +11,11 @@ namespace App.Services
     /// </summary>
     public interface IConfigService : IBaseService<Config, Guid>
     {
-        Task<Config> CreateAsync(string name);
+        Task<Config> CreateAsync(CreateConfigCmd cmd);
         Task<Config> GetAsync(Guid id);
         Task<IEnumerable<Config>> GetAsync();
         Task DeleteAsync(Guid id);
-        Task<Config> ChangeAsync(Guid id, ConfigChangeActionModel change);
+        Task<Config> ChangeAsync(Guid id, ChangeConfigCmd cmd);
     }
     /// <summary>
     /// The configuration service.
@@ -48,14 +42,14 @@ namespace App.Services
         /// <summary>
         /// Creates a new configuration with all of the defaults
         /// </summary>
-        /// <param name="name">The name of the configuration</param>
+        /// <param name="cmd">The create config command</param>
         /// <returns>The new configuration object</returns>
-        public async Task<Config> CreateAsync(string name)
+        public async Task<Config> CreateAsync(CreateConfigCmd cmd)
         {
             Config config = new Config();
             config.Change(
-                new ConfigChangeActionModel() {
-                    Name = name
+                new ChangeConfigCmd() {
+                    Name = cmd.Name
                 });
             await _repository.InsertAsync(config);
             return config;
@@ -96,7 +90,7 @@ namespace App.Services
         /// <param name="id">The ID of the configuration</param>
         /// <param name="change">The change that is occurring</param>
         /// <returns>The updated configuration</returns>
-        public async Task<Config> ChangeAsync(Guid id, ConfigChangeActionModel change)
+        public async Task<Config> ChangeAsync(Guid id, ChangeConfigCmd change)
         {
             Func<Config, Config> changeFunc = (config) =>
             {

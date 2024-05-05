@@ -4,7 +4,7 @@ Contains the core business logic of the application and objects that allow exter
 ## Guidelines
 The following describes guidelines for the architecture.
 
-### ActionModels
+### Commands
 * Represent correlated data to be passed into service or entity methods.
 * Used to more easily pass data rather than having a bunch of separate parameters passed in individually.
 

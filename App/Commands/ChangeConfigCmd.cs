@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App.ActionModels
+namespace App.Commands
 {
     /// <summary>
     /// Represents a set of changes that can be done to a configuration
     /// </summary>
-    public class ConfigChangeActionModel
+    public class ChangeConfigCmd
     {
         /// <summary>
         /// The name of the configuration

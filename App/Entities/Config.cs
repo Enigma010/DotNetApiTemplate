@@ -1,9 +1,4 @@
-﻿using App.ActionModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using App.Commands;
 
 namespace App.Entities
 {
@@ -31,7 +26,7 @@ namespace App.Entities
         /// Chagne the configuration
         /// </summary>
         /// <param name="change">The configuration changes</param>
-        public void Change(ConfigChangeActionModel change)
+        public void Change(ChangeConfigCmd change)
         {
             // Support for idempotence, this is done for future support for
             // eventing, i.e. if you event on the name change then if you 

@@ -7,6 +7,7 @@ This template consists of the following components:
 
 * **[Api](./Api/README.md)** - The API
 * **[App](./App/README.md)** - The application.  This includes:
+  * **Commands**: Commands used to denote changes to the entities
   * **Entities**: Objects with the core business logic
   * **Repositories**: Objects for retrieving entities from permanent storage
   * **Services**: Objects that interact with repositories, either returning, or interacting with entities

@@ -1,15 +1,9 @@
-﻿using Amazon.Runtime.Internal.Util;
-using App.ActionModels;
+﻿using App.Commands;
 using App.Entities;
 using App.Repositories;
 using App.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppTests.Services
 {
@@ -28,7 +22,10 @@ namespace AppTests.Services
         public async Task CreateAsync() 
         {
             string name = Guid.NewGuid().ToString();
-            Config createConfig = await _service.CreateAsync(name);
+            Config createConfig = await _service.CreateAsync(new CreateConfigCmd()
+            {
+                Name = name
+            });
             Assert.Equal(name, createConfig.Name);
             _repository.Verify(m => m.InsertAsync(It.IsAny<Config>()), Times.Once);
         }
@@ -67,7 +64,7 @@ namespace AppTests.Services
         public async Task ChangeAsync()
         {
             Config config = new Config();
-            ConfigChangeActionModel model = new ConfigChangeActionModel()
+            ChangeConfigCmd model = new ChangeConfigCmd()
             {
                 Name = Guid.NewGuid().ToString(),
                 Enabled = false
