@@ -6,6 +6,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,6 +41,20 @@ namespace AppTests.Repositories
             Config getConfig = await _repository.GetAsync(config.Id);
             Assert.Equal(config.Id, getConfig.Id);
             _client.Verify(m => m.GetAsync<Config, Guid>(config.Id), Times.Once);
+        }
+        [Fact]
+        public async Task GetExpressionAsync()
+        {
+            List<Config> configs = new List<Config>()
+            {
+                new Config(),
+                new Config(),
+                new Config()
+            };
+            Expression<Func<Config, bool>> filter = (c) => c.Enabled == true;
+            _client.Setup(m => m.GetAsync<Config>(It.IsAny<Expression<Func<Config, bool>>>())).ReturnsAsync(configs);
+            IEnumerable<Config> getConfigs = await _repository.GetAsync(filter);
+            Assert.Equal(configs, getConfigs);
         }
         [Fact]
         public async Task GetAllAsync()
