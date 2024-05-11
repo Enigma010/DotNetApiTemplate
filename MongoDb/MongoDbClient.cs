@@ -71,10 +71,10 @@ namespace MongoDb
             await collection.ReplaceOneAsync<EntityType>(doc => doc.Id.Equals(entity.Id), entity);
         }
 
-        public async Task DeleteAsync<EntityType, IdType>(IdType id) where EntityType : IEntity<IdType>
+        public async Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType>
         {
             var collection = GetCollection<EntityType>();
-            var filter = IdFilter<EntityType, IdType>(id);
+            var filter = IdFilter<EntityType, IdType>(entity.Id);
             await collection.DeleteOneAsync(filter);
         }
 

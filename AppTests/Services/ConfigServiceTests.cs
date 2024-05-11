@@ -2,6 +2,7 @@
 using App.Entities;
 using App.Repositories;
 using App.Services;
+using App.StateChanges;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -33,8 +34,10 @@ namespace AppTests.Services
         public async Task DeleteAsync()
         {
             Config config = new Config();
+            _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
+            config.ClearStateChanges();
             await _service.DeleteAsync(config.Id);
-            _repository.Verify(m => m.DeleteAsync(config.Id), Times.Once);
+            _repository.Verify(m => m.DeleteAsync(config), Times.Once);
         }
         [Fact]
         public async Task GetAsync()

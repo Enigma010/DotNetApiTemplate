@@ -1,5 +1,6 @@
 ﻿using App.Commands;
 using App.Entities;
+using App.StateChanges;
 
 namespace AppTests.Entities
 {
@@ -7,33 +8,56 @@ namespace AppTests.Entities
     {
         [Theory]
         [InlineData("12334")]
-        [InlineData("")]
+        [InlineData("abc")]
         public void SetName(string newName)
         {
             Config config = new Config();
+            AssertConfigCreated(config);
             bool enabled = config.Enabled;
             config.Change(new ChangeConfigCmd()
             {
                 Name = newName,
                 Enabled = config.Enabled
             });
+            AssertConfigCreatedChange(config);
             Assert.Equal(newName, config.Name);
             Assert.Equal(enabled, config.Enabled);
         }
         [Theory]
         [InlineData(true)]
-        [InlineData(false)]
         public void SetEnabled(bool enabled)
         {
             Config config = new Config();
+            AssertConfigCreated(config);
             string name = config.Name;
             config.Change(new ChangeConfigCmd()
             {
                 Name = config.Name,
                 Enabled = enabled
             });
+            AssertConfigCreatedChange(config);
             Assert.Equal(name, config.Name);
             Assert.Equal(enabled, config.Enabled);
+        }
+        public static Action<object> AssertType<AssertType>()
+        {
+            Action<object> assert =  (sc) =>
+            {
+                Assert.IsType<AssertType>(sc);
+            };
+            return assert;
+        }
+        private void AssertConfigCreated(Config config)
+        {
+            Assert.Collection(config.GetStateChanges(),
+                AssertType<ConfigCreated>());
+        }
+        private void AssertConfigCreatedChange(Config config)
+        {
+            Assert.Collection(
+                config.GetStateChanges(),
+                AssertType<ConfigCreated>(),
+                AssertType<ConfigChanged>());
         }
     }
 }

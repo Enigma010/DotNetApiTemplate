@@ -1,4 +1,5 @@
 ﻿using App.Commands;
+using App.StateChanges;
 
 namespace App.Entities
 {
@@ -13,6 +14,7 @@ namespace App.Entities
         public Config() : base()
         {
             Id = Guid.NewGuid();
+            AddStateChange(new ConfigCreated(this));
         }
         /// <summary>
         /// The name of the configuration
@@ -32,13 +34,22 @@ namespace App.Entities
             // eventing, i.e. if you event on the name change then if you 
             // call this method with the same name you don't want to trigger
             // a name change event
+            string oldName = Name;
+            bool oldEnabled = Enabled;
+            bool changed = false;
             if (Name != change.Name)
             {
                 Name = change.Name;
+                changed = true;
             }
             if (Enabled != change.Enabled)
             {
                 Enabled = change.Enabled;
+                changed = true;
+            }
+            if(changed)
+            {
+                AddStateChange(new ConfigChanged(this, oldName, Name, oldEnabled, Enabled));
             }
         }
     }

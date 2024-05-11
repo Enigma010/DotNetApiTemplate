@@ -1,5 +1,6 @@
 ﻿using App.Entities;
 using App.Repositories;
+using App.StateChanges;
 using Db;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -40,6 +41,7 @@ namespace AppTests.Repositories
             Assert.Equal(config.Id, changeConfig.Id);
             Config getConfig = await _repository.GetAsync(config.Id);
             Assert.Equal(config.Id, getConfig.Id);
+            Assert.Empty(getConfig.GetStateChanges());
             _client.Verify(m => m.GetAsync<Config, Guid>(config.Id), Times.Once);
         }
         [Fact]
@@ -52,9 +54,13 @@ namespace AppTests.Repositories
                 new Config()
             };
             Expression<Func<Config, bool>> filter = (c) => c.Enabled == true;
-            _client.Setup(m => m.GetAsync<Config>(It.IsAny<Expression<Func<Config, bool>>>())).ReturnsAsync(configs);
+            _client.Setup(m => m.GetAsync(It.IsAny<Expression<Func<Config, bool>>>())).ReturnsAsync(configs);
             IEnumerable<Config> getConfigs = await _repository.GetAsync(filter);
             Assert.Equal(configs, getConfigs);
+            getConfigs.ToList().ForEach(getConfig =>
+            {
+                Assert.Empty(getConfig.GetStateChanges());
+            });
         }
         [Fact]
         public async Task GetAllAsync()
@@ -69,6 +75,10 @@ namespace AppTests.Repositories
             IEnumerable<Config> getConfigs = await _repository.GetAsync();
             Assert.Equal(configs.Count, getConfigs.Count());
             _client.Verify(m => m.GetAsync<Config, Guid>(), Times.Once);
+            getConfigs.ToList().ForEach(getConfig =>
+            {
+                Assert.Empty(getConfig.GetStateChanges());
+            });
         }
         [Fact]
         public async Task UpdateAsync()
@@ -83,8 +93,15 @@ namespace AppTests.Repositories
         {
             ConfigRepository repository = new ConfigRepository(_client.Object, _logger.Object);
             Config config = new Config();
-            await repository.DeleteAsync(config.Id);
-            _client.Verify(m => m.DeleteAsync<Config, Guid>(It.Is<Guid>(id => id == config.Id)), Times.Once);
+            config.ClearStateChanges();
+            await repository.DeleteAsync(config);
+            _client.Verify(m => m.DeleteAsync<Config, Guid>(It.Is<Config>(c => c.Id == config.Id)), Times.Once);
+            Assert.Collection(
+                config.GetStateChanges(), 
+                (c) =>
+                {
+                    Assert.IsType<EntityDeleted<Guid>>(c);
+                });
         }
     }
 }

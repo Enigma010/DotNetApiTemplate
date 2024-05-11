@@ -23,7 +23,7 @@ namespace App.Repositories
         Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityType, bool>> expression);
         Task<EntityType> InsertAsync(EntityType entity);
         Task<EntityType> UpdateAsync(EntityType entity);
-        Task DeleteAsync(IdType id);
+        Task DeleteAsync(EntityType entity);
     }
     /// <summary>
     /// Base repository object, the repository object interfaces with a data storage
@@ -71,9 +71,10 @@ namespace App.Repositories
         /// </summary>
         /// <param name="id">The ID of the entity</param>
         /// <returns></returns>
-        public virtual async Task DeleteAsync(IdType id)
+        public virtual async Task DeleteAsync(EntityType entity)
         {
-            await _client.DeleteAsync<EntityType, IdType>(id);
+            entity.Deleted();
+            await _client.DeleteAsync<EntityType, IdType>(entity);
         }
 
         /// <summary>
@@ -83,7 +84,9 @@ namespace App.Repositories
         /// <returns>The entity</returns>
         public virtual async Task<EntityType> GetAsync(IdType id)
         {
-            return await _client.GetAsync<EntityType, IdType>(id);
+            EntityType entity = await _client.GetAsync<EntityType, IdType>(id);
+            ClearStateChanges(new List<EntityType> { entity });
+            return entity;
         }
 
         /// <summary>
@@ -94,7 +97,9 @@ namespace App.Repositories
         /// <returns>The entities that match the expression</returns>
         public virtual async Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityType, bool>> expression)
         {
-            return await _client.GetAsync(expression);
+            IEnumerable<EntityType> entities = await _client.GetAsync(expression);
+            ClearStateChanges(entities);
+            return entities;
         }
 
         /// <summary>
@@ -103,7 +108,17 @@ namespace App.Repositories
         /// <returns>All of the entities</returns>
         public virtual async Task<IEnumerable<EntityType>> GetAsync()
         {
-            return await _client.GetAsync<EntityType, IdType>();
+            IEnumerable<EntityType> entities = await _client.GetAsync<EntityType, IdType>();
+            ClearStateChanges(entities);
+            return entities;
+        }
+        /// <summary>
+        /// Clears the state changes on the entities
+        /// </summary>
+        /// <param name="entities">The entities</param>
+        private void ClearStateChanges(IEnumerable<EntityType> entities)
+        {
+            entities.ToList().ForEach(entity => entity.ClearStateChanges());
         }
     }
 }

@@ -62,7 +62,8 @@ namespace App.Services
         /// <returns></returns>
         public async Task DeleteAsync(Guid id)
         {
-            await _repository.DeleteAsync(id);
+            Config config = await _repository.GetAsync(id);
+            await _repository.DeleteAsync(config);
         }
 
         /// <summary>
