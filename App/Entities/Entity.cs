@@ -32,7 +32,7 @@ namespace App.Entities
         /// </summary>
         public virtual void Deleted()
         {
-            _stateChanges.Add(new EntityDeleted<IdType>(this));
+            throw new InvalidOperationException("Deleted method must be overridden");
         }
         /// <summary>
         /// Adds a state change to the list of state changes that have happened to the entity

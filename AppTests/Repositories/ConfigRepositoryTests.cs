@@ -100,7 +100,7 @@ namespace AppTests.Repositories
                 config.GetStateChanges(), 
                 (c) =>
                 {
-                    Assert.IsType<EntityDeleted<Guid>>(c);
+                    Assert.IsType<ConfigDeleted>(c);
                 });
         }
     }

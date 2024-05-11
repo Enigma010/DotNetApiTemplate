@@ -25,6 +25,13 @@ namespace App.Entities
         /// </summary>
         public bool Enabled { get; private set; } = false;
         /// <summary>
+        /// Set the config to be deleted
+        /// </summary>
+        public override void Deleted()
+        {
+            AddStateChange(new ConfigDeleted(this));
+        }
+        /// <summary>
         /// Chagne the configuration
         /// </summary>
         /// <param name="change">The configuration changes</param>
