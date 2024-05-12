@@ -1,12 +1,7 @@
-﻿using App.Repositories;
+﻿using AppCore.Repositories;
 using AppTests.Entities;
 using Db;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppTests.Repositories
 {

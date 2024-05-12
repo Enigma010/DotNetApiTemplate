@@ -1,15 +1,8 @@
-﻿using App.Services;
-using Db;
+﻿using Db;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace App.Repositories
+namespace AppCore.Repositories
 {
     /// <summary>
     /// Base repository interface

@@ -22,3 +22,7 @@ The following describes guidelines for the architecture.
 ### Services
 * Services encapsulate interacting with the repository.
 * They provide access to the entities other parts of the system.
+
+### StateChanges
+* State changes represent changes that have occurred to an entity through a command.
+* State changes can be emitted through the event bus to signal changes that have occurred in the system.

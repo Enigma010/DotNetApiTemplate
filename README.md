@@ -11,6 +11,7 @@ This template consists of the following components:
   * **Entities**: Objects with the core business logic
   * **Repositories**: Objects for retrieving entities from permanent storage
   * **Services**: Objects that interact with repositories, either returning, or interacting with entities
+* **[AppCore](./AppCore/README.md)**: The applicatinon core.
 * **[AppDi](./AppDi/README.md)** - The application's dependency injection
 * **[AppTests](./AppTests/README.md)** - Unit tests for the application
 * **[Db](./Db/README.md)** - Interfaces to abstract interaction with permanent storage like a database

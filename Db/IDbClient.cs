@@ -10,9 +10,9 @@ namespace Db
     {
         public const string UserNamePattern = "{username}";
         public const string PasswordPattern = "{password}";
-        Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType>;
-        Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType>;
-        Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType> where IdType : IComparable;
+        Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>;
+        Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>;
+        Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType> where IdType : IComparable;
         Task<EntityType> GetAsync<EntityType, IdType>(IdType id);
         Task<IEnumerable<EntityType>> GetAsync<EntityType, IdType>();
         Task<IEnumerable<EntityType>> GetAsync<EntityType>(Expression<Func<EntityType, bool>> expression);

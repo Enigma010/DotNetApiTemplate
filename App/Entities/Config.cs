@@ -1,5 +1,6 @@
 ﻿using App.Commands;
 using App.StateChanges;
+using AppCore;
 
 namespace App.Entities
 {

@@ -1,6 +1,7 @@
 ﻿using App.Commands;
 using App.Entities;
 using App.Services;
+using Db;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -36,7 +37,14 @@ namespace Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync([FromRoute] Guid id)
         {
-            return Ok(await _service.GetAsync(id));
+            try
+            {
+                return Ok(await _service.GetAsync(id));
+            }
+            catch (DbEntityNotFoundException<Guid>)
+            {
+                return NotFound();
+            }
         }
         /// <summary>
         /// HTTP GET to return all the configurations

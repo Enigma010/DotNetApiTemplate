@@ -1,11 +1,7 @@
 ﻿using App.Entities;
+using AppCore.Repositories;
 using Db;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App.Repositories
 {

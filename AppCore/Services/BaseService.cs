@@ -1,12 +1,6 @@
-﻿using App.Entities;
-using App.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AppCore.Repositories;
 
-namespace App.Services
+namespace AppCore.Services
 {
     /// <summary>
     /// The base service interface, the service interface deals with methods to interact with

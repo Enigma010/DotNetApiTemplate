@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Db
+﻿namespace Db
 {
     /// <summary>
     /// Exception thrown if the entity cannot be found in the database

@@ -1,4 +1,4 @@
-﻿using App.Services;
+﻿using AppCore.Services;
 using AppTests.Entities;
 using AppTests.Repositories;
 using Moq;

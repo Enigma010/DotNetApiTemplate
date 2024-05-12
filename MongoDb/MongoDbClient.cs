@@ -1,7 +1,6 @@
 ﻿using Db;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
-using SharpCompress.Common;
 using System.Linq.Expressions;
 
 namespace MongoDb
@@ -50,7 +49,7 @@ namespace MongoDb
         /// <param name="entity"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public async Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType>
+        public async Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>
         {
             if(entity == null)
             {
@@ -60,7 +59,7 @@ namespace MongoDb
             await collection.InsertOneAsync(entity);
         }
 
-        public async Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType> where IdType : IComparable
+        public async Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType> where IdType : IComparable
         {
             if (entity == null)
             {
@@ -71,7 +70,7 @@ namespace MongoDb
             await collection.ReplaceOneAsync<EntityType>(doc => doc.Id.Equals(entity.Id), entity);
         }
 
-        public async Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IEntity<IdType>
+        public async Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>
         {
             var collection = GetCollection<EntityType>();
             var filter = IdFilter<EntityType, IdType>(entity.Id);

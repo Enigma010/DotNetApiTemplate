@@ -1,6 +1,7 @@
 ﻿using App.Commands;
 using App.Entities;
 using App.Repositories;
+using AppCore.Services;
 using Microsoft.Extensions.Logging;
 
 namespace App.Services

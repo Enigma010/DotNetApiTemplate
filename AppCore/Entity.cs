@@ -1,12 +1,4 @@
-﻿using App.StateChanges;
-using Db;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace App.Entities
+﻿namespace AppCore
 {
     /// <summary>
     /// Base entity that all entities derive from, unifies the definition that all

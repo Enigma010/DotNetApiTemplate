@@ -11,12 +11,8 @@ namespace Db
     /// of the entity
     /// </summary>
     /// <typeparam name="IdType">The type of ID used to identify the entity</typeparam>
-    public interface IEntity<IdType>
+    public interface IDbEntity<IdType>
     {
         public IdType Id { get; }
-        public void Deleted();
-        public void AddStateChange(object stateChanged);
-        public IReadOnlyCollection<object> GetStateChanges();
-        public void ClearStateChanges();
     }
 }
