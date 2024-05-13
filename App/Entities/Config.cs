@@ -15,7 +15,7 @@ namespace App.Entities
         public Config() : base()
         {
             Id = Guid.NewGuid();
-            AddStateChange(new ConfigCreated(this));
+            AddStateChange(new ConfigCreated(Id, Name, Enabled));
         }
         /// <summary>
         /// The name of the configuration
@@ -30,7 +30,7 @@ namespace App.Entities
         /// </summary>
         public override void Deleted()
         {
-            AddStateChange(new ConfigDeleted(this));
+            AddStateChange(new ConfigDeleted(Id));
         }
         /// <summary>
         /// Chagne the configuration
@@ -57,7 +57,7 @@ namespace App.Entities
             }
             if(changed)
             {
-                AddStateChange(new ConfigChanged(this, oldName, Name, oldEnabled, Enabled));
+                AddStateChange(new ConfigChanged(Id, oldName, Name, oldEnabled, Enabled));
             }
         }
     }

@@ -2,6 +2,7 @@
 using App.Entities;
 using App.Repositories;
 using AppCore.Services;
+using DotNetEventBus;
 using Microsoft.Extensions.Logging;
 
 namespace App.Services
@@ -34,8 +35,9 @@ namespace App.Services
         /// <param name="logger">The logger</param>
         public ConfigService(
             IConfigRepository repository, 
-            ILogger<IConfigService> logger) 
-            : base(repository)
+            ILogger<IConfigService> logger,
+            IEventPublisher eventPublisher) 
+            : base(repository, eventPublisher)
         {
             _logger = logger;
         }
@@ -53,6 +55,7 @@ namespace App.Services
                     Name = cmd.Name
                 });
             await _repository.InsertAsync(config);
+            await PublishEvents(config);
             return config;
         }
 
@@ -65,6 +68,7 @@ namespace App.Services
         {
             Config config = await _repository.GetAsync(id);
             await _repository.DeleteAsync(config);
+            await PublishEvents(config);
         }
 
         /// <summary>
@@ -99,7 +103,9 @@ namespace App.Services
                 config.Change(change);
                 return config;
             };
-            return await ChangeAsync(id, changeFunc);
+            var config = await ChangeAsync(id, changeFunc);
+            await PublishEvents(config);
+            return config;
         }
     }
 }

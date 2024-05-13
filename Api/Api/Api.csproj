@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AppDi\AppDi.csproj" />
     <ProjectReference Include="..\..\App\App.csproj" />
   </ItemGroup>
 

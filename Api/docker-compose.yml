@@ -9,6 +9,13 @@ services:
     environment:
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
+      EVENT_BUS_HOST: ${EVENT_BUS_HOST} 
+      EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
+      EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
+    depends_on:
+      - mongo
+    extra_hosts:
+    - "host.docker.internal:host-gateway"    
   mongo:
     image: mongo
     restart: always

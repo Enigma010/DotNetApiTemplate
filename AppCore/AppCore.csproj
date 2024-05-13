@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Db\Db.csproj" />
+    <ProjectReference Include="..\EventBus\EventBus.csproj" />
   </ItemGroup>
 
 </Project>

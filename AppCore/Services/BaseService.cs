@@ -1,4 +1,6 @@
 ﻿using AppCore.Repositories;
+using AppCore.StateChanges;
+using DotNetEventBus;
 
 namespace AppCore.Services
 {
@@ -22,18 +24,24 @@ namespace AppCore.Services
     public class BaseService<RepositoryType, EntityType, IdType> 
         : IBaseService<EntityType, IdType> 
         where RepositoryType : IBaseRepository<EntityType, IdType>
+        where EntityType : IEntity<IdType>
     {
         /// <summary>
         /// The repository
         /// </summary>
         protected readonly RepositoryType _repository;
         /// <summary>
+        /// The event bus publisher
+        /// </summary>
+        protected readonly IEventPublisher _eventPublisher;
+        /// <summary>
         /// Crates a new base service
         /// </summary>
         /// <param name="repository">The repository</param>
-        public BaseService(RepositoryType repository)
+        public BaseService(RepositoryType repository, IEventPublisher eventPublisher)
         {
             _repository = repository;
+            _eventPublisher = eventPublisher;
         }
         /// <summary>
         /// Handles standard pattern of change/update, standard pattern is load the eneity from
@@ -49,6 +57,15 @@ namespace AppCore.Services
             changeFunc(entity);
             entity = await _repository.UpdateAsync(entity);
             return entity;
+        }
+        /// <summary>
+        /// Publishes state changes as events on the event bus
+        /// </summary>
+        /// <param name="entity">The entity</param>
+        /// <returns></returns>
+        protected async Task PublishEvents(EntityType entity)
+        {
+            await _eventPublisher.Publish(entity.GetStateChanges(), new CancellationToken());
         }
     }
 }

@@ -1,4 +1,4 @@
-using AppDi;
+using App.Di;
 
 var builder = WebApplication.CreateBuilder(args);
 
