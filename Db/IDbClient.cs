@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using UnitOfWork;
 
 namespace Db
 {
@@ -6,7 +7,7 @@ namespace Db
     /// Interface to a database, supports CRUD operations, used so that different database can be
     /// substituted without impacting the repository service
     /// </summary>
-    public interface IDbClient
+    public interface IDbClient : IUnitOfWork
     {
         public const string UserNamePattern = "{username}";
         public const string PasswordPattern = "{password}";

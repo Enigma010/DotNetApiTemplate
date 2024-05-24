@@ -4,6 +4,7 @@ using App.Repositories;
 using AppCore.Services;
 using DotNetEventBus;
 using Microsoft.Extensions.Logging;
+using UnitOfWork;
 
 namespace App.Services
 {
@@ -28,6 +29,7 @@ namespace App.Services
         /// Logger object
         /// </summary>
         private readonly ILogger<IConfigService> _logger;
+
         /// <summary>
         /// Creates a configuration service
         /// </summary>
@@ -49,14 +51,21 @@ namespace App.Services
         /// <returns>The new configuration object</returns>
         public async Task<Config> CreateAsync(CreateConfigCmd cmd)
         {
-            Config config = new Config();
-            config.Change(
-                new ChangeConfigCmd() {
-                    Name = cmd.Name
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            {
+                return await unitOfWorks.RunAsync(async () =>
+                {
+                    Config config = new Config();
+                    config.Change(
+                        new ChangeConfigCmd()
+                        {
+                            Name = cmd.Name
+                        });
+                    await _repository.InsertAsync(config);
+                    await PublishEvents(config);
+                    return config;
                 });
-            await _repository.InsertAsync(config);
-            await PublishEvents(config);
-            return config;
+            }
         }
 
         /// <summary>
@@ -66,9 +75,16 @@ namespace App.Services
         /// <returns></returns>
         public async Task DeleteAsync(Guid id)
         {
-            Config config = await _repository.GetAsync(id);
-            await _repository.DeleteAsync(config);
-            await PublishEvents(config);
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            {
+                await unitOfWorks.RunAsync(async () =>
+                {
+                    Config config = await _repository.GetAsync(id);
+                    await _repository.DeleteAsync(config);
+                    await PublishEvents(config);
+                    await unitOfWorks.Commit();
+                });
+            }
         }
 
         /// <summary>
@@ -98,14 +114,20 @@ namespace App.Services
         /// <returns>The updated configuration</returns>
         public async Task<Config> ChangeAsync(Guid id, ChangeConfigCmd change)
         {
-            Func<Config, Config> changeFunc = (config) =>
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
             {
-                config.Change(change);
-                return config;
-            };
-            var config = await ChangeAsync(id, changeFunc);
-            await PublishEvents(config);
-            return config;
+                return await unitOfWorks.RunAsync(async () =>
+                {
+                    Func<Config, Config> changeFunc = (config) =>
+                    {
+                        config.Change(change);
+                        return config;
+                    };
+                    var config = await ChangeAsync(id, changeFunc);
+                    await PublishEvents(config);
+                    return config;
+                });
+            }
         }
     }
 }

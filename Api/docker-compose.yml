@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   api:
     image: ${DOCKER_REGISTRY-}api
@@ -17,11 +15,30 @@ services:
     extra_hosts:
     - "host.docker.internal:host-gateway"    
   mongo:
-    image: mongo
+    build:
+      context: ..
+      dockerfile: MongoDb/Iac/Dockerfile
     restart: always
     ports:
       - 27017:27017
-    volumes: [../Output/MongoDb/data:/data/db]
+    volumes: [../Output/MongoDb/data:/data/db, ../MongoDb/Iac/Output/:/security]
+    # Need to override the entry point to be able to set the permissions on the replic.key file
+    # if the permissions are too open mongodb will not start the container will get in an
+    # infinite loop of restarting.  I tried to set the permissions in the KeyGenDockerfile
+    # but they were not respected when the container started here.  Got this from:
+    # https://github.com/docker-library/mongo/issues/475
+    entrypoint:
+            - bash
+            - -c
+            - |
+                chmod 400 /security/replica.key
+                chown 999:999 /security/replica.key
+                exec docker-entrypoint.sh $$@     
+    command: ["mongod", "--replSet", "my-replica-set", "--bind_ip_all", "--port", "27017", "--keyFile", "/security/replica.key"]
     environment:
-        MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-        MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    healthcheck:
+      test: test $$(mongosh --port 27017 --quiet --eval "try {rs.initiate({_id:'my-replica-set',members:[{_id:0,host:\"mongo:27017\"}]})} catch(e) {rs.status().ok}") -eq 1
+      interval: 10s
+      start_period: 30s      

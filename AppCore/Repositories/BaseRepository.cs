@@ -1,6 +1,7 @@
 ﻿using Db;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
+using UnitOfWork;
 
 namespace AppCore.Repositories
 {
@@ -9,7 +10,7 @@ namespace AppCore.Repositories
     /// </summary>
     /// <typeparam name="EntityType">The entity type</typeparam>
     /// <typeparam name="IdType">The ID type of that entity</typeparam>
-    public interface IBaseRepository<EntityType, IdType>
+    public interface IBaseRepository<EntityType, IdType> : IUnitOfWork
     {
         Task<EntityType> GetAsync(IdType id);
         Task<IEnumerable<EntityType>> GetAsync();
@@ -27,7 +28,10 @@ namespace AppCore.Repositories
     /// <typeparam name="RepositoryType">The type of repository</typeparam>
     /// <typeparam name="EntityType">The type of eneity</typeparam>
     /// <typeparam name="IdType">The type of ID</typeparam>
-    public class BaseRepository<RepositoryType, EntityType, IdType> : IBaseRepository<EntityType, IdType> where EntityType : IEntity<IdType> where IdType : IComparable
+    public class BaseRepository<RepositoryType, EntityType, IdType> 
+        : IBaseRepository<EntityType, IdType> where EntityType 
+        : IEntity<IdType> where IdType 
+        : IComparable
     {
         protected readonly ILogger<RepositoryType> _logger;
         protected readonly IDbClient _client;
@@ -112,6 +116,32 @@ namespace AppCore.Repositories
         private void ClearStateChanges(IEnumerable<EntityType> entities)
         {
             entities.ToList().ForEach(entity => entity.ClearStateChanges());
+        }
+
+        /// <summary>
+        /// Begins a unit of work
+        /// </summary>
+        /// <returns></returns>
+        public async Task Begin()
+        {
+            await _client.Begin();
+        }
+
+        /// <summary>
+        /// Commits a unit of work
+        /// </summary>
+        /// <returns></returns>
+        public async Task Commit()
+        {
+            await _client.Commit();
+        }
+        /// <summary>
+        /// Rollbacks a unit of work
+        /// </summary>
+        /// <returns></returns>
+        public async Task Rollback()
+        {
+            await _client.Rollback();
         }
     }
 }

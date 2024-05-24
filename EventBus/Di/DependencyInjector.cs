@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using static MassTransit.MessageHeaders;
 
 namespace EventBus.Di
 {
@@ -39,14 +40,13 @@ namespace EventBus.Di
         /// Registers dependencies for the application
         /// </summary>
         /// <param name="builder">The application host builder</param>
-        /// <param name="useInMemory">Whether to use the in-memory event bus</param>
-        public static void AddEventBusDependencies(this IHostApplicationBuilder builder, List<string> entryAssemblies, bool useInMemory = false)
+        public static void AddEventBusDependencies(this IHostApplicationBuilder builder, List<string> entryAssemblies)
         {
+            string host = GetEnvironmentVariableOrDefault(HostEnvironmentVariableName, DefaultHost);
+            string username = GetEnvironmentVariableOrDefault(UsernameEnvironmentVariableName, DefaultUsername);
+            string password = GetEnvironmentVariableOrDefault(PasswordEnvironmentVariableName, DefaultPassword);
             builder.Services.AddMassTransit(x =>
             {
-                string host = GetEnvironmentVariableOrDefault(HostEnvironmentVariableName, DefaultHost);
-                string username = GetEnvironmentVariableOrDefault(UsernameEnvironmentVariableName, DefaultUsername);
-                string password = GetEnvironmentVariableOrDefault(PasswordEnvironmentVariableName, DefaultPassword);
                 x.SetKebabCaseEndpointNameFormatter();
                 entryAssemblies.ForEach(entryAssemblyName =>
                 {
@@ -54,28 +54,35 @@ namespace EventBus.Di
                     x.AddConsumers(entryAssembly);
                     x.AddActivities(entryAssembly);
                 });
-                if (useInMemory)
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    x.UsingInMemory((context, cfg) =>
+                    cfg.Host(host, "/", h =>
                     {
-                        cfg.ConfigureEndpoints(context);
+                        h.Username(username);
+                        h.Password(password);
                     });
-                }
-                else
-                {
-                    x.UsingRabbitMq((context, cfg) =>
-                    {
-                        cfg.Host(host, "/", h =>
-                        {
-                            h.Username(username);
-                            h.Password(password);
-                        });
-                        cfg.ConfigureEndpoints(context);
-                    });
-                }
+                    cfg.ConfigureEndpoints(context);
+                });
             });
             builder.Services.AddScoped<IEventPublisher, EventPublisher>();
+            builder.Services.AddScoped((sp) =>
+            {
+                return Bus.Factory.CreateUsingRabbitMq(cfg =>
+                {
+                    cfg.Host(host, "/", h =>
+                    {
+                        h.Username(username);
+                        h.Password(password);
+                    });
+                });
+            });
         }
+        /// <summary>
+        /// Gets an environemt variable or the default value
+        /// </summary>
+        /// <param name="environmentVariableName">The environment variable name</param>
+        /// <param name="defaultValue">The default value</param>
+        /// <returns>The environment variable value or the default value</returns>
         private static string GetEnvironmentVariableOrDefault(string environmentVariableName, string defaultValue)
         {
             string? value = Environment.GetEnvironmentVariable(environmentVariableName);

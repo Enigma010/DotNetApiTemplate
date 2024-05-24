@@ -1,6 +1,7 @@
 ﻿using AppCore.Repositories;
 using AppCore.StateChanges;
 using DotNetEventBus;
+using UnitOfWork;
 
 namespace AppCore.Services
 {
@@ -35,6 +36,10 @@ namespace AppCore.Services
         /// </summary>
         protected readonly IEventPublisher _eventPublisher;
         /// <summary>
+        /// List of unit of work objects
+        /// </summary>
+        protected readonly List<IUnitOfWork> _unitOfWorks = new List<IUnitOfWork>();
+        /// <summary>
         /// Crates a new base service
         /// </summary>
         /// <param name="repository">The repository</param>
@@ -42,6 +47,7 @@ namespace AppCore.Services
         {
             _repository = repository;
             _eventPublisher = eventPublisher;
+            _unitOfWorks.AddRange(new List<IUnitOfWork>() { _repository, _eventPublisher });
         }
         /// <summary>
         /// Handles standard pattern of change/update, standard pattern is load the eneity from
@@ -53,10 +59,14 @@ namespace AppCore.Services
         /// <returns>The changed entity</returns>
         public async Task<EntityType> ChangeAsync(IdType id, Func<EntityType, EntityType> changeFunc)
         {
-            EntityType entity = await _repository.GetAsync(id);
-            changeFunc(entity);
-            entity = await _repository.UpdateAsync(entity);
-            return entity;
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            {
+                EntityType entity = await _repository.GetAsync(id);
+                changeFunc(entity);
+                entity = await _repository.UpdateAsync(entity);
+                await unitOfWorks.Commit();
+                return entity;
+            }
         }
         /// <summary>
         /// Publishes state changes as events on the event bus
@@ -65,7 +75,7 @@ namespace AppCore.Services
         /// <returns></returns>
         protected async Task PublishEvents(EntityType entity)
         {
-            await _eventPublisher.Publish(entity.GetStateChanges(), new CancellationToken());
+            await _eventPublisher.Publish(entity.GetStateChanges());
         }
     }
 }
