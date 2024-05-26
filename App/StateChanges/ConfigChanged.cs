@@ -9,10 +9,6 @@ namespace App.StateChanges
     public class ConfigChanged
     {
         /// <summary>
-        /// The default constuctor
-        /// </summary>
-        public ConfigChanged() { }
-        /// <summary>
         /// Config state changed
         /// </summary>
         /// <param name="config">The configuration</param>

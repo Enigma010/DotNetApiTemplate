@@ -10,12 +10,6 @@ namespace App.StateChanges
     public class ConfigCreated
     {
         /// <summary>
-        /// Default constructor
-        /// </summary>
-        public ConfigCreated()
-        {
-        }
-        /// <summary>
         /// Config created state
         /// </summary>
         /// <param name="config">The configuration</param>

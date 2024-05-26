@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace App.Events.Consumers
     /// consume messages from the message bus.  Note that I'm not sure if this should really run in the App that's
     /// running in the API probject or if it should be in another project
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class CreateConfigConsumer : EventConsumer<ConfigCreated>
     {
         /// <summary>

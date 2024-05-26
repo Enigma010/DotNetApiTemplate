@@ -14,6 +14,10 @@ namespace Api.Controllers
         /// The service for working with configurations
         /// </summary>
         private readonly IConfigService _service;
+        /// <summary>
+        /// Creates a new configuraiton controller
+        /// </summary>
+        /// <param name="service">The configuraiton service</param>
         public ConfigsController(IConfigService service) 
         { 
             _service = service;

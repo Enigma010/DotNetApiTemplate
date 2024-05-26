@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using UnitOfWork;
 
 namespace UnitOfWork
@@ -22,13 +23,13 @@ namespace UnitOfWork
     /// </code>
     /// Note that the example above uses RunAsync but you could also be using Run.
     /// </summary>
-public class UnitOfWorks : IDisposable
+    public class UnitOfWorks : IDisposable
     {
         /// <summary>
         /// The registered services that define unit of work blocks
         /// </summary>
         private List<IUnitOfWork> _unitOfWorks = new List<IUnitOfWork>();
-        public UnitOfWorks(IEnumerable<object> possibleUnitOfWorks) 
+        public UnitOfWorks(IEnumerable<object> possibleUnitOfWorks)
         {
             possibleUnitOfWorks.ToList().ForEach(possibleUnitOfWorks =>
             {
@@ -47,14 +48,19 @@ public class UnitOfWorks : IDisposable
         /// <returns></returns>
         public async Task Run(Action action)
         {
-            try
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                action();
-                await Commit();
-            }catch(Exception)
-            {
-                await Rollback();
-                throw;
+                try
+                {
+                    action();
+                    await Commit();
+                    scope.Complete();
+                }
+                catch (Exception)
+                {
+                    await Rollback();
+                    throw;
+                }
             }
         }
         /// <summary>
@@ -66,16 +72,20 @@ public class UnitOfWorks : IDisposable
         /// <returns>The application return object</returns>
         public async Task<RunReturnType> RunAsync<RunReturnType>(Func<Task<RunReturnType>> func)
         {
-            try
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                var returnValue = await func();
-                await Commit();
-                return returnValue;
-            }
-            catch (Exception)
-            {
-                await Rollback();
-                throw;
+                try
+                {
+                    var returnValue = await func();
+                    await Commit();
+                    scope.Complete();
+                    return returnValue;
+                }
+                catch (Exception)
+                {
+                    await Rollback();
+                    throw;
+                }
             }
         }
         /// <summary>
@@ -85,15 +95,18 @@ public class UnitOfWorks : IDisposable
         /// <returns></returns>
         public async Task RunAsync(Func<Task> func)
         {
-            try
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
-                await func();
-                await Commit();
-            }
-            catch (Exception)
-            {
-                await Rollback();
-                throw;
+                try
+                {
+                    await func();
+                    await Commit();
+                }
+                catch (Exception)
+                {
+                    await Rollback();
+                    throw;
+                }
             }
         }
         /// <summary>
@@ -102,7 +115,7 @@ public class UnitOfWorks : IDisposable
         /// <returns></returns>
         public async Task Commit()
         {
-            foreach(var unitOfWork in _unitOfWorks)
+            foreach (var unitOfWork in _unitOfWorks)
             {
                 await unitOfWork.Commit();
             }

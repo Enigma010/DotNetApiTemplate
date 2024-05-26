@@ -10,10 +10,6 @@ namespace App.StateChanges
     public class ConfigDeleted
     {
         /// <summary>
-        /// The default constructor
-        /// </summary>
-        public ConfigDeleted() { }
-        /// <summary>
         /// Config deleted
         /// </summary>
         /// <param name="config">The config deleted</param>

@@ -4,9 +4,11 @@ using EventBus.Di;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDb;
+using System.Diagnostics.CodeAnalysis;
 
 namespace App.Di
 {
+    [ExcludeFromCodeCoverage]
     public static class DependencyInjector
     {
         /// <summary>

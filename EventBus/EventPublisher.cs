@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using MassTransit.Transactions;
 using Microsoft.Extensions.Logging;
-using System.Transactions;
 using UnitOfWork;
 
 namespace DotNetEventBus
@@ -25,10 +24,6 @@ namespace DotNetEventBus
         /// </summary>
         private TransactionalEnlistmentBus? _transactionBus;
         /// <summary>
-        /// The transaction
-        /// </summary>
-        private TransactionScope? _transaction;
-        /// <summary>
         /// Creates a new event publisher
         /// </summary>
         /// <param name="bus">The event bus</param>
@@ -50,10 +45,6 @@ namespace DotNetEventBus
                 await _bus.StartAsync();
                 _transactionBus = new TransactionalEnlistmentBus(_bus);
             }
-            if(_transaction == null)
-            {
-                _transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            }
         }
 
         /// <summary>
@@ -63,11 +54,10 @@ namespace DotNetEventBus
         /// <exception cref="InvalidOperationException">Thrown if commit is invoked and begin wasn't invoked</exception>
         public async Task Commit()
         {
-            if (_transaction == null || _transactionBus == null)
+            if (_transactionBus == null)
             {
                 throw new InvalidOperationException("Cannot call Commit without first calling Begin");
             }
-            _transaction.Complete();
             await Task.CompletedTask;
             return;
         }
