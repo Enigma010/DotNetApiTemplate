@@ -15,25 +15,24 @@ This template consists of the following components:
 
 ## Setup
 ### EventBus
-The setup requires a few environment variables to be able to function. 
-
-| Environment Variable | Description | Default Value |
-| - | - | - |
-| EVENT_BUS_HOST | The host running RabbitMQ | localhost |
-| EVENT_BUS_USERNAME | The username used to connect to RabbitMQ | guest |
-| EVENT_BUS_PASSWORD | The password used to connect to RabbitMq | guest |
+The settings for the EventBus can be found in `Api/appsettings.Development.json` under the `EventBus` node. No additional configuration is necessary to run the EventBus with the default settings.
 
 ### MongoDB
-MongoDB requires a few things to be setup to function. The first is you need to setup the following environment variables:
+The settings for MongoDB can be found in the `Api\appsettings.Development.json` under the `Db` node. No additional configuraiton is necessary to run the MongoDB with the default settings.
 
-| Environment Variable | Description |
-| - | - |
-| MONGO_USERNAME | The name of the user for MongoDb |
-| MONGO_PASSWORD | The password of the user for MongoDb |
+Next you'll need to create/modify the `Api\.env` file. Create the file with the following content to start:
 
-If you have just set or changed these you will likely need to restart Visual Studio.
+```
+MONGO_USERNAME: username
+MONGO_PASSWORD: password
+MONGO_PORT: 27017
+```
 
-After you have setup the environment variables you will also need to generate a replication key file so that MongoDB can handle rolling back transactions.  To do this open up a **wsl** command window and change directories to `MongoDb` from there run the command:
+Change the `username` value to be the same value in the `Api\appsettings.Development.json` `Db` node, sub-node `Username` value.  
+
+Change the `password` value to be the same value in the `Api\appsettings.Development.json` `Db` node, sub-node `Password` value.
+
+Next you will also need to generate a replication key file so that MongoDB can handle rolling back transactions.  To do this open up a **wsl** command window and change directories to `MongoDb` from there run the command:
 
 ```
 ./lrun.sh
@@ -49,6 +48,7 @@ To run the API you need to do the following:
 ```
 ./lrun.sh
 ```
+
 This will start a local version of the event bus on your local machine.
 
 2. Open up Visual Studio and open the solution `Api\Api.sln`.  Under the start-up projects select `docker-compose` and press the play button. It should open up a swagger API page that you can use to run HTTP REST commands.

@@ -28,19 +28,19 @@ namespace MongoDb
         /// </summary>
         private IClientSessionHandle? _session;
         /// <summary>
-        /// Creates a new MongoDB client.  The following configurations are required:
-        ///   MONGO_USERNAME: The username to use to login to MongoDB
-        ///   MONGO_PASSWORD: The password to use to login to MongoDB
-        ///   *** Note that for development you can set these as environment variables and they
-        ///   *** will be respected
+        /// Creates a new MongoDB client.
         /// </summary>
         /// <param name="configuration">The configuration</param>
-        /// <exception cref="NullReferenceException">Throw if configuration is missing</exception>
+        /// <exception cref="NullReferenceException">Thrown if configuration is missing</exception>
         public MongoDbClient(IConfiguration configuration)
         {
             _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db:Uri in the configuration");
-            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(configuration["MONGO_USERNAME"] ?? throw new NullReferenceException("Missing MONGO_USERNAME in the configuration")));
-            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(configuration["MONGO_PASSWORD"] ?? throw new NullReferenceException("Missing MONGO_PASSWORD in the configuration")));
+            string username = configuration.GetSection("Db")["Username"] ?? throw new NullReferenceException("Missing Db.Username in the configuration");
+            string password = configuration.GetSection("Db")["Password"] ?? throw new NullReferenceException("Missing Db.Password in the configuration");
+            string port = configuration.GetSection("Db")["Port"] ?? throw new NullReferenceException("Missing Db.Port in the configuration");
+            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(username));
+            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(password));
+            _uri = _uri.Replace(IDbClient.PortPattern, Uri.EscapeDataString(port));
             _database = configuration.GetSection("Db")["Database"] ?? throw new NullReferenceException("Missing Db:DatabaseName in the configuration");
             _client = new MongoClient(_uri);
         }

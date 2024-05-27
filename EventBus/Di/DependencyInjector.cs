@@ -1,5 +1,6 @@
 ﻿using DotNetEventBus;
 using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -12,18 +13,6 @@ namespace EventBus.Di
     /// </summary>
     public static class DependencyInjector
     {
-        /// <summary>
-        /// Environment variable name for the event bus host
-        /// </summary>
-        public const string HostEnvironmentVariableName = "EVENT_BUS_HOST";
-        /// <summary>
-        /// Environment variable name for the event bus user name
-        /// </summary>
-        public const string UsernameEnvironmentVariableName = "EVENT_BUS_USERNAME";
-        /// <summary>
-        /// Environment variable name for the event bus password
-        /// </summary>
-        public const string PasswordEnvironmentVariableName = "EVENT_BUS_PASSWORD";
         /// <summary>
         /// The default host for the event bus
         /// </summary>
@@ -42,9 +31,10 @@ namespace EventBus.Di
         /// <param name="builder">The application host builder</param>
         public static void AddEventBusDependencies(this IHostApplicationBuilder builder, List<string> entryAssemblies)
         {
-            string host = GetEnvironmentVariableOrDefault(HostEnvironmentVariableName, DefaultHost);
-            string username = GetEnvironmentVariableOrDefault(UsernameEnvironmentVariableName, DefaultUsername);
-            string password = GetEnvironmentVariableOrDefault(PasswordEnvironmentVariableName, DefaultPassword);
+            IConfigurationSection section = builder.Configuration.GetSection("EventBus");
+            string host = section["Host"] ?? DefaultHost;
+            string username = section["Username"] ?? DefaultUsername;
+            string password = section["Password"] ?? DefaultPassword;
             builder.Services.AddMassTransit(x =>
             {
                 x.SetKebabCaseEndpointNameFormatter();
@@ -76,17 +66,6 @@ namespace EventBus.Di
                     });
                 });
             });
-        }
-        /// <summary>
-        /// Gets an environemt variable or the default value
-        /// </summary>
-        /// <param name="environmentVariableName">The environment variable name</param>
-        /// <param name="defaultValue">The default value</param>
-        /// <returns>The environment variable value or the default value</returns>
-        private static string GetEnvironmentVariableOrDefault(string environmentVariableName, string defaultValue)
-        {
-            string? value = Environment.GetEnvironmentVariable(environmentVariableName);
-            return !string.IsNullOrEmpty(value) ? value : defaultValue;
         }
     }
 }

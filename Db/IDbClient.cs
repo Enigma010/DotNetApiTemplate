@@ -11,6 +11,7 @@ namespace Db
     {
         public const string UserNamePattern = "{username}";
         public const string PasswordPattern = "{password}";
+        public const string PortPattern = "{port}";
         Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>;
         Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>;
         Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType> where IdType : IComparable;
