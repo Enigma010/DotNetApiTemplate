@@ -14,6 +14,31 @@ This template consists of the following components:
 * **[MongoDB](./MongoDb/README.md)** - Permanent storage implementation using a document data store of MongoDB
 
 ## Setup
+For windows you need to have the following software installed:
+
+* Docker
+* Ubuntu (You can get this from the windows store)
+
+Once you've installed Ubuntu you need to set it as the default [wsl](https://learn.microsoft.com/en-us/windows/wsl/) distribution.  To do that use the following command to get a list of the distributions:
+
+```
+wsl -l
+```
+
+You'll see something like this:
+
+```
+Ubuntu-20.04 (Default)
+docker-desktop-data
+docker-desktop
+```
+
+From there find the entry for Ubuntu, in the above example it's `Ubuntu-20.04` once you have this use the value with the `wsl -s` to set the default distribution to Ubuntu, as an example from the above:
+
+```
+wsl -s Ubuntu-20.04
+```
+
 ### EventBus
 The settings for the EventBus can be found in `Api/appsettings.Development.json` under the `EventBus` node. No additional configuration is necessary to run the EventBus with the default settings.
 

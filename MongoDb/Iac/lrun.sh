@@ -1,5 +1,5 @@
 #!/bin/sh
-docker build -t mongodbkey < KeyGenDockerfile
+docker build -t mongodbkey -f KeyGenDockerfile .
 [ -d ./Output/ ] || mkdir -p ./Output/
 cd ./Output
 volume=$(pwd)

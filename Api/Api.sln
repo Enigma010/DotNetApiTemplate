@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppCore", "..\AppCore\AppCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus", "..\EventBus\EventBus.csproj", "{1F97F3F8-59C3-46D4-B85B-428D0D1017CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitOfWork", "..\UnitOfWork\UnitOfWork.csproj", "{65770F52-F61B-4BB0-A602-8B8F521D8F24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitOfWork", "..\UnitOfWork\UnitOfWork.csproj", "{65770F52-F61B-4BB0-A602-8B8F521D8F24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppEvents", "..\AppEvents\AppEvents.csproj", "{42D8C792-DEFF-4F64-91FF-104A1A23F422}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{65770F52-F61B-4BB0-A602-8B8F521D8F24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65770F52-F61B-4BB0-A602-8B8F521D8F24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65770F52-F61B-4BB0-A602-8B8F521D8F24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42D8C792-DEFF-4F64-91FF-104A1A23F422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42D8C792-DEFF-4F64-91FF-104A1A23F422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42D8C792-DEFF-4F64-91FF-104A1A23F422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42D8C792-DEFF-4F64-91FF-104A1A23F422}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

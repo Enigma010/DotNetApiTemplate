@@ -1,6 +1,6 @@
 ﻿using App.Commands;
-using App.StateChanges;
 using AppCore;
+using AppEvents;
 
 namespace App.Entities
 {

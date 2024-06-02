@@ -1,15 +1,10 @@
 ﻿using App.Entities;
 using App.Repositories;
-using App.StateChanges;
+using AppEvents;
 using Db;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppTests.Repositories
 {

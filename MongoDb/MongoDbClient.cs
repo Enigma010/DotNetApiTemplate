@@ -37,10 +37,8 @@ namespace MongoDb
             _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db:Uri in the configuration");
             string username = configuration.GetSection("Db")["Username"] ?? throw new NullReferenceException("Missing Db.Username in the configuration");
             string password = configuration.GetSection("Db")["Password"] ?? throw new NullReferenceException("Missing Db.Password in the configuration");
-            string port = configuration.GetSection("Db")["Port"] ?? throw new NullReferenceException("Missing Db.Port in the configuration");
             _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(username));
             _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(password));
-            _uri = _uri.Replace(IDbClient.PortPattern, Uri.EscapeDataString(port));
             _database = configuration.GetSection("Db")["Database"] ?? throw new NullReferenceException("Missing Db:DatabaseName in the configuration");
             _client = new MongoClient(_uri);
         }
