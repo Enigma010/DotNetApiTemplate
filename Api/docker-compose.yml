@@ -1,6 +1,6 @@
 services:
   api:
-    image: ${DOCKER_REGISTRY-}api
+    image: ${DOCKER_REGISTRY-}${App}api
     build:
       context: .
       dockerfile: Api/Dockerfile
@@ -17,6 +17,7 @@ services:
     extra_hosts:
     - "host.docker.internal:host-gateway"    
   mongo:
+    image: ${DOCKER_REGISTRY-}${App}mongo
     build:
       context: ..
       dockerfile: MongoDb/Iac/Dockerfile
