@@ -3,7 +3,7 @@ using MassTransit.Transactions;
 using Microsoft.Extensions.Logging;
 using UnitOfWork;
 
-namespace DotNetEventBus
+namespace EventBus
 {
     public interface IEventPublisher : IUnitOfWork
     {

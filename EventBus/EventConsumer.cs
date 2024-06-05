@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DotNetEventBus
+namespace EventBus
 {
     public interface IEventConsumer<EventType> where EventType : class
     {
@@ -29,9 +30,10 @@ namespace DotNetEventBus
         /// Createa new event consumer
         /// </summary>
         /// <param name="logger"></param>
-        public EventConsumer(ILogger<EventConsumer<EventType>> logger)
+        public EventConsumer(ILogger<EventConsumer<EventType>> logger, IConfiguration configuration)
         {
             _logger = logger;
+            ConsumerDefintion = new EventConsumerDefinition<IConsumer<EventType>>(configuration);
         }
         /// <summary>
         /// The mass transit entry point for consuming events
@@ -40,6 +42,7 @@ namespace DotNetEventBus
         /// <returns></returns>
         public async Task Consume(ConsumeContext<EventType> context)
         {
+            _logger.LogInformation($"DateTime: {DateTime.Now} Method: EventConsumer.Consume: AppName: {ConsumerDefintion.AppName} Message: {context.Message}");
             await Consume(context.Message);
         }
         /// <summary>
@@ -49,5 +52,13 @@ namespace DotNetEventBus
         /// <param name="event">The event</param>
         /// <returns></returns>
         public abstract Task Consume(EventType @event);
+        /// <summary>
+        /// The consumer definition
+        /// </summary>
+        public EventConsumerDefinition<IConsumer<EventType>> ConsumerDefintion
+        {
+            get;
+            private set;
+        }
     }
 }

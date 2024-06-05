@@ -2,7 +2,7 @@
 using App.Entities;
 using App.Repositories;
 using App.Services;
-using DotNetEventBus;
+using EventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
 

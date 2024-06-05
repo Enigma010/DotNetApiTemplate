@@ -2,7 +2,7 @@
 using App.Entities;
 using App.Repositories;
 using AppCore.Services;
-using DotNetEventBus;
+using EventBus;
 using Microsoft.Extensions.Logging;
 using UnitOfWork;
 

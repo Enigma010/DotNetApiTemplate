@@ -1,9 +1,10 @@
 ﻿using AppEvents;
-using DotNetEventBus;
+using EventBus;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 
-namespace App.Events.Consumers
+namespace AppEventConsumers
 {
     /// <summary>
     /// The create config consumer example, this functionally doesn't do anything and is just used to show how to 
@@ -17,7 +18,7 @@ namespace App.Events.Consumers
         /// Creates a new consumer
         /// </summary>
         /// <param name="logger"></param>
-        public CreateConfigConsumer(ILogger<EventConsumer<ConfigCreated>> logger) : base(logger)
+        public CreateConfigConsumer(ILogger<EventConsumer<ConfigCreated>> logger, IConfiguration configuration) : base(logger, configuration)
         {
         }
         /// <summary>

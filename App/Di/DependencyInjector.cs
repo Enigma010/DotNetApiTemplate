@@ -18,7 +18,7 @@ namespace App.Di
         public static void AddAppDependencies(this IHostApplicationBuilder builder)
         {
             builder.AddMongoDbDependencies();
-            builder.AddEventBusDependencies(new List<string>() { "App" });
+            builder.AddEventBusDependencies(new List<string>() { "AppEventConsumers" });
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
         }

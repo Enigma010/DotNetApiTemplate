@@ -1,6 +1,6 @@
 ﻿using AppCore.Repositories;
 using AppCore.StateChanges;
-using DotNetEventBus;
+using EventBus;
 using UnitOfWork;
 
 namespace AppCore.Services

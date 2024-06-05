@@ -1,7 +1,7 @@
 ﻿using AppCore.Services;
 using AppTests.Entities;
 using AppTests.Repositories;
-using DotNetEventBus;
+using EventBus;
 using Moq;
 
 namespace AppTests.Services
