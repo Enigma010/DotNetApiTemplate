@@ -12,13 +12,13 @@ namespace AppEventConsumers
     /// running in the API probject or if it should be in another project
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class CreateConfigEventConsumer : EventConsumer<ConfigCreated>
+    public class CreateConfigEventConsumer : EventConsumer<ConfigCreatedEvent>
     {
         /// <summary>
         /// Creates a new consumer
         /// </summary>
         /// <param name="logger"></param>
-        public CreateConfigEventConsumer(ILogger<EventConsumer<ConfigCreated>> logger, IConfiguration configuration) : base(logger, configuration)
+        public CreateConfigEventConsumer(ILogger<EventConsumer<ConfigCreatedEvent>> logger, IConfiguration configuration) : base(logger, configuration)
         {
         }
         /// <summary>
@@ -27,9 +27,9 @@ namespace AppEventConsumers
         /// </summary>
         /// <param name="event">The create configuration event</param>
         /// <returns></returns>
-        public override async Task Consume(ConfigCreated @event)
+        public override async Task Consume(ConfigCreatedEvent @event)
         {
-             _logger.LogInformation($"Received {nameof(ConfigCreated)} Id: {@event.Id} Name: {@event.Name}");
+             _logger.LogInformation($"Received {nameof(ConfigCreatedEvent)} Id: {@event.Id} Name: {@event.Name}");
             await Task.CompletedTask;
         }
     }

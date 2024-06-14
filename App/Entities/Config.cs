@@ -12,20 +12,18 @@ namespace App.Entities
         /// <summary>
         /// Createa a new configuration
         /// </summary>
-        public Config() : base()
+        public Config() : base(Guid.NewGuid)
         {
-            Id = Guid.NewGuid();
-            AddStateChange(new ConfigCreated(Id, Name, Enabled));
+            AddStateChange(new ConfigCreatedEvent(Id, Name, Enabled));
         }
         /// <summary>
         /// Createa a new configuration
         /// </summary>
-        public Config(string name, bool enabled = false)
+        public Config(string name, bool enabled = false) : base(Guid.NewGuid)
         {
-            Id = Guid.NewGuid();
             Name = name;
             Enabled = enabled;
-            AddStateChange(new ConfigCreated(Id, Name, Enabled));
+            AddStateChange(new ConfigCreatedEvent(Id, Name, Enabled));
         }
         /// <summary>
         /// The name of the configuration
@@ -40,7 +38,7 @@ namespace App.Entities
         /// </summary>
         public override void Deleted()
         {
-            AddStateChange(new ConfigDeleted(Id));
+            AddStateChange(new ConfigDeletedEvent(Id));
         }
         /// <summary>
         /// Chagne the configuration
@@ -67,7 +65,7 @@ namespace App.Entities
             }
             if(changed)
             {
-                AddStateChange(new ConfigChanged(Id, oldName, Name, oldEnabled, Enabled));
+                AddStateChange(new ConfigChangedEvent(Id, oldName, Name, oldEnabled, Enabled));
             }
         }
     }

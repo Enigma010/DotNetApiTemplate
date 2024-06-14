@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace UnitOfWork
     /// </code>
     /// Note that the example above uses RunAsync but you could also be using Run.
     /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class UnitOfWorks : IDisposable
     {
         /// <summary>

@@ -10,6 +10,6 @@ namespace AppTests.Entities
 {
     public class TestEntity : Entity<Guid>
     {
-        public TestEntity() { Id = Guid.NewGuid();  }
+        public TestEntity() : base(Guid.NewGuid) { }
     }
 }

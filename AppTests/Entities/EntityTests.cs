@@ -13,7 +13,7 @@ namespace AppTests.Entities
         [Fact]
         public void NonOverriddenDeleteThrows()
         {
-            Entity<Guid> entity = new Entity<Guid>();
+            Entity<Guid> entity = new Entity<Guid>(Guid.NewGuid);
             Assert.Throws<InvalidOperationException>(() => entity.Deleted());
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,6 +20,7 @@ namespace EventBus
     /// An abstract class for event consumers
     /// </summary>
     /// <typeparam name="EventType">The event type or contract for the event</typeparam>
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public abstract class EventConsumer<EventType> : 
         IConsumer<EventType>, 
         IEventConsumer<EventType> where EventType : class

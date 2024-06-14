@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventBus
 {
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class EventBusConfig
     {
         /// <summary>

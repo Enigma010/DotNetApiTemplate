@@ -1,5 +1,6 @@
 ﻿using Db;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using UnitOfWork;
 
@@ -28,6 +29,7 @@ namespace AppCore.Repositories
     /// <typeparam name="RepositoryType">The type of repository</typeparam>
     /// <typeparam name="EntityType">The type of eneity</typeparam>
     /// <typeparam name="IdType">The type of ID</typeparam>
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class BaseRepository<RepositoryType, EntityType, IdType> 
         : IBaseRepository<EntityType, IdType> where EntityType 
         : IEntity<IdType> where IdType 

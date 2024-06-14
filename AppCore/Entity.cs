@@ -1,19 +1,22 @@
-﻿namespace AppCore
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace AppCore
 {
     /// <summary>
     /// Base entity that all entities derive from, unifies the definition that all
     /// entities will have an ID that is the primary identifier
     /// </summary>
     /// <typeparam name="IdType"></typeparam>
-    public class Entity<IdType> : IEntity<IdType> where IdType : new()
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
+    public class Entity<IdType> : IEntity<IdType>
     {
         private List<object> _stateChanges = new List<object>();
         /// <summary>
         /// Creates a new entitty
         /// </summary>
-        public Entity()
+        public Entity(Func<IdType> getNewId)
         {
-            Id = new IdType();
+            Id = getNewId();
         }
         /// <summary>
         /// The ID of the entity

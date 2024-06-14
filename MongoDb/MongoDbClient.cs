@@ -1,10 +1,12 @@
 ﻿using Db;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace MongoDb
 {
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class MongoDbClient : IDbClient
     {
         /// <summary>

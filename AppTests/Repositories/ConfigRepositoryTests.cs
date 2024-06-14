@@ -95,7 +95,7 @@ namespace AppTests.Repositories
                 config.GetStateChanges(), 
                 (c) =>
                 {
-                    Assert.IsType<ConfigDeleted>(c);
+                    Assert.IsType<ConfigDeletedEvent>(c);
                 });
         }
     }

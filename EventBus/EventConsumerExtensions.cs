@@ -1,8 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using ReflectionUtilities;
 
 namespace EventBus
 {
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public static class EventConsumerExtensions
     {
         /// <summary>

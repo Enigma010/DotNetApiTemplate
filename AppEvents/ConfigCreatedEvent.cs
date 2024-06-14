@@ -1,18 +1,15 @@
-﻿using EventBus;
-
-namespace AppEvents
+﻿namespace AppEvents
 {
     /// <summary>
     /// Config created state
     /// </summary>
-    [Event]
-    public class ConfigCreated
+    public class ConfigCreatedEvent
     {
         /// <summary>
         /// Config created state
         /// </summary>
         /// <param name="config">The configuration</param>
-        public ConfigCreated(Guid id, string name, bool enabled)
+        public ConfigCreatedEvent(Guid id, string name, bool enabled)
         {
             Id = id;
             Name = name;

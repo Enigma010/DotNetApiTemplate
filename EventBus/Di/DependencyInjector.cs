@@ -4,15 +4,17 @@ using MassTransit.Metadata;
 using MassTransit.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using static MassTransit.MessageHeaders;
 
 namespace EventBus.Di
 {
-    
+
     /// <summary>
     /// Dependency injection for the event bus
     /// </summary>
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public static class DependencyInjector
     {
         /// <summary>

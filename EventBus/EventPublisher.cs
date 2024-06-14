@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MassTransit.Transactions;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using UnitOfWork;
 
@@ -10,6 +11,7 @@ namespace EventBus
     {
         Task Publish(IEnumerable<object> events);
     }
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class EventPublisher : IEventPublisher
     {
         /// <summary>

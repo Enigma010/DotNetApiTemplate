@@ -1,9 +1,11 @@
 ﻿using Db;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MongoDb.Di
 {
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would be in a different project")]
     public static class DependencyInjector
     {
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using AppCore.Repositories;
 using EventBus;
+using System.Diagnostics.CodeAnalysis;
 using UnitOfWork;
 
 namespace AppCore.Services
@@ -21,6 +22,7 @@ namespace AppCore.Services
     /// <typeparam name="RepositoryType">The repository type</typeparam>
     /// <typeparam name="EntityType">The entity type</typeparam>
     /// <typeparam name="IdType">The ID type</typeparam>
+    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class BaseService<RepositoryType, EntityType, IdType> 
         : IBaseService<EntityType, IdType> 
         where RepositoryType : IBaseRepository<EntityType, IdType>
