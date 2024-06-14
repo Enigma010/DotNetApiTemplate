@@ -12,13 +12,13 @@ namespace AppEventConsumers
     /// running in the API probject or if it should be in another project
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class CreateConfigConsumer : EventConsumer<ConfigCreated>
+    public class CreateConfigEventConsumer : EventConsumer<ConfigCreated>
     {
         /// <summary>
         /// Creates a new consumer
         /// </summary>
         /// <param name="logger"></param>
-        public CreateConfigConsumer(ILogger<EventConsumer<ConfigCreated>> logger, IConfiguration configuration) : base(logger, configuration)
+        public CreateConfigEventConsumer(ILogger<EventConsumer<ConfigCreated>> logger, IConfiguration configuration) : base(logger, configuration)
         {
         }
         /// <summary>

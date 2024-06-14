@@ -1,12 +1,9 @@
-﻿using App.Entities;
-using AppCore.StateChanges;
-
-namespace App.StateChanges
+﻿namespace App.Events
 {
     /// <summary>
     /// Config changed state
     /// </summary>
-    public class ConfigChanged
+    public class ConfigChangedEvent
     {
         /// <summary>
         /// Config state changed
@@ -16,7 +13,7 @@ namespace App.StateChanges
         /// <param name="newName">The new name</param>
         /// <param name="oldEnabled">The old enabled</param>
         /// <param name="newEnabled">The new enabled</param>
-        public ConfigChanged(
+        public ConfigChangedEvent(
             Guid id,
             string oldName,
             string newName,

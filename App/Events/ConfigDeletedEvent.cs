@@ -1,19 +1,15 @@
-﻿using App.Entities;
-using AppCore;
-using AppCore.StateChanges;
-
-namespace App.StateChanges
+﻿namespace App.Events
 {
     /// <summary>
     /// Config deleted
     /// </summary>
-    public class ConfigDeleted
+    public class ConfigDeletedEvent
     {
         /// <summary>
         /// Config deleted
         /// </summary>
         /// <param name="config">The config deleted</param>
-        public ConfigDeleted(Guid id)
+        public ConfigDeletedEvent(Guid id)
         {
             Id = id;
         }
