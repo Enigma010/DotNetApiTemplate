@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MassTransit.Transactions;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 using UnitOfWork;
 
 namespace EventBus

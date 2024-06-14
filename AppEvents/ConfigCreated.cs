@@ -1,8 +1,11 @@
-﻿namespace AppEvents
+﻿using EventBus;
+
+namespace AppEvents
 {
     /// <summary>
     /// Config created state
     /// </summary>
+    [Event]
     public class ConfigCreated
     {
         /// <summary>

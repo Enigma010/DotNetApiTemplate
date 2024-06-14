@@ -1,9 +1,10 @@
 ﻿using App.Repositories;
 using App.Services;
+using AppCore;
 using EventBus.Di;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDb;
+using MongoDb.Di;
 using System.Diagnostics.CodeAnalysis;
 
 namespace App.Di
@@ -18,7 +19,8 @@ namespace App.Di
         public static void AddAppDependencies(this IHostApplicationBuilder builder)
         {
             builder.AddMongoDbDependencies();
-            builder.AddEventBusDependencies(new List<string>() { "AppEventConsumers" });
+            AppConfig appConfig = new AppConfig(builder.Configuration);
+            builder.AddEventBusDependencies(appConfig.Name, ["AppEvents"], ["AppEventConsumers"]);
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
         }

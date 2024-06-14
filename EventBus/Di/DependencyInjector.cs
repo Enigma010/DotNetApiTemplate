@@ -1,6 +1,7 @@
-﻿using EventBus;
-using MassTransit;
-using Microsoft.Extensions.Configuration;
+﻿using MassTransit;
+using MassTransit.Configuration;
+using MassTransit.Metadata;
+using MassTransit.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
@@ -8,63 +9,91 @@ using static MassTransit.MessageHeaders;
 
 namespace EventBus.Di
 {
+    
     /// <summary>
     /// Dependency injection for the event bus
     /// </summary>
     public static class DependencyInjector
     {
         /// <summary>
-        /// The default host for the event bus
+        /// The delimiter used to separate the queue name parts
         /// </summary>
-        public const string DefaultHost = "host.docker.internal";
-        /// <summary>
-        /// The default user name
-        /// </summary>
-        public const string DefaultUsername = "guest";
-        /// <summary>
-        /// The default password
-        /// </summary>
-        public const string DefaultPassword = "guest";
+        public const string QueueNameDelimiter = ":";
         /// <summary>
         /// Registers dependencies for the application
         /// </summary>
         /// <param name="builder">The application host builder</param>
-        public static void AddEventBusDependencies(this IHostApplicationBuilder builder, List<string> entryAssemblies)
+        public static void AddEventBusDependencies(
+            this IHostApplicationBuilder builder, 
+            string queueNamePrefix,
+            IEnumerable<string> publisherAssemblyNames,
+            IEnumerable<string> consumerAssemblyNames)
         {
-            IConfigurationSection section = builder.Configuration.GetSection("EventBus");
-            string host = section["Host"] ?? DefaultHost;
-            string username = section["Username"] ?? DefaultUsername;
-            string password = section["Password"] ?? DefaultPassword;
-            builder.Services.AddMassTransit(x =>
+            EventBusConfig eventBusConfig = new EventBusConfig(builder.Configuration);
+            List<Assembly> consumerAssemblies = new List<Assembly>();
+            List<Assembly> publisherAssemblies = new List<Assembly>();
+            if (string.IsNullOrEmpty(queueNamePrefix))
             {
-                x.SetKebabCaseEndpointNameFormatter();
-                entryAssemblies.ForEach(entryAssemblyName =>
+                throw new ArgumentNullException("The queue name prefix cannot be null or empty");
+            }
+            consumerAssemblyNames.ToList().ForEach(consumerAssemblyName =>
+            {
+                consumerAssemblies.Add(Assembly.Load(consumerAssemblyName));
+            });
+            publisherAssemblyNames.ToList().ForEach(publisherAssemblyName =>
+            {
+                publisherAssemblies.Add(Assembly.Load(publisherAssemblyName));
+            });
+            builder.Services.AddMassTransit(mt =>
+            {
+                mt.SetKebabCaseEndpointNameFormatter();
+                consumerAssemblies.ForEach(entryAssembly =>
                 {
-                    Assembly entryAssembly = Assembly.Load(entryAssemblyName);
-                    x.AddConsumers(entryAssembly);
-                    x.AddActivities(entryAssembly);
+                    mt.AddConsumers(entryAssembly);
+                    mt.AddActivities(entryAssembly);
                 });
-                x.UsingRabbitMq((context, cfg) =>
+                mt.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(host, "/", h =>
+                    cfg.Host(eventBusConfig.Host, "/", h =>
                     {
-                        h.Username(username);
-                        h.Password(password);
+                        h.Username(eventBusConfig.Username);
+                        h.Password(eventBusConfig.Password);
                     });
-                    cfg.ConfigureEndpoints(context);
+                    foreach(Assembly publisherAssembly in publisherAssemblies)
+                    {
+                        foreach (Type eventType in publisherAssembly.GetAppEventTypes())
+                        {
+                            MethodInfo configureTopology = typeof(DependencyInjector).GetMethod(nameof(DependencyInjector.ConfigureTopology), BindingFlags.NonPublic | BindingFlags.Static) 
+                            ?? throw new InvalidOperationException();
+                            configureTopology = configureTopology.MakeGenericMethod([eventType]);
+                            configureTopology.Invoke(null, [cfg]);
+                        }
+                    }
+                    foreach(Assembly consumerAssembly in consumerAssemblies)
+                    {
+                        foreach(Type eventConsumerType in consumerAssembly.GetEventConsumerTypes())
+                        {
+                            MethodInfo configureReceiveEndPoint = typeof(DependencyInjector).GetMethod(nameof(DependencyInjector.ConfigureReceiveEndPoint), BindingFlags.NonPublic | BindingFlags.Static)
+                            ?? throw new InvalidOperationException();
+                            configureReceiveEndPoint = configureReceiveEndPoint.MakeGenericMethod([eventConsumerType]);
+                            configureReceiveEndPoint.Invoke(null, [cfg, context, $"{queueNamePrefix}:{eventConsumerType.Name}"]);
+                        }
+                    }
                 });
             });
             builder.Services.AddScoped<IEventPublisher, EventPublisher>();
-            builder.Services.AddScoped((sp) =>
+        }
+        private static void ConfigureTopology<MessageType>(IRabbitMqBusFactoryConfigurator config) where MessageType : class
+        {
+            config.Message<MessageType>(ct => { });
+            config.AutoDelete = true;
+        }
+        private static void ConfigureReceiveEndPoint<ConsumerType>(IRabbitMqBusFactoryConfigurator config, IBusRegistrationContext context, string queueName) where ConsumerType : class, IConsumer
+        {
+            config.ReceiveEndpoint(queueName, exchangeConfigurator =>
             {
-                return Bus.Factory.CreateUsingRabbitMq(cfg =>
-                {
-                    cfg.Host(host, "/", h =>
-                    {
-                        h.Username(username);
-                        h.Password(password);
-                    });
-                });
+                exchangeConfigurator.AutoDelete = true;
+                exchangeConfigurator.Consumer<ConsumerType>(context);
             });
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace EventBus
         /// <returns></returns>
         public async Task Consume(ConsumeContext<EventType> context)
         {
-            _logger.LogInformation($"DateTime: {DateTime.Now} Method: EventConsumer.Consume: AppName: {ConsumerDefintion.AppName} Message: {context.Message}");
+            _logger.LogInformation($"DateTime: {DateTime.Now} Method: EventConsumer.Consume: Queue: {ConsumerDefintion.EventBusConfig.QueueName} Message: {context.Message}");
             await Consume(context.Message);
         }
         /// <summary>

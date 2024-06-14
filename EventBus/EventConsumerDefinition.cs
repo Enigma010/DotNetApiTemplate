@@ -1,11 +1,5 @@
 ﻿using MassTransit;
-using MassTransit.Configuration;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventBus
 {
@@ -24,20 +18,11 @@ namespace EventBus
         /// <exception cref="InvalidOperationException"></exception>
         public EventConsumerDefinition(IConfiguration configuration) 
         {
-            AppName = configuration.GetSection("App")["Name"] ?? throw new InvalidOperationException("Missing configuation App.Name");
-            Endpoint(x =>
-            {
-                x.InstanceId = AppName;
-            });
-            //EndpointName = $"{AppName}-{typeof(EventType).GetGenericArguments()[0].Name}";
+            EventBusConfig = new EventBusConfig(configuration);
         }
         /// <summary>
-        /// The application name
+        /// The event bus configuration
         /// </summary>
-        public string AppName
-        {
-            get;
-            private set;
-        }
+        public EventBusConfig EventBusConfig { get; set; }
     }
 }

@@ -18,6 +18,16 @@ namespace App.Entities
             AddStateChange(new ConfigCreated(Id, Name, Enabled));
         }
         /// <summary>
+        /// Createa a new configuration
+        /// </summary>
+        public Config(string name, bool enabled = false)
+        {
+            Id = Guid.NewGuid();
+            Name = name;
+            Enabled = enabled;
+            AddStateChange(new ConfigCreated(Id, Name, Enabled));
+        }
+        /// <summary>
         /// The name of the configuration
         /// </summary>
         public string Name { get; private set; } = string.Empty;

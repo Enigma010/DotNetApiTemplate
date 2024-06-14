@@ -1,8 +1,11 @@
-﻿namespace AppEvents
+﻿using EventBus;
+
+namespace AppEvents
 {
     /// <summary>
     /// Config changed state
     /// </summary>
+    [Event]
     public class ConfigChanged
     {
         /// <summary>

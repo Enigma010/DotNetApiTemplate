@@ -55,12 +55,7 @@ namespace App.Services
             {
                 return await unitOfWorks.RunAsync(async () =>
                 {
-                    Config config = new Config();
-                    config.Change(
-                        new ChangeConfigCmd()
-                        {
-                            Name = cmd.Name
-                        });
+                    Config config = new Config(cmd.Name);
                     await _repository.InsertAsync(config);
                     await PublishEvents(config);
                     return config;

@@ -1,8 +1,11 @@
-﻿namespace AppEvents
+﻿using EventBus;
+
+namespace AppEvents
 {
     /// <summary>
     /// Config deleted
     /// </summary>
+    [Event]
     public class ConfigDeleted
     {
         /// <summary>

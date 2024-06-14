@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ReflectionUtilities\ReflectionUtilities.csproj" />
     <ProjectReference Include="..\UnitOfWork\UnitOfWork.csproj" />
   </ItemGroup>
 
