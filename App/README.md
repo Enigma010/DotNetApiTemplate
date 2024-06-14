@@ -5,7 +5,16 @@ Contains the core business logic of the application and objects that allow exter
 The following describes guidelines for the architecture.
 
 ### Commands
+* Represent a command or action happening to an entity and it's corresponding data. As an example cancelling an order in the system would have a command class defined as:
+
+```
+public class CancelOrderCmd {
+    public Guid Id { get; set; }
+    public string Reasone { get; set; }
+}
+```
 * Represent correlated data to be passed into service or entity methods.
+* Comprised of a verb then a noun and the suffix `Cmd` to represent a command.
 * Used to more easily pass data rather than having a bunch of separate parameters passed in individually.
 
 ### Entities
@@ -14,15 +23,18 @@ The following describes guidelines for the architecture.
 * All methods should adhere to [idempotence](https://en.wikipedia.org/wiki/Idempotence). While not important for the persistance of the data, this will become important when events are triggered from methods.
 * Properties should allow read access to data but all data changes should be done through a method.  This allows for the safe guarding of the object state and allows multiple properties to be changes in consistant manners.
 * Adhere to keeping the number of entities in a single API to a minimum.  The best practice is to have a single aggregate, or root, entity that your API deals with. Keeping the entities to a minimum will keep your projects smaller and more concise and avoid monolithic applications.
+* Entities should keep all the business logic related internal state within their defintions.
+
+### Events
+* Events represent changes to entities that have occurred through a command.
+* Events are emitted to signal changes throughout the system.
+* Event defintions are a contract with other microservices. Contracts should be respected and only should be broken as a last resort. Breaking contracts requires a high degree of coordination across multiple microservices to not break the entire system.
 
 ### Repositories
 * Keep the access patterns data storage agnostic. This will allow an easier transition between data stores.
 * Repositories should implement paging.
 
 ### Services
-* Services encapsulate interacting with the repository.
-* They provide access to the entities other parts of the system.
-
-### StateChanges
-* State changes represent changes that have occurred to an entity through a command.
-* State changes can be emitted through the event bus to signal changes that have occurred in the system.
+* Services encapsulate interacting with the repository and entities.
+* Services can interact with external systems.
+* Services should include business logic that crosses entities or systems.  
