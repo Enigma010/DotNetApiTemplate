@@ -37,7 +37,7 @@ namespace AppTests.Services
         {
             Config config = new Config();
             _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
-            config.ClearStateChanges();
+            config.ClearEvents();
             await _service.DeleteAsync(config.Id);
             _repository.Verify(m => m.DeleteAsync(config), Times.Once);
         }

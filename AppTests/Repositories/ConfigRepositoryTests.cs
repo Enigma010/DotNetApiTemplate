@@ -36,7 +36,7 @@ namespace AppTests.Repositories
             Assert.Equal(config.Id, changeConfig.Id);
             Config getConfig = await _repository.GetAsync(config.Id);
             Assert.Equal(config.Id, getConfig.Id);
-            Assert.Empty(getConfig.GetStateChanges());
+            Assert.Empty(getConfig.GetEvents());
             _client.Verify(m => m.GetAsync<Config, Guid>(config.Id), Times.Once);
         }
         [Fact]
@@ -54,7 +54,7 @@ namespace AppTests.Repositories
             Assert.Equal(configs, getConfigs);
             getConfigs.ToList().ForEach(getConfig =>
             {
-                Assert.Empty(getConfig.GetStateChanges());
+                Assert.Empty(getConfig.GetEvents());
             });
         }
         [Fact]
@@ -72,7 +72,7 @@ namespace AppTests.Repositories
             _client.Verify(m => m.GetAsync<Config, Guid>(), Times.Once);
             getConfigs.ToList().ForEach(getConfig =>
             {
-                Assert.Empty(getConfig.GetStateChanges());
+                Assert.Empty(getConfig.GetEvents());
             });
         }
         [Fact]
@@ -88,11 +88,11 @@ namespace AppTests.Repositories
         {
             ConfigRepository repository = new ConfigRepository(_client.Object, _logger.Object);
             Config config = new Config();
-            config.ClearStateChanges();
+            config.ClearEvents();
             await repository.DeleteAsync(config);
             _client.Verify(m => m.DeleteAsync<Config, Guid>(It.Is<Config>(c => c.Id == config.Id)), Times.Once);
             Assert.Collection(
-                config.GetStateChanges(), 
+                config.GetEvents(), 
                 (c) =>
                 {
                     Assert.IsType<ConfigDeletedEvent>(c);

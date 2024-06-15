@@ -76,7 +76,7 @@ namespace AppCore.Services
         /// <returns></returns>
         protected async Task PublishEvents(EntityType entity)
         {
-            await _eventPublisher.Publish(entity.GetStateChanges());
+            await _eventPublisher.Publish(entity.GetEvents());
         }
     }
 }

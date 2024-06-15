@@ -10,8 +10,8 @@ namespace AppCore
     public interface IEntity<IdType> : IDbEntity<IdType>
     {
         public void Deleted();
-        public void AddStateChange(object stateChanged);
-        public IReadOnlyCollection<object> GetStateChanges();
-        public void ClearStateChanges();
+        public void AddEvent(object stateChanged);
+        public IReadOnlyCollection<object> GetEvents();
+        public void ClearEvents();
     }
 }

@@ -22,7 +22,7 @@ namespace AppTests.Entities
             AssertConfigCreatedChange(config);
             Assert.Equal(newName, config.Name);
             Assert.Equal(enabled, config.Enabled);
-            IReadOnlyCollection<object> stateChanges = config.GetStateChanges();
+            IReadOnlyCollection<object> stateChanges = config.GetEvents();
             ConfigCreatedEvent? configCreated = stateChanges.ElementAt(0) as ConfigCreatedEvent;
             Assert.NotNull(configCreated);
             // The name of a newly created configuration is always empty
@@ -55,13 +55,13 @@ namespace AppTests.Entities
         }
         private void AssertConfigCreated(Config config)
         {
-            Assert.Collection(config.GetStateChanges(),
+            Assert.Collection(config.GetEvents(),
                 AssertType<ConfigCreatedEvent>());
         }
         private void AssertConfigCreatedChange(Config config)
         {
             Assert.Collection(
-                config.GetStateChanges(),
+                config.GetEvents(),
                 AssertType<ConfigCreatedEvent>(),
                 AssertType<ConfigChangedEvent>());
         }

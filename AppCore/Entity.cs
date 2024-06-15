@@ -10,7 +10,7 @@ namespace AppCore
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class Entity<IdType> : IEntity<IdType>
     {
-        private List<object> _stateChanges = new List<object>();
+        private List<object> _events = new List<object>();
         /// <summary>
         /// Creates a new entitty
         /// </summary>
@@ -30,27 +30,27 @@ namespace AppCore
             throw new InvalidOperationException("Deleted method must be overridden");
         }
         /// <summary>
-        /// Adds a state change to the list of state changes that have happened to the entity
+        /// Adds an event
         /// </summary>
-        /// <param name="stateChanged"></param>
-        public void AddStateChange(object stateChanged)
+        /// <param name="event">The event</param>
+        public void AddEvent(object @event)
         {
-            _stateChanges.Add(stateChanged);
+            _events.Add(@event);
         }
         /// <summary>
-        /// Gets all of the state changes
+        /// Gets all of the events
         /// </summary>
-        /// <returns></returns>
-        public IReadOnlyCollection<object> GetStateChanges()
+        /// <returns>The events</returns>
+        public IReadOnlyCollection<object> GetEvents()
         {
-            return _stateChanges.AsReadOnly();
+            return _events.AsReadOnly();
         }
         /// <summary>
-        /// Removes all state changes
+        /// Clears the events
         /// </summary>
-        public void ClearStateChanges()
+        public void ClearEvents()
         {
-            _stateChanges.Clear();
+            _events.Clear();
         }
     }
 }

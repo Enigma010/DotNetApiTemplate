@@ -117,7 +117,7 @@ namespace AppCore.Repositories
         /// <param name="entities">The entities</param>
         private void ClearStateChanges(IEnumerable<EntityType> entities)
         {
-            entities.ToList().ForEach(entity => entity.ClearStateChanges());
+            entities.ToList().ForEach(entity => entity.ClearEvents());
         }
 
         /// <summary>
