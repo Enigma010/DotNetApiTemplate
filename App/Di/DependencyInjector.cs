@@ -2,6 +2,7 @@
 using App.Services;
 using AppCore;
 using EventBus.Di;
+using Logging.Di;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDb.Di;
@@ -21,6 +22,7 @@ namespace App.Di
             builder.AddMongoDbDependencies();
             AppConfig appConfig = new AppConfig(builder.Configuration);
             builder.AddEventBusDependencies(appConfig.Name, ["AppEvents"], ["AppEventConsumers"]);
+            builder.AddLoggerDependencies();
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
         }

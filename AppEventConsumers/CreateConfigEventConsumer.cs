@@ -29,7 +29,7 @@ namespace AppEventConsumers
         /// <returns></returns>
         public override async Task Consume(ConfigCreatedEvent @event)
         {
-             _logger.LogInformation($"Received {nameof(ConfigCreatedEvent)} Id: {@event.Id} Name: {@event.Name}");
+             _logger.LogInformation("Received {@EventName} Id: {@Id} Name: {@Name}", nameof(ConfigChangedEvent), @event.Id, @event.Name );
             await Task.CompletedTask;
         }
     }

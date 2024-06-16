@@ -2,8 +2,9 @@ services:
   api:
     image: ${DOCKER_REGISTRY-}${App}api
     build:
-      context: .
-      dockerfile: Api/Dockerfile
+      context: ..
+      dockerfile: Api/Api/Dockerfile
+    volumes: [../Output/Log:/log]
     environment:
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}

@@ -45,8 +45,17 @@ namespace EventBus
         /// <returns></returns>
         public async Task Consume(ConsumeContext<EventType> context)
         {
-            _logger.LogInformation($"DateTime: {DateTime.Now} Method: EventConsumer.Consume: Queue: {ConsumerDefintion.EventBusConfig.QueueName} Message: {context.Message}");
+            _logger.LogInformation("{ClassName}.{MethodName} started processing from queue {QueueName} message {@Message}", 
+                nameof(EventConsumer<EventType>), 
+                nameof(EventConsumer<EventType>.Consume), 
+                ConsumerDefintion.EventBusConfig.QueueName,
+                context.Message);
             await Consume(context.Message);
+            _logger.LogInformation("{ClassName}.{MethodName} finished processing from queue {QueueName} message {@Message}",
+                nameof(EventConsumer<EventType>),
+                nameof(EventConsumer<EventType>.Consume),
+                ConsumerDefintion.EventBusConfig.QueueName,
+                context.Message);
         }
         /// <summary>
         /// The entry point for consuming events, implement this and
