@@ -52,13 +52,7 @@ There are setups for both the [EventBus](./EventBus/README.md#setup) and the [Mo
 ## Running the API
 To run the API you need to do the following:
 
-1. Open up a **wsl** command prompt and change directories to `EventBus`.  Then issue the command:
-
-```
-./lrun.sh
-```
-
-This will start a local version of the event bus on your local machine.
+1. Run the [EventBus](./EventBus/README.md#running-the-eventbus).
 
 2. Open up Visual Studio and open the solution `Api\Api.sln`.  Under the start-up projects select `docker-compose` and press the play button. It should open up a swagger API page that you can use to run HTTP REST commands.
 
