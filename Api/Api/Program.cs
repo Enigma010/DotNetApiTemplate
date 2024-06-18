@@ -1,4 +1,5 @@
 using App.Di;
+using Logging.Di;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,5 +28,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.AddWebLoggingDependencies();
 
 app.Run();
