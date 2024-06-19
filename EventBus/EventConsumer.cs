@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Logging;
 
 namespace EventBus
 {
@@ -45,17 +46,16 @@ namespace EventBus
         /// <returns></returns>
         public async Task Consume(ConsumeContext<EventType> context)
         {
-            _logger.LogInformation("{ClassName}.{MethodName} started processing from queue {QueueName} message {@Message}", 
-                nameof(EventConsumer<EventType>), 
-                nameof(EventConsumer<EventType>.Consume), 
-                ConsumerDefintion.EventBusConfig.QueueName,
-                context.Message);
-            await Consume(context.Message);
-            _logger.LogInformation("{ClassName}.{MethodName} finished processing from queue {QueueName} message {@Message}",
-                nameof(EventConsumer<EventType>),
-                nameof(EventConsumer<EventType>.Consume),
-                ConsumerDefintion.EventBusConfig.QueueName,
-                context.Message);
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Processing from queue {QueueName} message {@Message}",
+                    ConsumerDefintion.EventBusConfig.QueueName,
+                    context.Message);
+                await Consume(context.Message);
+                _logger.LogInformation("Processed from queue {QueueName} message {@Message}",
+                    ConsumerDefintion.EventBusConfig.QueueName,
+                    context.Message);
+            }
         }
         /// <summary>
         /// The entry point for consuming events, implement this and

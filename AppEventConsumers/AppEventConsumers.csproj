@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AppEvents\AppEvents.csproj" />
     <ProjectReference Include="..\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\Logging\Logging.csproj" />
   </ItemGroup>
 
 </Project>

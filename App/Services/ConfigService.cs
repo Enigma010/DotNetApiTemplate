@@ -3,6 +3,7 @@ using App.Entities;
 using App.Repositories;
 using AppCore.Services;
 using EventBus;
+using Logging;
 using Microsoft.Extensions.Logging;
 using UnitOfWork;
 
@@ -26,11 +27,6 @@ namespace App.Services
     public class ConfigService : BaseService<IConfigRepository, Config, Guid>, IConfigService
     {
         /// <summary>
-        /// Logger object
-        /// </summary>
-        private readonly ILogger<IConfigService> _logger;
-
-        /// <summary>
         /// Creates a configuration service
         /// </summary>
         /// <param name="repository">The repository</param>
@@ -39,9 +35,8 @@ namespace App.Services
             IConfigRepository repository, 
             ILogger<IConfigService> logger,
             IEventPublisher eventPublisher) 
-            : base(repository, eventPublisher)
+            : base(repository, eventPublisher, logger)
         {
-            _logger = logger;
         }
 
         /// <summary>
@@ -51,15 +46,18 @@ namespace App.Services
         /// <returns>The new configuration object</returns>
         public async Task<Config> CreateAsync(CreateConfigCmd cmd)
         {
-            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            using (_logger.LogCaller())
             {
-                return await unitOfWorks.RunAsync(async () =>
+                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
                 {
-                    Config config = new Config(cmd.Name);
-                    await _repository.InsertAsync(config);
-                    await PublishEvents(config);
-                    return config;
-                });
+                    return await unitOfWorks.RunAsync(async () =>
+                    {
+                        Config config = new Config(cmd.Name);
+                        await _repository.InsertAsync(config);
+                        await PublishEvents(config);
+                        return config;
+                    });
+                }
             }
         }
 
@@ -70,15 +68,18 @@ namespace App.Services
         /// <returns></returns>
         public async Task DeleteAsync(Guid id)
         {
-            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            using (_logger.LogCaller())
             {
-                await unitOfWorks.RunAsync(async () =>
+                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
                 {
-                    Config config = await _repository.GetAsync(id);
-                    await _repository.DeleteAsync(config);
-                    await PublishEvents(config);
-                    await unitOfWorks.Commit();
-                });
+                    await unitOfWorks.RunAsync(async () =>
+                    {
+                        Config config = await _repository.GetAsync(id);
+                        await _repository.DeleteAsync(config);
+                        await PublishEvents(config);
+                        await unitOfWorks.Commit();
+                    });
+                }
             }
         }
 
@@ -89,7 +90,10 @@ namespace App.Services
         /// <returns></returns>
         public async Task<Config> GetAsync(Guid id)
         {
-            return await _repository.GetAsync(id);
+            using (_logger.LogCaller())
+            {
+                return await _repository.GetAsync(id);
+            }
         }
 
         /// <summary>
@@ -98,7 +102,10 @@ namespace App.Services
         /// <returns></returns>
         public async Task<IEnumerable<Config>> GetAsync()
         {
-            return await _repository.GetAsync();
+            using (_logger.LogCaller())
+            {
+                return await _repository.GetAsync();
+            }
         }
 
         /// <summary>
@@ -109,19 +116,22 @@ namespace App.Services
         /// <returns>The updated configuration</returns>
         public async Task<Config> ChangeAsync(Guid id, ChangeConfigCmd change)
         {
-            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            using (_logger.LogCaller())
             {
-                return await unitOfWorks.RunAsync(async () =>
+                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
                 {
-                    Func<Config, Config> changeFunc = (config) =>
+                    return await unitOfWorks.RunAsync(async () =>
                     {
-                        config.Change(change);
+                        Func<Config, Config> changeFunc = (config) =>
+                        {
+                            config.Change(change);
+                            return config;
+                        };
+                        var config = await ChangeAsync(id, changeFunc);
+                        await PublishEvents(config);
                         return config;
-                    };
-                    var config = await ChangeAsync(id, changeFunc);
-                    await PublishEvents(config);
-                    return config;
-                });
+                    });
+                }
             }
         }
     }

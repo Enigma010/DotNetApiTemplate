@@ -3,6 +3,7 @@ using EventBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
+using Logging;
 
 namespace AppEventConsumers
 {
@@ -29,8 +30,11 @@ namespace AppEventConsumers
         /// <returns></returns>
         public override async Task Consume(ConfigCreatedEvent @event)
         {
-             _logger.LogInformation("Received {@EventName} Id: {@Id} Name: {@Name}", nameof(ConfigChangedEvent), @event.Id, @event.Name );
-            await Task.CompletedTask;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Received {@EventName} Id: {@Id} Name: {@Name}", args: [nameof(ConfigChangedEvent), @event.Id, @event.Name]);
+                await Task.CompletedTask;
+            }
         }
     }
 }

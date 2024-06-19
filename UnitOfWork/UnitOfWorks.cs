@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
-using UnitOfWork;
+using Logging;
 
 namespace UnitOfWork
 {
@@ -27,20 +22,29 @@ namespace UnitOfWork
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class UnitOfWorks : IDisposable
     {
+        private readonly ILogger _logger;
         /// <summary>
         /// The registered services that define unit of work blocks
         /// </summary>
         private List<IUnitOfWork> _unitOfWorks = new List<IUnitOfWork>();
-        public UnitOfWorks(IEnumerable<object> possibleUnitOfWorks)
+        public UnitOfWorks(IEnumerable<object> possibleUnitOfWorks, ILogger logger)
         {
-            possibleUnitOfWorks.ToList().ForEach(possibleUnitOfWorks =>
+            _logger = logger;
+            using (_logger.LogCaller())
             {
-                if (possibleUnitOfWorks is IUnitOfWork unitOfWork)
+                possibleUnitOfWorks.ToList().ForEach(possibleUnitOfWorks =>
                 {
-                    _unitOfWorks.Add(unitOfWork);
-                    unitOfWork.Begin();
-                }
-            });
+                    if (possibleUnitOfWorks is IUnitOfWork unitOfWork)
+                    {
+                        string unitOfWorkType = unitOfWork.GetType().Name;
+                        _logger.LogInformation("Adding unit of work {UnitOfWorkType}", unitOfWorkType);
+                        _unitOfWorks.Add(unitOfWork);
+                        _logger.LogInformation("Beginning unit of work {UnitOfWorkType}", unitOfWorkType);
+                        unitOfWork.Begin();
+                        _logger.LogInformation("Began unit of work {UnitOfWorkType}", unitOfWorkType);
+                    }
+                });
+            }
         }
         /// <summary>
         /// Runs an action, representing the application logic, if successful commits
@@ -50,18 +54,27 @@ namespace UnitOfWork
         /// <returns></returns>
         public async Task Run(Action action)
         {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (_logger.LogCaller())
             {
-                try
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    action();
-                    await Commit();
-                    scope.Complete();
-                }
-                catch (Exception)
-                {
-                    await Rollback();
-                    throw;
+                    try
+                    {
+                        _logger.LogInformation("Running action");
+                        action();
+                        _logger.LogInformation("Ran action");
+                        await Commit();
+                        _logger.LogInformation("Committed");
+                        scope.Complete();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Exception encountered");
+                        _logger.LogInformation("Rolling back");
+                        await Rollback();
+                        _logger.LogInformation("Rolled back");
+                        throw;
+                    }
                 }
             }
         }
@@ -74,19 +87,26 @@ namespace UnitOfWork
         /// <returns>The application return object</returns>
         public async Task<RunReturnType> RunAsync<RunReturnType>(Func<Task<RunReturnType>> func)
         {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (_logger.LogCaller())
             {
-                try
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var returnValue = await func();
-                    await Commit();
-                    scope.Complete();
-                    return returnValue;
-                }
-                catch (Exception)
-                {
-                    await Rollback();
-                    throw;
+                    try
+                    {
+                        _logger.LogInformation("Running function");
+                        var returnValue = await func();
+                        _logger.LogInformation("Ran function");
+                        await Commit();
+                        _logger.LogInformation("Committed");
+                        scope.Complete();
+                        return returnValue;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Exception encountered");
+                        await Rollback();
+                        throw;
+                    }
                 }
             }
         }
@@ -97,17 +117,24 @@ namespace UnitOfWork
         /// <returns></returns>
         public async Task RunAsync(Func<Task> func)
         {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (_logger.LogCaller())
             {
-                try
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    await func();
-                    await Commit();
-                }
-                catch (Exception)
-                {
-                    await Rollback();
-                    throw;
+                    try
+                    {
+                        _logger.LogInformation("Running function");
+                        await func();
+                        _logger.LogInformation("Ran function");
+                        await Commit();
+                        _logger.LogInformation("Committed");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Exception encountered");
+                        await Rollback();
+                        throw;
+                    }
                 }
             }
         }
@@ -117,9 +144,14 @@ namespace UnitOfWork
         /// <returns></returns>
         public async Task Commit()
         {
-            foreach (var unitOfWork in _unitOfWorks)
+            using (_logger.LogCaller())
             {
-                await unitOfWork.Commit();
+                foreach (var unitOfWork in _unitOfWorks)
+                {
+                    _logger.LogInformation("Committing {UnitOfWorkType}", unitOfWork.GetType().Name);
+                    await unitOfWork.Commit();
+                    _logger.LogInformation("Committed {UnitOfWorkType}", unitOfWork.GetType().Name);
+                }
             }
         }
         /// <summary>
@@ -128,9 +160,14 @@ namespace UnitOfWork
         /// <returns></returns>
         private async Task Rollback()
         {
-            foreach (var unitOfWork in _unitOfWorks)
+            using (_logger.LogCaller())
             {
-                await unitOfWork.Rollback();
+                foreach (var unitOfWork in _unitOfWorks)
+                {
+                    _logger.LogInformation("Rolling back {UnitOfWorkType}", unitOfWork.GetType().Name);
+                    await unitOfWork.Rollback();
+                    _logger.LogInformation("Rolled back {UnitOfWorkType}", unitOfWork.GetType().Name);
+                }
             }
         }
         /// <summary>

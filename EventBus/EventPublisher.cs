@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Logging;
+using MassTransit;
 using MassTransit.Transactions;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
@@ -83,11 +84,16 @@ namespace EventBus
         /// <exception cref="ArgumentNullException">Thrown if the events are null</exception>
         public async Task Publish(IEnumerable<object> events)
         {
-            if (events == null)
+            using (_logger.LogCaller())
             {
-                throw new ArgumentNullException("The event cannot be null");
+                if (events == null)
+                {
+                    throw new ArgumentNullException("The event cannot be null");
+                }
+                _logger.LogInformation("Publishing {EventCounts} events", events.Count());
+                await _bus.PublishBatch(events);
+                _logger.LogInformation("Published events");
             }
-            await _bus.PublishBatch(events);
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Db;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using Logging;
 
 namespace MongoDb
 {
@@ -30,11 +32,15 @@ namespace MongoDb
         /// </summary>
         private IClientSessionHandle? _session;
         /// <summary>
+        /// The logger
+        /// </summary>
+        private readonly ILogger _logger;
+        /// <summary>
         /// Creates a new MongoDB client.
         /// </summary>
         /// <param name="configuration">The configuration</param>
         /// <exception cref="NullReferenceException">Thrown if configuration is missing</exception>
-        public MongoDbClient(IConfiguration configuration)
+        public MongoDbClient(IConfiguration configuration, ILogger<MongoDbClient> logger)
         {
             _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db:Uri in the configuration");
             string username = configuration.GetSection("Db")["Username"] ?? throw new NullReferenceException("Missing Db.Username in the configuration");
@@ -43,6 +49,7 @@ namespace MongoDb
             _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(password));
             _database = configuration.GetSection("Db")["Database"] ?? throw new NullReferenceException("Missing Db:DatabaseName in the configuration");
             _client = new MongoClient(_uri);
+            _logger = logger;
         }
         /// <summary>
         /// Inserts an entity into MongoDB
@@ -54,16 +61,21 @@ namespace MongoDb
         /// <exception cref="ArgumentNullException"></exception>
         public async Task InsertAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>
         {
-            if(entity == null)
+            using (_logger.LogCaller())
             {
-                throw new ArgumentNullException("Null entities cannot be saved");
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("Null entities cannot be saved");
+                }
+                if (_session == null)
+                {
+                    throw new InvalidOperationException("Begin transatino must be called first");
+                }
+                var collection = GetCollectionForEntityType<EntityType>();
+                _logger.LogInformation("Inserting {Id}", entity.Id);
+                await collection.InsertOneAsync(_session, entity);
+                _logger.LogInformation("Inserted {Id}", entity.Id);
             }
-            if (_session == null)
-            {
-                throw new InvalidOperationException("Begin transatino must be called first");
-            }
-            var collection = GetCollection<EntityType>();
-            await collection.InsertOneAsync(_session, entity);
         }
 
         /// <summary>
@@ -76,13 +88,18 @@ namespace MongoDb
         /// <exception cref="ArgumentNullException">Thrown if the entity is null</exception>
         public async Task UpdateAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType> where IdType : IComparable
         {
-            if (entity == null)
+            using (_logger.LogCaller())
             {
-                throw new ArgumentNullException("Null entities cannot be saved");
+                if (entity == null)
+                {
+                    throw new ArgumentNullException("Null entities cannot be saved");
+                }
+                var collection = GetCollectionForEntityType<EntityType>();
+                var filter = IdFilter<EntityType, IdType>(entity.Id);
+                _logger.LogInformation("Replacing {Id}", entity.Id);
+                await collection.ReplaceOneAsync<EntityType>(_session, doc => doc.Id.Equals(entity.Id), entity);
+                _logger.LogInformation("Replaced {Id}", entity.Id);
             }
-            var collection = GetCollection<EntityType>();
-            var filter = IdFilter<EntityType, IdType>(entity.Id);
-            await collection.ReplaceOneAsync<EntityType>(_session, doc => doc.Id.Equals(entity.Id), entity);
         }
 
         /// <summary>
@@ -94,13 +111,18 @@ namespace MongoDb
         /// <returns></returns>
         public async Task DeleteAsync<EntityType, IdType>(EntityType entity) where EntityType : IDbEntity<IdType>
         {
-            if(_session == null)
+            using (_logger.LogCaller())
             {
-                throw new InvalidOperationException("Begin transatino must be called first");
+                if (_session == null)
+                {
+                    throw new InvalidOperationException("Begin transatino must be called first");
+                }
+                var collection = GetCollectionForEntityType<EntityType>();
+                var filter = IdFilter<EntityType, IdType>(entity.Id);
+                _logger.LogInformation("Deleting {Id}", entity.Id);
+                await collection.DeleteOneAsync(_session, filter);
+                _logger.LogInformation("Deleted {Id}", entity.Id);
             }
-            var collection = GetCollection<EntityType>();
-            var filter = IdFilter<EntityType, IdType>(entity.Id);
-            await collection.DeleteOneAsync(_session, filter);
         }
 
         /// <summary>
@@ -113,14 +135,19 @@ namespace MongoDb
         /// <exception cref="DbEntityNotFoundException{IdType}">Thrown if the entity isn't found</exception>
         public async Task<EntityType> GetAsync<EntityType, IdType>(IdType id)
         {
-            var collection = GetCollection<EntityType>();
-            var filter = IdFilter<EntityType, IdType>(id);
-            var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
-            if (!entities.Any())
+            using (_logger.LogCaller())
             {
-                throw new DbEntityNotFoundException<IdType>(id);
+                var collection = GetCollectionForEntityType<EntityType>();
+                var filter = IdFilter<EntityType, IdType>(id);
+                _logger.LogInformation("Getting {Id}", id);
+                var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
+                _logger.LogInformation("Got {Id}", id);
+                if (!entities.Any())
+                {
+                    throw new DbEntityNotFoundException<IdType>(id);
+                }
+                return entities.First();
             }
-            return entities.First();
         }
 
         /// <summary>
@@ -131,10 +158,15 @@ namespace MongoDb
         /// <returns></returns>
         public async Task<IEnumerable<EntityType>> GetAsync<EntityType>(Expression<Func<EntityType, bool>> expression)
         {
-            var collection = GetCollection<EntityType>();
-            var filter = Builders<EntityType>.Filter.Where(expression);
-            var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
-            return entities;
+            using (_logger.LogCaller())
+            {
+                var collection = GetCollectionForEntityType<EntityType>();
+                var filter = Builders<EntityType>.Filter.Where(expression);
+                _logger.LogInformation("Getting by expression");
+                var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
+                _logger.LogInformation("Got by expression");
+                return entities;
+            }
         }
 
         /// <summary>
@@ -145,10 +177,15 @@ namespace MongoDb
         /// <returns>The entities</returns>
         public async Task<IEnumerable<EntityType>> GetAsync<EntityType, IdType>()
         {
-            var collection = GetCollection<EntityType>();
-            var filter = Builders<EntityType>.Filter.Empty;
-            var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
-            return entities;
+            using (_logger.LogCaller())
+            {
+                var collection = GetCollectionForEntityType<EntityType>();
+                var filter = Builders<EntityType>.Filter.Empty;
+                _logger.LogInformation("Getting all");
+                var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
+                _logger.LogInformation("Got all");
+                return entities;
+            }
         }
 
         /// <summary>
@@ -219,6 +256,17 @@ namespace MongoDb
         private FilterDefinition<EntityType> IdFilter<EntityType, IdType>(IdType id)
         {
             return Builders<EntityType>.Filter.Eq("_id", id);
+        }
+        /// <summary>
+        /// Logs the message before we get the collection name
+        /// </summary>
+        /// <typeparam name="EntityType"></typeparam>
+        private IMongoCollection<EntityType> GetCollectionForEntityType<EntityType>()
+        {
+            _logger.LogInformation("Getting collection for {EntityName}", typeof(EntityType).Name);
+            IMongoCollection<EntityType> collection = GetCollection<EntityType>();
+            _logger.LogInformation("Got collection for {EntityName} is {CollectionName}", typeof(EntityType).Name, collection.CollectionNamespace.CollectionName);
+            return collection;
         }
     }
 }

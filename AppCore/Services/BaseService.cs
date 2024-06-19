@@ -2,6 +2,8 @@
 using EventBus;
 using System.Diagnostics.CodeAnalysis;
 using UnitOfWork;
+using Logging;
+using Microsoft.Extensions.Logging;
 
 namespace AppCore.Services
 {
@@ -41,13 +43,18 @@ namespace AppCore.Services
         /// </summary>
         protected readonly List<IUnitOfWork> _unitOfWorks = new List<IUnitOfWork>();
         /// <summary>
+        /// Logger object
+        /// </summary>
+        protected readonly ILogger _logger;
+        /// <summary>
         /// Crates a new base service
         /// </summary>
         /// <param name="repository">The repository</param>
-        public BaseService(RepositoryType repository, IEventPublisher eventPublisher)
+        public BaseService(RepositoryType repository, IEventPublisher eventPublisher, ILogger logger)
         {
             _repository = repository;
             _eventPublisher = eventPublisher;
+            _logger = logger;
             _unitOfWorks.AddRange(new List<IUnitOfWork>() { _repository, _eventPublisher });
         }
         /// <summary>
@@ -60,13 +67,18 @@ namespace AppCore.Services
         /// <returns>The changed entity</returns>
         public async Task<EntityType> ChangeAsync(IdType id, Func<EntityType, EntityType> changeFunc)
         {
-            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks))
+            using (_logger.LogCaller())
             {
-                EntityType entity = await _repository.GetAsync(id);
-                changeFunc(entity);
-                entity = await _repository.UpdateAsync(entity);
-                await unitOfWorks.Commit();
-                return entity;
+                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
+                {
+                    EntityType entity = await _repository.GetAsync(id);
+                    _logger.LogInformation("Running change function on {Id}", id);
+                    changeFunc(entity);
+                    _logger.LogInformation("Ran change function on {Id}", id);
+                    entity = await _repository.UpdateAsync(entity);
+                    await unitOfWorks.Commit();
+                    return entity;
+                }
             }
         }
         /// <summary>
@@ -76,7 +88,10 @@ namespace AppCore.Services
         /// <returns></returns>
         protected async Task PublishEvents(EntityType entity)
         {
-            await _eventPublisher.Publish(entity.GetEvents());
+            using (_logger.LogCaller())
+            {
+                await _eventPublisher.Publish(entity.GetEvents());
+            }
         }
     }
 }

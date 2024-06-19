@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using UnitOfWork;
+using Logging;
 
 namespace AppCore.Repositories
 {
@@ -50,8 +51,13 @@ namespace AppCore.Repositories
         /// <returns>The entity created</returns>
         public virtual async Task<EntityType> InsertAsync(EntityType entity) 
         {
-            await _client.InsertAsync<EntityType, IdType>(entity);
-            return entity;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Inserting {Id}", entity.Id);
+                await _client.InsertAsync<EntityType, IdType>(entity);
+                _logger.LogInformation("Inserted {Id}", entity.Id);
+                return entity;
+            }
         }
 
         /// <summary>
@@ -61,8 +67,13 @@ namespace AppCore.Repositories
         /// <returns>The entity updated</returns>
         public virtual async Task<EntityType> UpdateAsync(EntityType entity) 
         {
-            await _client.UpdateAsync<EntityType, IdType>(entity);
-            return entity;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Updating {Id}", entity.Id);
+                await _client.UpdateAsync<EntityType, IdType>(entity);
+                _logger.LogInformation("Updated {Id}", entity.Id);
+                return entity;
+            }
         }
 
         /// <summary>
@@ -72,8 +83,15 @@ namespace AppCore.Repositories
         /// <returns></returns>
         public virtual async Task DeleteAsync(EntityType entity)
         {
-            entity.Deleted();
-            await _client.DeleteAsync<EntityType, IdType>(entity);
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Marking entity {Id} as deleted", entity.Id);
+                entity.Deleted();
+                _logger.LogInformation("Marked entity {Id} as deleted", entity.Id);
+                _logger.LogInformation("Deleting {Id}", entity.Id);
+                await _client.DeleteAsync<EntityType, IdType>(entity);
+                _logger.LogInformation("Deleted {Id}", entity.Id);
+            }
         }
 
         /// <summary>
@@ -83,9 +101,14 @@ namespace AppCore.Repositories
         /// <returns>The entity</returns>
         public virtual async Task<EntityType> GetAsync(IdType id)
         {
-            EntityType entity = await _client.GetAsync<EntityType, IdType>(id);
-            ClearStateChanges(new List<EntityType> { entity });
-            return entity;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Getting {Id}", id);
+                EntityType entity = await _client.GetAsync<EntityType, IdType>(id);
+                _logger.LogInformation("Got {Id}", id);
+                ClearEvents(new List<EntityType> { entity });
+                return entity;
+            }
         }
 
         /// <summary>
@@ -96,9 +119,14 @@ namespace AppCore.Repositories
         /// <returns>The entities that match the expression</returns>
         public virtual async Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityType, bool>> expression)
         {
-            IEnumerable<EntityType> entities = await _client.GetAsync(expression);
-            ClearStateChanges(entities);
-            return entities;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Getting by expression");
+                IEnumerable<EntityType> entities = await _client.GetAsync(expression);
+                _logger.LogInformation("Got by expression");
+                ClearEvents(entities);
+                return entities;
+            }
         }
 
         /// <summary>
@@ -107,17 +135,26 @@ namespace AppCore.Repositories
         /// <returns>All of the entities</returns>
         public virtual async Task<IEnumerable<EntityType>> GetAsync()
         {
-            IEnumerable<EntityType> entities = await _client.GetAsync<EntityType, IdType>();
-            ClearStateChanges(entities);
-            return entities;
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Getting all");
+                IEnumerable<EntityType> entities = await _client.GetAsync<EntityType, IdType>();
+                _logger.LogInformation("Got all");
+                ClearEvents(entities);
+                return entities;
+            }
         }
         /// <summary>
-        /// Clears the state changes on the entities
+        /// Clears the events on the entities
         /// </summary>
         /// <param name="entities">The entities</param>
-        private void ClearStateChanges(IEnumerable<EntityType> entities)
+        private void ClearEvents(IEnumerable<EntityType> entities)
         {
-            entities.ToList().ForEach(entity => entity.ClearEvents());
+            using (_logger.LogCaller())
+            {
+                _logger.LogInformation("Clearing events");
+                entities.ToList().ForEach(entity => entity.ClearEvents());
+            }
         }
 
         /// <summary>
