@@ -35,6 +35,7 @@ namespace AppCore
         /// <param name="event">The event</param>
         public void AddEvent(object @event)
         {
+            _events = _events ?? new List<object>();
             _events.Add(@event);
         }
         /// <summary>
@@ -43,6 +44,7 @@ namespace AppCore
         /// <returns>The events</returns>
         public IReadOnlyCollection<object> GetEvents()
         {
+            _events = _events ?? new List<object>();
             return _events.AsReadOnly();
         }
         /// <summary>
@@ -50,6 +52,7 @@ namespace AppCore
         /// </summary>
         public void ClearEvents()
         {
+            _events = _events ?? new List<object>();
             _events.Clear();
         }
     }
