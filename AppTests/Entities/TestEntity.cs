@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace AppTests.Entities
 {
-    public class TestEntity : Entity<Guid>
+    public class TestEntity : Entity<TestEntityDto, Guid>
     {
         public TestEntity() : base(Guid.NewGuid) { }
+    }
+
+    public class TestEntityDto : EntityDto<Guid>
+    {
+        public TestEntityDto(Func<Guid> getNewId) : base(getNewId)
+        {
+        }
     }
 }

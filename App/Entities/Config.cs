@@ -1,4 +1,5 @@
 ﻿using App.Commands;
+using App.Repositories.Dtos;
 using AppCore;
 using AppEvents;
 
@@ -7,39 +8,71 @@ namespace App.Entities
     /// <summary>
     /// The configuration object
     /// </summary>
-    public class Config : Entity<Guid>
+    public class Config : Entity<ConfigDto, Guid>
     {
+        /// <summary>
+        /// Creates a new configuration loaded from the repository
+        /// </summary>
+        /// <param name="dto"></param>
+        public Config(ConfigDto dto) : base(dto)
+        {
+        }
         /// <summary>
         /// Createa a new configuration
         /// </summary>
         public Config() : base(Guid.NewGuid)
         {
-            AddEvent(new ConfigCreatedEvent(Id, Name, Enabled));
+            AddEvent(new ConfigCreatedEvent(_dto.Id, _dto.Name, _dto.Enabled));
         }
         /// <summary>
         /// Createa a new configuration
         /// </summary>
         public Config(string name, bool enabled = false) : base(Guid.NewGuid)
         {
-            Name = name;
-            Enabled = enabled;
-            AddEvent(new ConfigCreatedEvent(Id, Name, Enabled));
+            _dto.Name = name;
+            _dto.Enabled = enabled;
+            AddEvent(new ConfigCreatedEvent(_dto.Id, _dto.Name, _dto.Enabled));
+        }
+        /// <summary>
+        /// The ID of the configuration
+        /// </summary>
+        public Guid Id
+        {
+            get
+            {
+                return _dto.Id;
+            }
         }
         /// <summary>
         /// The name of the configuration
         /// </summary>
-        public string Name { get; private set; } = string.Empty;
+        public string Name
+        {
+            get
+            {
+                return _dto.Name;
+            }
+        }
+
         /// <summary>
         /// Whether the configuration is active or not
         /// </summary>
-        public bool Enabled { get; private set; } = false;
+        public bool Enabled 
+        {
+            get
+            {
+                return _dto.Enabled;
+            }
+        }
+
         /// <summary>
         /// Set the config to be deleted
         /// </summary>
         public override void Deleted()
         {
-            AddEvent(new ConfigDeletedEvent(Id));
+            AddEvent(new ConfigDeletedEvent(_dto.Id));
         }
+
         /// <summary>
         /// Chagne the configuration
         /// </summary>
@@ -55,17 +88,17 @@ namespace App.Entities
             bool changed = false;
             if (Name != change.Name)
             {
-                Name = change.Name;
+                _dto.Name = change.Name;
                 changed = true;
             }
             if (Enabled != change.Enabled)
             {
-                Enabled = change.Enabled;
+                _dto.Enabled = change.Enabled;
                 changed = true;
             }
             if(changed)
             {
-                AddEvent(new ConfigChangedEvent(Id, oldName, Name, oldEnabled, Enabled));
+                AddEvent(new ConfigChangedEvent(_dto.Id, oldName, _dto.Name, oldEnabled, _dto.Enabled));
             }
         }
     }

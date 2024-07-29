@@ -13,8 +13,15 @@ namespace AppTests.Entities
         [Fact]
         public void NonOverriddenDeleteThrows()
         {
-            Entity<Guid> entity = new Entity<Guid>(Guid.NewGuid);
+            Entity<EntityTestsDto, Guid> entity = new Entity<EntityTestsDto, Guid>(Guid.NewGuid);
             Assert.Throws<InvalidOperationException>(() => entity.Deleted());
+        }
+
+        public class EntityTestsDto : EntityDto<Guid>
+        {
+            public EntityTestsDto(Func<Guid> getNewId) : base(getNewId)
+            {
+            }
         }
     }
 }

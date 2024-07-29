@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using Db;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AppCore
 {
@@ -8,20 +9,47 @@ namespace AppCore
     /// </summary>
     /// <typeparam name="IdType"></typeparam>
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
-    public class Entity<IdType> : IEntity<IdType>
+    public class Entity<EntityDtoType, IdType> : IEntity<EntityDtoType, IdType>
+        where EntityDtoType : EntityDto<IdType>
     {
+        /// <summary>
+        /// The events
+        /// </summary>
         private List<object> _events = new List<object>();
+
+        /// <summary>
+        /// The data transport object
+        /// </summary>
+        protected readonly EntityDtoType _dto;
+        /// <summary>
+        /// Gets the ID
+        /// </summary>
+        public IdType Id => _dto.Id;
+
+        /// <summary>
+        /// Gets the data transfer objects
+        /// </summary>
+        /// <returns></returns>
+        public EntityDtoType GetDto()
+        {
+            return _dto;
+        }
+        /// <summary>
+        /// Creates a new entitty
+        /// </summary>
+        public Entity(EntityDtoType dto)
+        {
+            _dto = dto;
+        }
+
         /// <summary>
         /// Creates a new entitty
         /// </summary>
         public Entity(Func<IdType> getNewId)
         {
-            Id = getNewId();
+            _dto = (EntityDtoType?)Activator.CreateInstance(typeof(EntityDtoType), getNewId) ?? throw new NullReferenceException();
         }
-        /// <summary>
-        /// The ID of the entity
-        /// </summary>
-        public IdType Id { get; protected set; }
+
         /// <summary>
         /// Sets the entity state to deleted
         /// </summary>
