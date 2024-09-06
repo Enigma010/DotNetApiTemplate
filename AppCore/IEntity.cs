@@ -7,7 +7,7 @@ namespace AppCore
     /// of the entity
     /// </summary>
     /// <typeparam name="IdType">The type of ID used to identify the entity</typeparam>
-    public interface IEntity<EntityDtoType, IdType> : IDbEntity<IdType> 
+    public interface IEntity<EntityDtoType, IdType> : IDbEntity<IdType>
         where EntityDtoType : EntityDto<IdType>
     {
         public void Deleted();

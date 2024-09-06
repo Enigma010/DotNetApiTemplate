@@ -15,8 +15,8 @@ namespace AppCore.Repositories
     public interface IBaseRepository<EntityType, EntityDtoType, IdType> : IUnitOfWork
     {
         Task<EntityType> GetAsync(IdType id);
-        Task<IEnumerable<EntityType>> GetAsync();
-        Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityDtoType, bool>> expression);
+        Task<IEnumerable<EntityType>> GetAsync(Paging paging);
+        Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityDtoType, bool>> expression, Paging paging);
         Task<EntityType> InsertAsync(EntityType entity);
         Task<EntityType> UpdateAsync(EntityType entity);
         Task DeleteAsync(EntityType entity);
@@ -123,12 +123,12 @@ namespace AppCore.Repositories
         /// <typeparam name="EntityType">The entity type</typeparam>
         /// <param name="expression">The filter expression</param>
         /// <returns>The entities that match the expression</returns>
-        public virtual async Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityDtoType, bool>> expression)
+        public virtual async Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityDtoType, bool>> expression, Paging paging)
         {
             using (_logger.LogCaller())
             {
                 _logger.LogInformation("Getting by expression");
-                IEnumerable<EntityDtoType> entityDtos = await _client.GetAsync<EntityDtoType>(expression);
+                IEnumerable<EntityDtoType> entityDtos = await _client.GetAsync<EntityDtoType, IdType>(expression, paging);
                 _logger.LogInformation("Got by expression");
                 IEnumerable<EntityType> entites = entityDtos.Select(GetEntity);
                 ClearEvents(entites);
@@ -140,12 +140,12 @@ namespace AppCore.Repositories
         /// Gets all entities
         /// </summary>
         /// <returns>All of the entities</returns>
-        public virtual async Task<IEnumerable<EntityType>> GetAsync()
+        public virtual async Task<IEnumerable<EntityType>> GetAsync(Paging paging)
         {
             using (_logger.LogCaller())
             {
                 _logger.LogInformation("Getting all");
-                IEnumerable<EntityDtoType> entityDtos = await _client.GetAsync<EntityDtoType, IdType>();
+                IEnumerable<EntityDtoType> entityDtos = await _client.GetAsync<EntityDtoType, IdType>(paging);
                 _logger.LogInformation("Got all");
                 IEnumerable<EntityType> entities = entityDtos.Select(GetEntity);
                 ClearEvents(entities);

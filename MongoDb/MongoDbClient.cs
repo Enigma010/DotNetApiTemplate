@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Logging;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MongoDb
 {
@@ -156,14 +157,18 @@ namespace MongoDb
         /// <typeparam name="EntityType">The entity type</typeparam>
         /// <param name="expression">The expression to get the entity by</param>
         /// <returns></returns>
-        public async Task<IEnumerable<EntityDtoType>> GetAsync<EntityDtoType>(Expression<Func<EntityDtoType, bool>> expression) where EntityDtoType : class
+        public async Task<IEnumerable<EntityDtoType>> GetAsync<EntityDtoType, IdType>(Expression<Func<EntityDtoType, bool>> expression, Paging paging) where EntityDtoType : IDbEntity<IdType>
         {
             using (_logger.LogCaller())
             {
                 var collection = GetCollectionForEntityType<EntityDtoType>();
                 var filter = Builders<EntityDtoType>.Filter.Where(expression);
                 _logger.LogInformation("Getting by expression");
-                var entities = await (await collection.FindAsync<EntityDtoType>(filter)).ToListAsync();
+                var entities = await collection.Find(filter)
+                    .SortBy((e) => e.Id)
+                    .Skip((paging.PageNumber - 1) * paging.PageSize)
+                    .Limit(paging.PageSize)
+                    .ToListAsync();
                 _logger.LogInformation("Got by expression");
                 return entities;
             }
@@ -172,17 +177,21 @@ namespace MongoDb
         /// <summary>
         /// Gets all the entities
         /// </summary>
-        /// <typeparam name="EntityType">The type of entity</typeparam>
+        /// <typeparam name="EntityDboType">The type of entity</typeparam>
         /// <typeparam name="IdType">The type of ID</typeparam>
         /// <returns>The entities</returns>
-        public async Task<IEnumerable<EntityType>> GetAsync<EntityType, IdType>()
+        public async Task<IEnumerable<EntityDboType>> GetAsync<EntityDboType, IdType>(Paging paging) where EntityDboType : IDbEntity<IdType>
         {
             using (_logger.LogCaller())
             {
-                var collection = GetCollectionForEntityType<EntityType>();
-                var filter = Builders<EntityType>.Filter.Empty;
+                var collection = GetCollectionForEntityType<EntityDboType>();
+                var filter = Builders<EntityDboType>.Filter.Empty;
                 _logger.LogInformation("Getting all");
-                var entities = await (await collection.FindAsync<EntityType>(filter)).ToListAsync();
+                var entities = await collection.Find(filter)
+                    .SortBy((e) => e.Id)
+                    .Skip((paging.PageNumber - 1) * paging.PageSize)
+                    .Limit(paging.PageSize)
+                    .ToListAsync();
                 _logger.LogInformation("Got all");
                 return entities;
             }

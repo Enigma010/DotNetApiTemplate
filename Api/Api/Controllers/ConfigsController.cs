@@ -14,6 +14,7 @@ namespace Api.Controllers
         /// The service for working with configurations
         /// </summary>
         private readonly IConfigService _service;
+
         /// <summary>
         /// Creates a new configuraiton controller
         /// </summary>
@@ -22,6 +23,7 @@ namespace Api.Controllers
         { 
             _service = service;
         }
+
         /// <summary>
         /// HTTP POST request to create a configuration
         /// </summary>
@@ -33,6 +35,7 @@ namespace Api.Controllers
             Config config = await _service.CreateAsync(cmd);
             return Ok(config);
         }
+
         /// <summary>
         /// HTTP GET to getsa specific configuration by ID
         /// </summary>
@@ -50,15 +53,17 @@ namespace Api.Controllers
                 return NotFound();
             }
         }
+
         /// <summary>
         /// HTTP GET to return all the configurations
         /// </summary>
         /// <returns>The configurations</returns>
         [HttpGet()]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync([FromQuery] Paging paging)
         {
-            return Ok(await _service.GetAsync());
+            return Ok(await _service.GetAsync(paging));
         }
+
         /// <summary>
         /// HTTP PUT to update a specific configuration
         /// </summary>
@@ -72,6 +77,7 @@ namespace Api.Controllers
             Config config = await _service.ChangeAsync(id, cmd);
             return Ok(config);
         }
+
         /// <summary>
         /// HTTP DELETE to delete a specific configuration by ID
         /// </summary>

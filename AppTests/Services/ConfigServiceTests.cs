@@ -2,6 +2,7 @@
 using App.Entities;
 using App.Repositories;
 using App.Services;
+using Db;
 using EventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -60,10 +61,10 @@ namespace AppTests.Services
                 new Config(),
                 new Config()
             };
-            _repository.Setup(m => m.GetAsync()).ReturnsAsync(configs);
-            IEnumerable<Config> getConfigs = await _service.GetAsync();
+            _repository.Setup(m => m.GetAsync(It.IsAny<Paging>())).ReturnsAsync(configs);
+            IEnumerable<Config> getConfigs = await _service.GetAsync(new Paging());
             Assert.Equal(configs.Count, getConfigs.Count());
-            _repository.Verify(m => m.GetAsync(), Times.Once);
+            _repository.Verify(m => m.GetAsync(It.IsAny<Paging>()), Times.Once);
         }
         [Fact]
         public async Task ChangeAsync()

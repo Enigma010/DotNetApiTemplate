@@ -3,8 +3,10 @@ using App.Entities;
 using App.Repositories;
 using App.Repositories.Dtos;
 using AppCore.Services;
+using Db;
 using EventBus;
 using Logging;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using UnitOfWork;
 
@@ -18,7 +20,7 @@ namespace App.Services
     {
         Task<Config> CreateAsync(CreateConfigCmd cmd);
         Task<Config> GetAsync(Guid id);
-        Task<IEnumerable<Config>> GetAsync();
+        Task<IEnumerable<Config>> GetAsync(Paging paging);
         Task DeleteAsync(Guid id);
         Task<Config> ChangeAsync(Guid id, ChangeConfigCmd cmd);
     }
@@ -101,11 +103,11 @@ namespace App.Services
         /// Gets all of the configurations
         /// </summary>
         /// <returns></returns>
-        public async Task<IEnumerable<Config>> GetAsync()
+        public async Task<IEnumerable<Config>> GetAsync([FromQuery] Paging paging)
         {
             using (_logger.LogCaller())
             {
-                return await _repository.GetAsync();
+                return await _repository.GetAsync(paging);
             }
         }
 
