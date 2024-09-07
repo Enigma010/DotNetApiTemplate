@@ -5,6 +5,7 @@ using AppEvents;
 using Db;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Data;
 using System.Linq.Expressions;
 
 namespace AppTests.Repositories
@@ -51,7 +52,7 @@ namespace AppTests.Repositories
             };
             List<ConfigDto> configDtos = configs.Select(config => config.GetDto()).ToList();
             Expression<Func<ConfigDto, bool>> filter = (c) => c.Enabled == true;
-            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Expression<Func<ConfigDto, bool>>>(), It.IsAny<Paging>())).ReturnsAsync(configDtos);
+            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Expression<Func<ConfigDto, bool>>>(), It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>())).ReturnsAsync(configDtos);
             IEnumerable<Config> getConfigs = await _repository.GetAsync(filter, new Paging());
             Assert.Equal(configs.Select(c => c.GetDto()), getConfigs.Select(c => c.GetDto()));
             getConfigs.ToList().ForEach(getConfig =>
@@ -68,10 +69,10 @@ namespace AppTests.Repositories
                 new Config(),
                 new Config()
             };
-            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>())).ReturnsAsync(configs.Select(c => c.GetDto()));
+            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>())).ReturnsAsync(configs.Select(c => c.GetDto()));
             IEnumerable<Config> getConfigs = await _repository.GetAsync(new Paging());
             Assert.Equal(configs.Count, getConfigs.Count());
-            _client.Verify(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>()), Times.Once);
+            _client.Verify(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>()), Times.Once);
             getConfigs.ToList().ForEach(getConfig =>
             {
                 Assert.Empty(getConfig.GetEvents());

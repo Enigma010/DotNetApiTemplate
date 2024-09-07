@@ -18,7 +18,7 @@ namespace Db
         Task DeleteAsync<DbType, IdType>(DbType entity) where DbType : IDbEntity<IdType>;
         Task UpdateAsync<DbType, IdType>(DbType entity) where DbType : IDbEntity<IdType> where IdType : IComparable;
         Task<DbType> GetAsync<DbType, IdType>(IdType id);
-        Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Paging paging) where DbType : IDbEntity<IdType>;
-        Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Expression<Func<DbType, bool>> expression, Paging paging) where DbType : IDbEntity<IdType>;
+        Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Paging paging, Expression<Func<DbType, object>>? sort = null) where DbType : IDbEntity<IdType>;
+        Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Expression<Func<DbType, bool>> expression, Paging paging, Expression<Func<DbType, object>>? sort = null) where DbType : IDbEntity<IdType>;
     }
 }

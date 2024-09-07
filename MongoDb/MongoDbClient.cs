@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Logging;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Data;
 
 namespace MongoDb
 {
@@ -157,15 +158,16 @@ namespace MongoDb
         /// <typeparam name="EntityType">The entity type</typeparam>
         /// <param name="expression">The expression to get the entity by</param>
         /// <returns></returns>
-        public async Task<IEnumerable<EntityDtoType>> GetAsync<EntityDtoType, IdType>(Expression<Func<EntityDtoType, bool>> expression, Paging paging) where EntityDtoType : IDbEntity<IdType>
+        public async Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Expression<Func<DbType, bool>> expression, Paging paging, Expression<Func<DbType, object>>? sort = null) where DbType : IDbEntity<IdType>
         {
+            Expression<Func<DbType, object>> sortBy = GetSortBy<DbType, IdType>(sort);
             using (_logger.LogCaller())
             {
-                var collection = GetCollectionForEntityType<EntityDtoType>();
-                var filter = Builders<EntityDtoType>.Filter.Where(expression);
+                var collection = GetCollectionForEntityType<DbType>();
+                var filter = Builders<DbType>.Filter.Where(expression);
                 _logger.LogInformation("Getting by expression");
                 var entities = await collection.Find(filter)
-                    .SortBy((e) => e.Id)
+                    .SortBy(sortBy)
                     .Skip((paging.PageNumber - 1) * paging.PageSize)
                     .Limit(paging.PageSize)
                     .ToListAsync();
@@ -177,18 +179,19 @@ namespace MongoDb
         /// <summary>
         /// Gets all the entities
         /// </summary>
-        /// <typeparam name="EntityDboType">The type of entity</typeparam>
+        /// <typeparam name="DbType">The type of entity</typeparam>
         /// <typeparam name="IdType">The type of ID</typeparam>
         /// <returns>The entities</returns>
-        public async Task<IEnumerable<EntityDboType>> GetAsync<EntityDboType, IdType>(Paging paging) where EntityDboType : IDbEntity<IdType>
+        public async Task<IEnumerable<DbType>> GetAsync<DbType, IdType>(Paging paging, Expression<Func<DbType, object>>? sort = null) where DbType : IDbEntity<IdType>
         {
+            Expression<Func<DbType, object>> sortBy = GetSortBy<DbType, IdType>(sort);
             using (_logger.LogCaller())
             {
-                var collection = GetCollectionForEntityType<EntityDboType>();
-                var filter = Builders<EntityDboType>.Filter.Empty;
+                var collection = GetCollectionForEntityType<DbType>();
+                var filter = Builders<DbType>.Filter.Empty;
                 _logger.LogInformation("Getting all");
                 var entities = await collection.Find(filter)
-                    .SortBy((e) => e.Id)
+                    .SortBy(sortBy)
                     .Skip((paging.PageNumber - 1) * paging.PageSize)
                     .Limit(paging.PageSize)
                     .ToListAsync();
@@ -258,24 +261,37 @@ namespace MongoDb
         /// <summary>
         /// Gets a filter clause base on the ID
         /// </summary>
-        /// <typeparam name="EntityType">The type of entity</typeparam>
+        /// <typeparam name="DbType">The type of entity</typeparam>
         /// <typeparam name="IdType">The type of ID</typeparam>
         /// <param name="id">The ID</param>
         /// <returns></returns>
-        private FilterDefinition<EntityType> IdFilter<EntityType, IdType>(IdType id)
+        private FilterDefinition<DbType> IdFilter<DbType, IdType>(IdType id)
         {
-            return Builders<EntityType>.Filter.Eq("_id", id);
+            return Builders<DbType>.Filter.Eq("_id", id);
         }
         /// <summary>
         /// Logs the message before we get the collection name
         /// </summary>
-        /// <typeparam name="EntityType"></typeparam>
-        private IMongoCollection<EntityType> GetCollectionForEntityType<EntityType>()
+        /// <typeparam name="DbType"></typeparam>
+        private IMongoCollection<DbType> GetCollectionForEntityType<DbType>()
         {
-            _logger.LogInformation("Getting collection for {EntityName}", typeof(EntityType).Name);
-            IMongoCollection<EntityType> collection = GetCollection<EntityType>();
-            _logger.LogInformation("Got collection for {EntityName} is {CollectionName}", typeof(EntityType).Name, collection.CollectionNamespace.CollectionName);
+            _logger.LogInformation("Getting collection for {EntityName}", typeof(DbType).Name);
+            IMongoCollection<DbType> collection = GetCollection<DbType>();
+            _logger.LogInformation("Got collection for {EntityName} is {CollectionName}", typeof(DbType).Name, collection.CollectionNamespace.CollectionName);
             return collection;
+        }
+
+        /// <summary>
+        /// Gets the sort to use
+        /// </summary>
+        /// <typeparam name="DbType">The database type</typeparam>
+        /// <typeparam name="IdType">The ID type</typeparam>
+        /// <param name="sort">What to sort by</param>
+        /// <returns>The sort operator to use</returns>
+        private Expression<Func<DbType, object>> GetSortBy<DbType, IdType>(Expression<Func<DbType, object>>? sort = null) where DbType : IDbEntity<IdType>
+        {
+            Expression<Func<DbType, object>> defaultSort = (e) => e.Id;
+            return sort ?? defaultSort;
         }
     }
 }
