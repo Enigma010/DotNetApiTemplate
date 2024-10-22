@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Db\Db.csproj" />
-    <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\DotNetApiLogging\Logging.csproj" />
   </ItemGroup>
 
 </Project>

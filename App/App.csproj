@@ -15,7 +15,7 @@
     <ProjectReference Include="..\AppEventConsumers\AppEventConsumers.csproj" />
     <ProjectReference Include="..\AppEvents\AppEvents.csproj" />
     <ProjectReference Include="..\Db\Db.csproj" />
-    <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\DotNetApiLogging\Logging.csproj" />
     <ProjectReference Include="..\MongoDb\MongoDb.csproj" />
   </ItemGroup>
 

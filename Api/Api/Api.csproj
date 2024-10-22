@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\App\App.csproj" />
-    <ProjectReference Include="..\..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\..\DotNetApiLogging\Logging.csproj" />
   </ItemGroup>
 
 </Project>

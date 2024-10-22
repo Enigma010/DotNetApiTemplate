@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\DotNetApiLogging\Logging.csproj" />
     <ProjectReference Include="..\ReflectionUtilities\ReflectionUtilities.csproj" />
     <ProjectReference Include="..\UnitOfWork\UnitOfWork.csproj" />
   </ItemGroup>
