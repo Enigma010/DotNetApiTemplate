@@ -1,5 +1,5 @@
 ﻿using App.Entities;
-using AppCore;
+using DotNetApiAppCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;

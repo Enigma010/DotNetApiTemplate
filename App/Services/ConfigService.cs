@@ -2,13 +2,13 @@
 using App.Entities;
 using App.Repositories;
 using App.Repositories.Dtos;
-using AppCore.Services;
-using Db;
-using EventBus;
-using Logging;
+using DotNetApiAppCore.Services;
+using DotNetApiDb;
+using DotNetApiEventBus;
+using DotNetApiLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using UnitOfWork;
+using DotNetApiUnitOfWork;
 
 namespace App.Services
 {

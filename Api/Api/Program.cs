@@ -1,5 +1,5 @@
 using App.Di;
-using Logging.Di;
+using DotNetApiLogging.Di;
 
 var builder = WebApplication.CreateBuilder(args);
 

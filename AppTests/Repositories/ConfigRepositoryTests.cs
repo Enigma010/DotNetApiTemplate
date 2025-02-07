@@ -2,7 +2,7 @@
 using App.Repositories;
 using App.Repositories.Dtos;
 using AppEvents;
-using Db;
+using DotNetApiDb;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Data;

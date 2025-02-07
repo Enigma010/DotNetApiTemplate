@@ -1,4 +1,4 @@
-﻿using AppCore;
+﻿using DotNetApiAppCore;
 using AppEvents;
 using System;
 using System.Collections.Generic;

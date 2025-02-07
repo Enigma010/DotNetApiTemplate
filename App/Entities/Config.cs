@@ -1,6 +1,6 @@
 ﻿using App.Commands;
 using App.Repositories.Dtos;
-using AppCore;
+using DotNetApiAppCore;
 using AppEvents;
 
 namespace App.Entities
