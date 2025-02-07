@@ -1,8 +1,8 @@
 ﻿using Amazon.Runtime.Internal.Util;
-using AppCore.Services;
+using DotNetApiAppCore.Services;
 using AppTests.Entities;
 using AppTests.Repositories;
-using EventBus;
+using DotNetApiEventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
 

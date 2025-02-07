@@ -1,11 +1,11 @@
 ﻿using App.Repositories;
 using App.Services;
-using AppCore;
-using EventBus.Di;
-using Logging.Di;
+using DotNetApiAppCore;
+using DotNetApiEventBus.Di;
+using DotNetApiLogging.Di;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDb.Di;
+using DotNetApiMongoDb.Di;
 using System.Diagnostics.CodeAnalysis;
 
 namespace App.Di
@@ -23,8 +23,8 @@ namespace App.Di
             AppConfig appConfig = new AppConfig(builder.Configuration);
             builder.AddEventBusDependencies(appConfig.Name, ["AppEvents"], ["AppEventConsumers"]);
             builder.AddLoggerDependencies([
-                new Logging.Di.DependencyInjector.JsonFileConfig("appsettings.json", optional: false),
-                new Logging.Di.DependencyInjector.JsonFileConfig("appsettings.Development.json", optional: true),
+                new DotNetApiLogging.Di.DependencyInjector.JsonFileConfig("appsettings.json", optional: false),
+                new DotNetApiLogging.Di.DependencyInjector.JsonFileConfig("appsettings.Development.json", optional: true),
                 ]);
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();

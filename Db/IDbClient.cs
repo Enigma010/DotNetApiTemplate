@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Data;
 using System.Linq.Expressions;
-using UnitOfWork;
+using DotNetApiUnitOfWork;
 
 namespace Db
 {

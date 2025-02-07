@@ -1,9 +1,9 @@
 ﻿using AppEvents;
-using EventBus;
+using DotNetApiEventBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
-using Logging;
+using DotNetApiLogging;
 
 namespace AppEventConsumers
 {

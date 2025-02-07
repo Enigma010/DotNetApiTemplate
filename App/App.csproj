@@ -7,16 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetApiAppCore" Version="1.0.0" />
+    <PackageReference Include="DotNetApiEventBus" Version="1.0.0" />
+    <PackageReference Include="DotNetApiLogging" Version="1.0.0" />
+    <PackageReference Include="DotNetApiMongoDb" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AppCore\AppCore.csproj" />
     <ProjectReference Include="..\AppEventConsumers\AppEventConsumers.csproj" />
     <ProjectReference Include="..\AppEvents\AppEvents.csproj" />
-    <ProjectReference Include="..\Db\Db.csproj" />
-    <ProjectReference Include="..\Logging\Logging.csproj" />
-    <ProjectReference Include="..\MongoDb\MongoDb.csproj" />
   </ItemGroup>
 
 </Project>
