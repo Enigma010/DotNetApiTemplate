@@ -2,6 +2,7 @@
 using App.Repositories.Dtos;
 using DotNetApiAppCore;
 using AppEvents;
+using System.ComponentModel.DataAnnotations;
 
 namespace App.Entities
 {
@@ -46,6 +47,8 @@ namespace App.Entities
         /// <summary>
         /// The name of the configuration
         /// </summary>
+        [Length(1 ,50)]
+        [Required(AllowEmptyStrings = false)]
         public string Name
         {
             get

@@ -14,6 +14,17 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.AddAppDependencies();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("cors",
+        builder =>
+        {
+            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
+                .SetIsOriginAllowedToAllowWildcardSubdomains();
+        });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,3 +43,4 @@ app.MapControllers();
 app.AddWebLoggingDependencies();
 
 app.Run();
+app.UseCors("cors");

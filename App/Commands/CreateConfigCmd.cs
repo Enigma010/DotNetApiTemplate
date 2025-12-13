@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace App.Commands
 {
@@ -11,6 +7,8 @@ namespace App.Commands
         /// <summary>
         /// The name of the config
         /// </summary>
+        [Length(1, 50)]
+        [Required(AllowEmptyStrings = false)]
         public string Name { get; set; } = string.Empty;
     }
 }
