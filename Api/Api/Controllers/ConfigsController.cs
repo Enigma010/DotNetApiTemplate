@@ -8,6 +8,7 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Produces("application/json", "application/problem+json")]
     public class ConfigsController : ControllerBase
     {
         /// <summary>
@@ -30,6 +31,7 @@ namespace Api.Controllers
         /// <param name="cmd">The create command</param>
         /// <returns>The configuration</returns>
         [HttpPost]
+        [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
         public async Task<IActionResult> PostAsync([FromBody]CreateConfigCmd cmd)
         {
             Config config = await _service.CreateAsync(cmd);
@@ -42,6 +44,8 @@ namespace Api.Controllers
         /// <param name="id">The ID of the configuration</param>
         /// <returns>The configuration</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid id)
         {
             try
@@ -59,6 +63,7 @@ namespace Api.Controllers
         /// </summary>
         /// <returns>The configurations</returns>
         [HttpGet()]
+        [ProducesResponseType(typeof(IEnumerable<Config>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAsync([FromQuery] Paging paging)
         {
             return Ok(await _service.GetAsync(paging));
@@ -71,6 +76,7 @@ namespace Api.Controllers
         /// <param name="cmd">The change command</param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
         public async Task<IActionResult> PutAsync([FromRoute] Guid id, 
             [FromBody] ChangeConfigCmd cmd)
         {
@@ -84,6 +90,7 @@ namespace Api.Controllers
         /// <param name="id">The ID of the configuration</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
         {
             await _service.DeleteAsync(id);
