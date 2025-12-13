@@ -8,7 +8,7 @@ namespace Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Produces("application/json")]
+    [Produces("application/json", "application/problem+json")]
     public class ConfigsController : ControllerBase
     {
         /// <summary>
@@ -90,7 +90,7 @@ namespace Api.Controllers
         /// <param name="id">The ID of the configuration</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
         {
             await _service.DeleteAsync(id);
