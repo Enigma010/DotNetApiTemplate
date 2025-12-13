@@ -14,16 +14,17 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.AddAppDependencies();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("cors",
-        builder =>
-        {
-            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()
-                .SetIsOriginAllowedToAllowWildcardSubdomains();
-        });
-});
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("cors", policy => policy
+    .WithOrigins(allowedOrigins)
+    .SetIsOriginAllowedToAllowWildcardSubdomains()
+    .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+    .WithHeaders("Content-Type", "Authorization", "X-Requested-With")
+    .AllowCredentials()
+    .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
+    });
 
 var app = builder.Build();
 
@@ -33,14 +34,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-app.MapControllers();
-
-app.AddWebLoggingDependencies();
-
-app.Run();
 app.UseCors("cors");
+app.MapControllers();
+app.AddWebLoggingDependencies();
+app.Run();
