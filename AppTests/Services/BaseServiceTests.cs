@@ -33,7 +33,7 @@ namespace AppTests.Services
                 changed = true;
                 return entity;
             };
-            TestEntity changeTestEntity = await service.ChangeAsync(entity.Id, changeFunc);
+            TestEntity changeTestEntity = await service.RunCommandAsync(entity.Id, changeFunc);
             Assert.True(changed);
             Assert.Equal(entity.Id, changeTestEntity.Id);
         }

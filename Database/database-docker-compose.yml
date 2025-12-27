@@ -1,0 +1,43 @@
+services:
+  mongo-keygen:
+    image: alpine:3.19
+    container_name: mongo-keygen
+    command: >
+      sh -c "
+      apk add --no-cache openssl &&
+      if [ ! -f /key/mongo-keyfile ]; then
+        openssl rand -base64 756 > /key/mongo-keyfile &&
+        chmod 600 /key/mongo-keyfile;
+      fi
+      "
+    volumes:
+      - mongo-key:/key
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    depends_on:
+      - mongo-keygen
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo-key:/key
+      - mongo-data:/data/db
+    command: >
+      bash -c "
+      cp /key/mongo-keyfile /etc/mongo-keyfile &&
+      chown mongodb:mongodb /etc/mongo-keyfile &&
+      chmod 600 /etc/mongo-keyfile &&
+      exec mongod --replSet rs0 --keyFile /etc/mongo-keyfile --auth --bind_ip_all
+      "
+    networks:
+      - tmpltnetwork
+volumes:
+  mongo-key:
+  mongo-data:
+
+networks:
+  tmpltnetwork:  

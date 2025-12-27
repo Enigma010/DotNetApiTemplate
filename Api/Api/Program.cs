@@ -10,6 +10,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.AddJsonFile("appsettings.json");
+builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.AddAppDependencies();

@@ -12,22 +12,20 @@ services:
       EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
       EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
     depends_on:
-      - mongo
+      - documentdb
     networks:
       - tmpltnetwork
     extra_hosts:
-    - "host.docker.internal:host-gateway"    
-  mongo:
-    image: ${DOCKER_REGISTRY-}${App}mongo
-    build:
-      context: ..
-      dockerfile: DotNetApiMongoDb/Dockerfile
-    restart: always
-    volumes: [../Output/MongoDb/data:/data/db]
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    - "host.docker.internal:host-gateway"
+  documentdb:
+    image: ghcr.io/documentdb/documentdb/documentdb-local:latest
+    container_name: ${DOCKER_REGISTRY-}${App}documentdb
+    restart: unless-stopped
+    ports:
+      - "10260:10260"
+    command:  ["--username", "$MONGO_USERNAME", "--password", "$MONGO_PASSWORD"]
     networks:
       - tmpltnetwork
+
 networks:
-  tmpltnetwork:     
+  tmpltnetwork:  

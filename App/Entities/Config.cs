@@ -35,16 +35,6 @@ namespace App.Entities
             AddEvent(new ConfigCreatedEvent(_dto.Id, _dto.Name, _dto.Enabled));
         }
         /// <summary>
-        /// The ID of the configuration
-        /// </summary>
-        public Guid Id
-        {
-            get
-            {
-                return _dto.Id;
-            }
-        }
-        /// <summary>
         /// The name of the configuration
         /// </summary>
         [Length(1 ,50)]

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 # Create a shared volume for working with this container
 VOLUME [ "/app" ]
 # Go to working directory

@@ -7,11 +7,9 @@ This template consists of the following components:
 
 * **[Api](./Api/README.md)** - The application API
 * **[App](./App/README.md)** - The application business logic
-* **[AppCore](./AppCore/README.md)**: The application core
 * **[AppTests](./AppTests/README.md)** - Unit tests for the application
-* **[Db](./Db/README.md)** - Interfaces to abstract interaction with permanent storage like a database
+* **[Database](./Database/README.md)** - Permanent storage for the application, using MongoDB
 * **[EventBus](./EventBus/README.md)** - Infrastructure used to work with the event bus
-* **[MongoDB](./MongoDb/README.md)** - Permanent storage implementation using a document data store of MongoDB
 
 ## Setup
 For windows you need to have the following software installed:
