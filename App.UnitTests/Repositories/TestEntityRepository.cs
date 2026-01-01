@@ -1,6 +1,6 @@
-﻿using DotNetApiAppCore.Repositories;
+﻿using App.Core.Repositories;
+using App.Db;
 using AppTests.Entities;
-using DotNetApiDb;
 using Microsoft.Extensions.Logging;
 
 namespace AppTests.Repositories

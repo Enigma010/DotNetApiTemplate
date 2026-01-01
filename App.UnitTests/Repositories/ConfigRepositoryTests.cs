@@ -1,8 +1,8 @@
-﻿using App.Entities;
+﻿using App.Db;
+using App.Entities;
 using App.Repositories;
 using App.Repositories.Dtos;
 using AppEvents;
-using DotNetApiDb;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Data;

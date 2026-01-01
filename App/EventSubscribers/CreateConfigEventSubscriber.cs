@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 using DotNetApiLogging;
 
-namespace AppEventConsumers
+namespace App.EventSubscribers
 {
     /// <summary>
     /// The create config consumer example, this functionally doesn't do anything and is just used to show how to 

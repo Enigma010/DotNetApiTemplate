@@ -5,10 +5,12 @@ using DotNetApiEventBus.Di;
 using DotNetApiLogging.Di;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using DotNetApiMongoDb.Di;
 using System.Diagnostics.CodeAnalysis;
 using DotNetApiLogging;
 using Microsoft.Extensions.Configuration;
+using App.Core;
+using App.DbMongo.Di;
+using App.UnitOfWork;
 
 namespace App.Di
 {
@@ -24,10 +26,11 @@ namespace App.Di
             builder.AddMongoDbDependencies();
             AppConfig appConfig = new AppConfig(builder.Configuration);
             LogConfig logConfig = builder.Configuration.GetSection(nameof(LogConfig)).Get<LogConfig>() ?? throw new InvalidOperationException($"Missing {nameof(LogConfig)} configuration");
-            builder.AddEventBusDependencies(["AppEventSubscribers"]);
+            builder.AddEventBusDependencies(["App"]);
             builder.AddLoggerDependencies(logConfig);
             builder.Services.AddScoped<IConfigService, ConfigService>();
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
+            builder.Services.AddScoped<IEventPublisherUnitOfWork, EventPublisherUnitOfWork>();
         }
     }
 }

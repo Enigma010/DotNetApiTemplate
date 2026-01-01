@@ -1,6 +1,6 @@
 ﻿using App.Commands;
 using App.Repositories.Dtos;
-using DotNetApiAppCore;
+using App.Core;
 using AppEvents;
 using System.ComponentModel.DataAnnotations;
 

@@ -1,22 +1,22 @@
-﻿using Amazon.Runtime.Internal.Util;
-using DotNetApiAppCore.Services;
+﻿using DotNetApiAppCore.Services;
 using AppTests.Entities;
 using AppTests.Repositories;
 using DotNetApiEventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
+using App.UnitOfWork;
 
 namespace AppTests.Services
 {
     public class BaseServiceTests
     {
         private readonly Mock<ITestEntityRepository> _repository;
-        private readonly Mock<IEventPublisher> _eventPublisher;
+        private readonly Mock<IEventPublisherUnitOfWork> _eventPublisher;
         private readonly Mock<ILogger<BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid>>> _logger;
         public BaseServiceTests()
         {
             _repository = new Mock<ITestEntityRepository>();
-            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher = new Mock<IEventPublisherUnitOfWork>();
             _logger = new Mock<ILogger<BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid>>>();
         }
         [Fact]

@@ -1,7 +1,7 @@
 ﻿using App.Commands;
+using App.Db;
 using App.Entities;
 using App.Services;
-using DotNetApiDb;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers

@@ -1,7 +1,7 @@
-﻿using App.Entities;
+﻿using App.Core.Repositories;
+using App.Db;
+using App.Entities;
 using App.Repositories.Dtos;
-using DotNetApiAppCore.Repositories;
-using DotNetApiDb;
 using Microsoft.Extensions.Logging;
 
 namespace App.Repositories

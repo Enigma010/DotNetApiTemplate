@@ -5,14 +5,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DotNetApiAppCore" Version="3.0.1" />
-    <PackageReference Include="DotNetApiEventBus" Version="3.0.2" />
+    <PackageReference Include="DotNetApiEventBus" Version="3.0.3" />
     <PackageReference Include="DotNetApiLogging" Version="3.0.0" />
-    <PackageReference Include="DotNetApiMongoDb" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AppEventSubscribers\AppEventSubscribers.csproj" />
-    <ProjectReference Include="..\AppEvents\AppEvents.csproj" />
+    <PackageReference Include="MongoDB.Bson" Version="3.5.2" />
+    <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
   </ItemGroup>
 </Project>

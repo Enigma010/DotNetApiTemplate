@@ -1,8 +1,9 @@
 ﻿using App.Commands;
+using App.Db;
 using App.Entities;
 using App.Repositories;
 using App.Services;
-using DotNetApiDb;
+using App.UnitOfWork;
 using DotNetApiEventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,12 +15,12 @@ namespace AppTests.Services
         private readonly Mock<IConfigRepository> _repository;
         private readonly Mock<ILogger<IConfigService>> _logger;
         private readonly ConfigService _service;
-        private readonly Mock<IEventPublisher> _eventPublisher;
+        private readonly Mock<IEventPublisherUnitOfWork> _eventPublisher;
         public ConfigServiceTests()
         {
             _repository = new Mock<IConfigRepository>();
             _logger = new Mock<ILogger<IConfigService>>();
-            _eventPublisher = new Mock<IEventPublisher>();
+            _eventPublisher = new Mock<IEventPublisherUnitOfWork>();
             _service = new ConfigService(_repository.Object, _logger.Object, _eventPublisher.Object);
         }
         [Fact]

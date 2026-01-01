@@ -3,12 +3,12 @@ using App.Entities;
 using App.Repositories;
 using App.Repositories.Dtos;
 using DotNetApiAppCore.Services;
-using DotNetApiDb;
+using App.Db;
 using DotNetApiEventBus;
 using DotNetApiLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DotNetApiUnitOfWork;
+using App.UnitOfWork;
 
 namespace App.Services
 {
@@ -37,7 +37,7 @@ namespace App.Services
         public ConfigService(
             IConfigRepository repository, 
             ILogger<IConfigService> logger,
-            IEventPublisher eventPublisher) 
+            IEventPublisherUnitOfWork eventPublisher) 
             : base(repository, eventPublisher, logger)
         {
         }
