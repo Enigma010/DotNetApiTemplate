@@ -4,6 +4,10 @@ services:
     build:
       context: ..
       dockerfile: Api/Api/Dockerfile
+      args:
+        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
+        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
     volumes: [../Output/Log:/log]
     environment:
       MONGO_USERNAME: ${MONGO_USERNAME}

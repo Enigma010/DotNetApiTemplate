@@ -59,7 +59,12 @@ namespace DotNetApiAppCore.Services
             _repository = repository;
             _eventPublisher = eventPublisher;
             _logger = logger;
-            _unitOfWorks.AddRange(new List<IUnitOfWork>() { _repository, _eventPublisher });
+            _unitOfWorks.AddRange(
+                new List<IUnitOfWork>() 
+                { 
+                    _repository, 
+                    _eventPublisher 
+                });
         }
         /// <summary>
         /// Handles standard pattern of change/update, standard pattern is load the eneity from
