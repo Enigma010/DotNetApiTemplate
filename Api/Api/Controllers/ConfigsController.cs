@@ -20,8 +20,8 @@ namespace Api.Controllers
         /// Creates a new configuraiton controller
         /// </summary>
         /// <param name="service">The configuraiton service</param>
-        public ConfigsController(IConfigService service) 
-        { 
+        public ConfigsController(IConfigService service)
+        {
             _service = service;
         }
 
@@ -32,7 +32,7 @@ namespace Api.Controllers
         /// <returns>The configuration</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostAsync([FromBody]CreateConfigCmd cmd)
+        public async Task<IActionResult> PostAsync([FromBody] CreateConfigCmd cmd)
         {
             Config config = await _service.CreateAsync(cmd);
             return Ok(config);
@@ -77,7 +77,7 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PutAsync([FromRoute] Guid id, 
+        public async Task<IActionResult> PutAsync([FromRoute] Guid id,
             [FromBody] ChangeConfigCmd cmd)
         {
             Config config = await _service.ChangeAsync(id, cmd);
@@ -91,7 +91,7 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
             await _service.DeleteAsync(id);
             return Ok();

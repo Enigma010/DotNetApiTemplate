@@ -37,7 +37,7 @@ namespace App.Entities
         /// <summary>
         /// The name of the configuration
         /// </summary>
-        [Length(1 ,50)]
+        [Length(1, 50)]
         [Required(AllowEmptyStrings = false)]
         public string Name
         {
@@ -50,7 +50,7 @@ namespace App.Entities
         /// <summary>
         /// Whether the configuration is active or not
         /// </summary>
-        public bool Enabled 
+        public bool Enabled
         {
             get
             {
@@ -89,7 +89,7 @@ namespace App.Entities
                 _dto.Enabled = change.Enabled;
                 changed = true;
             }
-            if(changed)
+            if (changed)
             {
                 AddEvent(new ConfigChangedEvent(_dto.Id, oldName, _dto.Name, oldEnabled, _dto.Enabled));
             }

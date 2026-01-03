@@ -20,7 +20,7 @@ namespace App.Core
         /// Creates a new app configuration object
         /// </summary>
         /// <param name="configurationManager"></param>
-        public AppConfig(IConfigurationManager configurationManager) 
+        public AppConfig(IConfigurationManager configurationManager)
         {
             IConfigurationSection section = configurationManager.GetSection(ConfigurationSectionName);
             Name = section[NameSectionName] ?? string.Empty;

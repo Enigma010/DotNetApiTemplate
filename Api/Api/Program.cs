@@ -18,7 +18,8 @@ builder.AddAppDependencies();
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("cors", policy => policy
     .WithOrigins(allowedOrigins)
     .SetIsOriginAllowedToAllowWildcardSubdomains()
@@ -26,7 +27,7 @@ builder.Services.AddCors(options => {
     .WithHeaders("Content-Type", "Authorization", "X-Requested-With")
     .AllowCredentials()
     .SetPreflightMaxAge(TimeSpan.FromMinutes(10)));
-    });
+});
 
 var app = builder.Build();
 

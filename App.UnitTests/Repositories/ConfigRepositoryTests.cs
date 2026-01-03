@@ -95,7 +95,7 @@ namespace AppTests.Repositories
             await repository.DeleteAsync(config);
             _client.Verify(m => m.DeleteAsync<ConfigDto, Guid>(It.Is<ConfigDto>(c => c.Id == config.Id)), Times.Once);
             Assert.Collection(
-                config.GetEvents(), 
+                config.GetEvents(),
                 (c) =>
                 {
                     Assert.IsType<ConfigDeletedEvent>(c);

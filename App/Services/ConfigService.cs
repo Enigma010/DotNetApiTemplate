@@ -35,9 +35,9 @@ namespace App.Services
         /// <param name="repository">The repository</param>
         /// <param name="logger">The logger</param>
         public ConfigService(
-            IConfigRepository repository, 
+            IConfigRepository repository,
             ILogger<IConfigService> logger,
-            IEventPublisherUnitOfWork eventPublisher) 
+            IEventPublisherUnitOfWork eventPublisher)
             : base(repository, eventPublisher, logger)
         {
         }
@@ -53,7 +53,7 @@ namespace App.Services
             using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
             {
                 return await unitOfWorks.RunAsync(async () =>
-                {   
+                {
                     Config config = new Config(cmd.Name);
                     await _repository.InsertAsync(config);
                     await PublishEvents(config);

@@ -10,7 +10,7 @@ namespace AppTests.Repositories
     }
     public class TestEntityRepository : BaseRepository<ITestEntityRepository, TestEntity, TestEntityDto, Guid>
     {
-        public TestEntityRepository(IDbClient client, ILogger<ITestEntityRepository> logger) : base(client,logger)
+        public TestEntityRepository(IDbClient client, ILogger<ITestEntityRepository> logger) : base(client, logger)
         {
         }
     }

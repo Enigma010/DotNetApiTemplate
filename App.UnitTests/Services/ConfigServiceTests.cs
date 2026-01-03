@@ -24,7 +24,7 @@ namespace AppTests.Services
             _service = new ConfigService(_repository.Object, _logger.Object, _eventPublisher.Object);
         }
         [Fact]
-        public async Task CreateAsync() 
+        public async Task CreateAsync()
         {
             string name = Guid.NewGuid().ToString();
             Config createConfig = await _service.CreateAsync(new CreateConfigCmd()

@@ -27,8 +27,8 @@ namespace DotNetApiAppCore.Services
     /// <typeparam name="EntityType">The entity type</typeparam>
     /// <typeparam name="IdType">The ID type</typeparam>
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
-    public class BaseService<RepositoryType, EntityType, EntityDtoType, IdType> 
-        : IBaseService<EntityType, IdType> 
+    public class BaseService<RepositoryType, EntityType, EntityDtoType, IdType>
+        : IBaseService<EntityType, IdType>
         where RepositoryType : IBaseRepository<EntityType, EntityDtoType, IdType>
         where EntityType : IEntity<EntityDtoType, IdType>
         where EntityDtoType : EntityDto<IdType>
@@ -60,10 +60,10 @@ namespace DotNetApiAppCore.Services
             _eventPublisher = eventPublisher;
             _logger = logger;
             _unitOfWorks.AddRange(
-                new List<IUnitOfWork>() 
-                { 
-                    _repository, 
-                    _eventPublisher 
+                new List<IUnitOfWork>()
+                {
+                    _repository,
+                    _eventPublisher
                 });
         }
         /// <summary>

@@ -47,7 +47,7 @@ namespace AppTests.Entities
         }
         public static Action<object> AssertType<AssertType>()
         {
-            Action<object> assert =  (sc) =>
+            Action<object> assert = (sc) =>
             {
                 Assert.IsType<AssertType>(sc);
             };
