@@ -1,4 +1,4 @@
-﻿namespace AppEvents
+﻿namespace App.Events
 {
     /// <summary>
     /// Config deleted

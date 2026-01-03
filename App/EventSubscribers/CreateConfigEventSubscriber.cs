@@ -1,4 +1,4 @@
-﻿using AppEvents;
+﻿using App.Events;
 using DotNetApiEventBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

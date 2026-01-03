@@ -1,5 +1,5 @@
-# AppTests
-The application's unit tests.
+# App.UnitTests
+Unit tests for the application.
 
 ## Guidelines
 The following describes guidelines for the architecture.

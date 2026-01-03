@@ -11,4 +11,7 @@
     <PackageReference Include="MongoDB.Bson" Version="3.5.2" />
     <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\App.Events\App.Events.csproj" />
+  </ItemGroup>
 </Project>

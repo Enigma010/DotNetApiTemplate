@@ -1,6 +1,6 @@
 ﻿using App.Commands;
 using App.Entities;
-using AppEvents;
+using App.Events;
 
 namespace AppTests.Entities
 {

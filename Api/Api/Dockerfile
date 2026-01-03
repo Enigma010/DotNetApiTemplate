@@ -7,6 +7,7 @@ EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
+# Set up GitHub Package Registry credentials for private NuGet packages
 ARG GITHUBCFG_USERNAME
 ARG GITHUBCFG_PAT
 ARG GITHUBCFG_NAMESPACE
@@ -14,6 +15,8 @@ ENV GITHUBCFG_USERNAME=$GITHUBCFG_USERNAME
 ENV GITHUBCFG_PAT=$GITHUBCFG_PAT
 ENV GITHUBCFG_NAMESPACE=$GITHUBCFG_NAMESPACE
 WORKDIR /src
+# The .csproj files are copied so they can be read and 
+# the nuget packages restored before the rest of the source code is copied
 COPY ["Api/Api/Api.csproj", "Api/Api/Api.csproj"]
 COPY ["App/App.csproj", "App/App.csproj"]
 COPY ["nuget.config", "nuget.config"]

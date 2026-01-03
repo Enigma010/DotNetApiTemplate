@@ -1,7 +1,7 @@
 ﻿using App.Commands;
 using App.Repositories.Dtos;
 using App.Core;
-using AppEvents;
+using App.Events;
 using System.ComponentModel.DataAnnotations;
 
 namespace App.Entities
