@@ -1,7 +1,9 @@
-﻿using App.Db;
+﻿using App.Core;
+using App.Db;
 using DotNetApiLogging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -14,17 +16,9 @@ namespace App.DbMongo
     public class MongoDbClient : IDbClient
     {
         /// <summary>
-        /// The default database name, if not specified in the configuration this value will be used
-        /// </summary>
-        public const string DefaultDatabase = "db";
-        /// <summary>
         /// The URI where MongoDB is located
         /// </summary>
         private readonly string _uri = string.Empty;
-        /// <summary>
-        /// The database to use
-        /// </summary>
-        private readonly string _database = DefaultDatabase;
         /// <summary>
         /// The MongoDB client
         /// </summary>
@@ -38,6 +32,10 @@ namespace App.DbMongo
         /// </summary>
         private readonly ILogger _logger;
 
+        private readonly string _domain = string.Empty;
+        private readonly string _subDomain = string.Empty;
+        private readonly string _userName = string.Empty;
+        private readonly string _password = string.Empty;
         public bool UseScopedTransactions => false;
 
         /// <summary>
@@ -47,12 +45,14 @@ namespace App.DbMongo
         /// <exception cref="NullReferenceException">Thrown if configuration is missing</exception>
         public MongoDbClient(IConfiguration configuration, ILogger<MongoDbClient> logger)
         {
-            _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db:Uri in the configuration");
-            string username = configuration.GetSection("Db")["Username"] ?? throw new NullReferenceException("Missing Db.Username in the configuration");
-            string password = configuration.GetSection("Db")["Password"] ?? throw new NullReferenceException("Missing Db.Password in the configuration");
-            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(username));
-            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(password));
-            _database = configuration.GetSection("Db")["Database"] ?? throw new NullReferenceException("Missing Db:DatabaseName in the configuration");
+            _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db.Uri in the configuration");
+            _domain = EnvVars.DddVars.Domain.GetRequiredValue<string>(configuration);
+            _subDomain = EnvVars.DddVars.Subdomain.GetRequiredValue<string>(configuration);
+            _userName = EnvVars.DbVars.UserName.GetRequiredValue<string>(configuration);
+            _password = EnvVars.DbVars.Password.GetRequiredValue<string>(configuration);
+            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(_userName));
+            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(_password));
+            _uri = _uri.Replace(IDbClient.DatabaseNamePattern, GetDatabaseName());
             var settings = MongoClientSettings.FromConnectionString(_uri);
             if (_uri.Contains("tlsAllowInvalidHostnames=true"))
             {
@@ -248,13 +248,22 @@ namespace App.DbMongo
         }
 
         /// <summary>
+        /// Gets the database name based on the configuration
+        /// </summary>
+        /// <returns>The database name</returns>
+        public string GetDatabaseName()
+        {
+            return $"{_domain}-{_subDomain}";
+        }
+
+        /// <summary>
         /// Resolves a C# class to a MongoDB collection
         /// </summary>
         /// <typeparam name="EntityType"></typeparam>
         /// <returns></returns>
         private IMongoCollection<EntityType> GetCollection<EntityType>()
         {
-            return _client.GetDatabase(_database).GetCollection<EntityType>(typeof(EntityType).Name);
+            return _client.GetDatabase(GetDatabaseName()).GetCollection<EntityType>(typeof(EntityType).Name);
         }
 
         /// <summary>

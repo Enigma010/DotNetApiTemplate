@@ -13,12 +13,8 @@ This template consists of the following components:
 * **[EventBus](./EventBus/README.md)** - Infrastructure used to work with the event bus
 
 ## Setup
-For windows you need to have the following software installed:
-
-* Docker
-* Ubuntu (You can get this from the windows store)
-
-Once you've installed Ubuntu you need to set it as the default [wsl](https://learn.microsoft.com/en-us/windows/wsl/) distribution.  To do that use the following command to get a list of the distributions:
+### Windows Subsystem for Linux (WSL) Setup
+A number of scripts written for this project use unix shells for ease of distribution and running.  To get these working locally you will need set this up.  Start by installing Ubuntu from the windows store. Once you've installed Ubuntu you need to set it as the default [wsl](https://learn.microsoft.com/en-us/windows/wsl/) distribution.  To do that use the following command to get a list of the distributions:
 
 ```
 wsl -l
@@ -38,11 +34,22 @@ From there find the entry for Ubuntu, in the above example it's `Ubuntu-20.04` o
 wsl -s Ubuntu-20.04
 ```
 
-Next you'll need to create/modify the `Api\.env` file. Create the file with the following content to start:
+### Docker Installation/Setup
+Docker is used for virtualization and ease of deployment.  You will need to install docker for this project to work.  For windows you can follow the steps [here](https://docs.docker.com/desktop/setup/install/windows-install/).
 
-```
-App: template-
-```
+Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.env](https://docs.docker.com/reference/compose-file/services/#env_file) file.  Set the following values in the file:
+
+| Property | Description | Notes |
+| - | - | - |
+| **DOMAIN** | The name of the domain of the project | All lower case.  Same value as **Api/appsettings.json** **App.Domain** |
+| **SUBDOMAIN** | The name of the sobdomai of the project | All lower case. Same value as **Api/appsettings.json** **App.SubDomain** |
+| **APPDB_USERNAME** | The username to connect to the database as | |
+| **APPDB_PASSWORD** | The password to connect to the database with | |
+| **APPDB_NAME** | The name of the database to store the data in | |
+| **EVENT_BUS_HOST** | The host were the event bus is | In development this will be **localhost** |
+| **GITHUBCFG_USERNAME** | The GitHub username for nuget package retrieval |
+| **GITHUBCFG_PAT** | The GitHub PAT (personal access token) for nuget package retrieval |
+| **GITHUBCFG_NAMESPACE** | The GitHub namespace for nuget package retrieval | For personal GitHub accounts the same as the **GITHUBCFG_USERNAME** |
 
 The `App` value gets appended to the docker container names that are build and are required to be unique.  The value `template-` above is just used as a placeholder.
 

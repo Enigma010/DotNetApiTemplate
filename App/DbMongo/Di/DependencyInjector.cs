@@ -1,4 +1,5 @@
 ﻿using App.Db;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Bson;
@@ -18,6 +19,7 @@ namespace App.DbMongo.Di
         public static void AddMongoDbDependencies(this IHostApplicationBuilder builder)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+            builder.Configuration.AddEnvironmentVariables();
             builder.Services.AddScoped<IDbClient, MongoDbClient>();
         }
     }

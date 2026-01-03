@@ -1,6 +1,7 @@
 services:
   api:
-    image: ${DOCKER_REGISTRY-}${App}api
+    image: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
     build:
       context: ..
       dockerfile: Api/Api/Dockerfile
@@ -10,24 +11,26 @@ services:
         GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
     volumes: [../Output/Log:/log]
     environment:
-      MONGO_USERNAME: ${MONGO_USERNAME}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
       EVENT_BUS_HOST: ${EVENT_BUS_HOST} 
       EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
       EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
     depends_on:
-      - documentdb
+      - appdb
     networks:
       - tmpltnetwork
     extra_hosts:
     - "host.docker.internal:host-gateway"
-  documentdb:
+  appdb:
     image: ghcr.io/documentdb/documentdb/documentdb-local:latest
-    container_name: ${DOCKER_REGISTRY-}${App}documentdb
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-appdb
     restart: unless-stopped
     ports:
       - "10260:10260"
-    command:  ["--username", "$MONGO_USERNAME", "--password", "$MONGO_PASSWORD"]
+    command:  ["--username", "$APP_DB_USERNAME", "--password", "$APP_DB_PASSWORD"]
     networks:
       - tmpltnetwork
 

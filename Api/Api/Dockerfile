@@ -11,9 +11,11 @@ ARG BUILD_CONFIGURATION=Release
 ARG GITHUBCFG_USERNAME
 ARG GITHUBCFG_PAT
 ARG GITHUBCFG_NAMESPACE
+
 ENV GITHUBCFG_USERNAME=$GITHUBCFG_USERNAME
 ENV GITHUBCFG_PAT=$GITHUBCFG_PAT
 ENV GITHUBCFG_NAMESPACE=$GITHUBCFG_NAMESPACE
+
 WORKDIR /src
 # The .csproj files are copied so they can be read and 
 # the nuget packages restored before the rest of the source code is copied
