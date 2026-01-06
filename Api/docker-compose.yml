@@ -18,6 +18,7 @@ services:
       EVENT_BUS_HOST: ${EVENT_BUS_HOST} 
       EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
       EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
+      EVENT_BUS_PORT: ${EVENT_BUS_PORT}
     depends_on:
       - appdb
     networks:

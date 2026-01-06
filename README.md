@@ -41,17 +41,18 @@ Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.
 
 | Property | Description | Notes |
 | - | - | - |
-| **DOMAIN** | The name of the domain of the project | All lower case.  Same value as **Api/appsettings.json** **App.Domain** |
-| **SUBDOMAIN** | The name of the sobdomai of the project | All lower case. Same value as **Api/appsettings.json** **App.SubDomain** |
-| **APPDB_USERNAME** | The username to connect to the database as | |
-| **APPDB_PASSWORD** | The password to connect to the database with | |
-| **APPDB_NAME** | The name of the database to store the data in | |
-| **EVENT_BUS_HOST** | The host were the event bus is | In development this will be **localhost** |
+| **APP_DOMAIN** | The name of the domain of the project | All lower case. |
+| **APP_SUBDOMAIN** | The name of the sobdomai of the project | All lower case. |
+| **APP_DB_USERNAME** | The username to connect to the database as | |
+| **APP_DB_PASSWORD** | The password to connect to the database with | |
+| **EVENT_BUS_HOST** | The host were the event bus is | In development this will be **host.docker.internal** to connect to the container running the EventBus |
+| **EVENT_BUS_USERNAME** | The username to connect to the event bus with | Default is **guest** |
+| **EVENT_BUS_PASSWORD** | The password to connect to the event bus with | Default is **guest** |
+| **EVENT_BUS_PORT** | The port to use to connect to the event bus | Default is **5672** |
+| **EVENT_BUS_HOST** | The host were the event bus is | In development this will be **host.docker.internal** to connect to the container running the EventBus |
 | **GITHUBCFG_USERNAME** | The GitHub username for nuget package retrieval |
 | **GITHUBCFG_PAT** | The GitHub PAT (personal access token) for nuget package retrieval |
 | **GITHUBCFG_NAMESPACE** | The GitHub namespace for nuget package retrieval | For personal GitHub accounts the same as the **GITHUBCFG_USERNAME** |
-
-The `App` value gets appended to the docker container names that are build and are required to be unique.  The value `template-` above is just used as a placeholder.
 
 There are setups for both the [EventBus](./EventBus/README.md#setup) and the [MongoDB](./Db/README.md#setup), review both of these and complete any necessary steps.
 

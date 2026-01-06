@@ -1,5 +1,6 @@
 ﻿using App.Core;
 using App.Db;
+using DotNetApiEventBus;
 using DotNetApiLogging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -31,11 +32,17 @@ namespace App.DbMongo
         /// The logger
         /// </summary>
         private readonly ILogger _logger;
-
-        private readonly string _domain = string.Empty;
-        private readonly string _subDomain = string.Empty;
-        private readonly string _userName = string.Empty;
-        private readonly string _password = string.Empty;
+        /// <summary>
+        /// The domain driven design configurations
+        /// </summary>
+        private readonly IDddConfig _dddConfig;
+        /// <summary>
+        /// Provides access to the MongoDB configuration settings used by the application.
+        /// </summary>
+        private readonly IMongoDbConfig _mongoDbConfig;
+        /// <summary>
+        /// Gets a value indicating whether scoped transactions are enabled for operations.
+        /// </summary>
         public bool UseScopedTransactions => false;
 
         /// <summary>
@@ -46,13 +53,11 @@ namespace App.DbMongo
         public MongoDbClient(IConfiguration configuration, ILogger<MongoDbClient> logger)
         {
             _uri = configuration.GetSection("Db")["Uri"] ?? throw new NullReferenceException("Missing Db.Uri in the configuration");
-            _domain = EnvVars.DddVars.Domain.GetRequiredValue<string>(configuration);
-            _subDomain = EnvVars.DddVars.Subdomain.GetRequiredValue<string>(configuration);
-            _userName = EnvVars.DbVars.UserName.GetRequiredValue<string>(configuration);
-            _password = EnvVars.DbVars.Password.GetRequiredValue<string>(configuration);
-            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(_userName));
-            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(_password));
-            _uri = _uri.Replace(IDbClient.DatabaseNamePattern, GetDatabaseName());
+            _dddConfig = new DddConfig(configuration);
+            _mongoDbConfig = new MongoDbConfig(configuration);
+            _uri = _uri.Replace(IDbClient.UserNamePattern, Uri.EscapeDataString(_mongoDbConfig.Username));
+            _uri = _uri.Replace(IDbClient.PasswordPattern, Uri.EscapeDataString(_mongoDbConfig.Password));
+            _uri = _uri.Replace(IDbClient.DatabaseNamePattern, Uri.EscapeDataString(GetDatabaseName()));
             var settings = MongoClientSettings.FromConnectionString(_uri);
             if (_uri.Contains("tlsAllowInvalidHostnames=true"))
             {
@@ -253,7 +258,7 @@ namespace App.DbMongo
         /// <returns>The database name</returns>
         public string GetDatabaseName()
         {
-            return $"{_domain}-{_subDomain}";
+            return $"{_dddConfig.Domain}-{_dddConfig.SubDomain}";
         }
 
         /// <summary>
