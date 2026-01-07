@@ -48,14 +48,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(await _service.GetAsync(id));
-            }
-            catch (DbEntityNotFoundException<Guid>)
-            {
-                return NotFound();
-            }
+            return await this.GetToActionResultsAsync<Guid, Config>(() => _service.GetAsync(id));
         }
 
         /// <summary>
@@ -64,9 +57,10 @@ namespace Api.Controllers
         /// <returns>The configurations</returns>
         [HttpGet()]
         [ProducesResponseType(typeof(IEnumerable<Config>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync([FromQuery] Paging paging)
         {
-            return Ok(await _service.GetAsync(paging));
+            return await this.GetToActionResultsAsync<Guid, IEnumerable<Config>>(() => _service.GetAsync(paging));
         }
 
         /// <summary>
@@ -77,11 +71,11 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutAsync([FromRoute] Guid id,
             [FromBody] ChangeConfigCmd cmd)
         {
-            Config config = await _service.ChangeAsync(id, cmd);
-            return Ok(config);
+            return await this.PutToActionResultsAsync<Guid, Config>(() => _service.ChangeAsync(id, cmd));
         }
 
         /// <summary>
@@ -91,10 +85,10 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            await _service.DeleteAsync(id);
-            return Ok();
+            return await this.DeleteToActionResultsAsync<Guid>(() => _service.DeleteAsync(id));
         }
     }
 }
