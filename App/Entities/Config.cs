@@ -1,8 +1,9 @@
 ﻿using App.Commands;
-using App.Repositories.Dtos;
 using App.Core;
 using App.Events;
+using App.Repositories.Dtos;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Channels;
 
 namespace App.Entities
 {
@@ -69,29 +70,30 @@ namespace App.Entities
         /// <summary>
         /// Chagne the configuration
         /// </summary>
-        /// <param name="change">The configuration changes</param>
-        public void Change(ChangeConfigCmd change)
+        /// <param name="cmd">The configuration changes</param>
+        public void Rename(ConfigRenameCmd cmd)
         {
-            // Support for idempotence, this is done for future support for
-            // eventing, i.e. if you event on the name change then if you 
-            // call this method with the same name you don't want to trigger
-            // a name change event
-            string oldName = Name;
-            bool oldEnabled = Enabled;
-            bool changed = false;
-            if (Name != change.Name)
+            if (Name != cmd.NewName)
             {
-                _dto.Name = change.Name;
-                changed = true;
+                string oldName = Name;
+                _dto.Name = cmd.NewName;
+                AddEvent(new ConfigRenamedEvent(_dto.Id, oldName, _dto.Name));
             }
-            if (Enabled != change.Enabled)
+        }
+
+        /// <summary>
+        /// Updates the enabled state of the configuration based on the specified command.
+        /// </summary>
+        /// <remarks>If the enabled state changes, an event is recorded to reflect the update. This method
+        /// does not perform any action if the requested state matches the current state.</remarks>
+        /// <param name="cmd">A command containing the desired enabled state to apply to the configuration.</param>
+        public void Enablement(ConfigEnablementCmd cmd)
+        {
+            if (Enabled != cmd.Enabled)
             {
-                _dto.Enabled = change.Enabled;
-                changed = true;
-            }
-            if (changed)
-            {
-                AddEvent(new ConfigChangedEvent(_dto.Id, oldName, _dto.Name, oldEnabled, _dto.Enabled));
+                bool oldEnabled = Enabled;
+                _dto.Enabled = cmd.Enabled;
+                AddEvent(new ConfigEnablementEvent(_dto.Id, oldEnabled, _dto.Enabled));
             }
         }
     }

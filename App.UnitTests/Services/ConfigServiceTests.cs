@@ -27,7 +27,7 @@ namespace AppTests.Services
         public async Task CreateAsync()
         {
             string name = Guid.NewGuid().ToString();
-            Config createConfig = await _service.CreateAsync(new CreateConfigCmd()
+            Config createConfig = await _service.CreateAsync(new ConfigCreateCmd()
             {
                 Name = name
             });
@@ -71,17 +71,15 @@ namespace AppTests.Services
         public async Task ChangeAsync()
         {
             Config config = new Config();
-            ChangeConfigCmd model = new ChangeConfigCmd()
+            ConfigRenameCmd model = new ConfigRenameCmd()
             {
-                Name = Guid.NewGuid().ToString(),
-                Enabled = false
+                NewName = Guid.NewGuid().ToString(),
             };
             _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
             _repository.Setup(m => m.UpdateAsync(It.Is<Config>(c => c.Id == config.Id))).ReturnsAsync(config);
-            Config changeConfig = await _service.ChangeAsync(config.Id, model);
+            Config changeConfig = await _service.RenameAsync(config.Id, model);
             Assert.Equal(config.Id, changeConfig.Id);
-            Assert.Equal(model.Name, changeConfig.Name);
-            Assert.Equal(model.Enabled, changeConfig.Enabled);
+            Assert.Equal(model.NewName, changeConfig.Name);
             _repository.Verify(m => m.UpdateAsync(It.Is<Config>(c => c.Id == config.Id)), Times.Once);
         }
     }

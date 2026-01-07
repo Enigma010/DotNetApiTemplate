@@ -14,10 +14,9 @@ namespace AppTests.Entities
             Config config = new Config();
             AssertConfigCreated(config);
             bool enabled = config.Enabled;
-            config.Change(new ChangeConfigCmd()
+            config.Rename(new ConfigRenameCmd()
             {
-                Name = newName,
-                Enabled = config.Enabled
+                NewName = newName
             });
             AssertConfigCreatedChange(config);
             Assert.Equal(newName, config.Name);
@@ -36,10 +35,9 @@ namespace AppTests.Entities
             Config config = new Config();
             AssertConfigCreated(config);
             string name = config.Name;
-            config.Change(new ChangeConfigCmd()
+            config.Rename(new ConfigRenameCmd()
             {
-                Name = config.Name,
-                Enabled = enabled
+                NewName = config.Name
             });
             AssertConfigCreatedChange(config);
             Assert.Equal(name, config.Name);
@@ -63,7 +61,7 @@ namespace AppTests.Entities
             Assert.Collection(
                 config.GetEvents(),
                 AssertType<ConfigCreatedEvent>(),
-                AssertType<ConfigChangedEvent>());
+                AssertType<ConfigRenamedEvent>());
         }
     }
 }

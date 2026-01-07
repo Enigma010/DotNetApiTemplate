@@ -30,7 +30,7 @@ namespace App.EventSubscribers
         /// <returns></returns>
         public override async Task Respond(ConfigCreatedEvent @event)
         {
-            _logger.LogInformationCaller("Received {@EventName} Id: {@Id} Name: {@Name}", args: [nameof(ConfigChangedEvent), @event.Id, @event.Name]);
+            _logger.LogInformationCaller("Received {@EventName} Id: {@Id} Name: {@Name}", args: [nameof(ConfigRenamedEvent), @event.Id, @event.Name]);
             await Task.CompletedTask;
         }
     }

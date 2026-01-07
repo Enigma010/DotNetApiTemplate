@@ -2,7 +2,7 @@
 
 namespace App.Commands
 {
-    public class CreateConfigCmd
+    public class ConfigCreateCmd
     {
         /// <summary>
         /// The name of the config

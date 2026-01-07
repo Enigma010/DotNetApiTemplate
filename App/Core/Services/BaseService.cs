@@ -1,11 +1,12 @@
 ﻿
+using App.Core;
+using App.Core.Repositories;
+using App.Entities;
+using App.UnitOfWork;
 using DotNetApiEventBus;
-using System.Diagnostics.CodeAnalysis;
 using DotNetApiLogging;
 using Microsoft.Extensions.Logging;
-using App.Core.Repositories;
-using App.Core;
-using App.UnitOfWork;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNetApiAppCore.Services
 {
@@ -18,7 +19,7 @@ namespace DotNetApiAppCore.Services
     /// <typeparam name="IdType">The ID type that identifies the entity</typeparam>
     public interface IBaseService<EntityType, IdType>
     {
-        Task<EntityType> RunCommandAsync(IdType id, Func<EntityType, EntityType> changeFunc);
+        Task<EntityType> RunCommandAsync(IdType id, string methodName, Func<EntityType, EntityType> changeFunc);
     }
     /// <summary>
     /// The base service object
@@ -72,19 +73,25 @@ namespace DotNetApiAppCore.Services
         /// repository method to update it in the repository
         /// </summary>
         /// <param name="id">The ID of the entity</param>
-        /// <param name="commandFunc">The function to change the entity</param>
+        /// <param name="methodName">The method name calling this function</param>
+        /// <param name="command">The function to change the entity</param>
         /// <returns>The changed entity</returns>
-        public async Task<EntityType> RunCommandAsync(IdType id, Func<EntityType, EntityType> commandFunc)
+        public async Task<EntityType> RunCommandAsync(IdType id, string methodName, Func<EntityType, EntityType> command)
         {
-            _logger.LogInformationCaller("ChangeAsync: id: {@id}, commandFunc: {@commandFunc}", args: [id, commandFunc]);
+            _logger.LogInformationCaller($"{methodName}: id: {@id}, commandFunc: {command}", args: [id, command]);
             using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
             {
-                EntityType entity = await _repository.GetAsync(id);
-                _logger.LogInformation("Running change function on {Id}", id);
-                commandFunc(entity);
-                _logger.LogInformation("Ran change function on {Id}", id);
-                entity = await _repository.UpdateAsync(entity);
-                return entity;
+                Func<Task<EntityType>> retrieveUpdatePublishCmd = async () =>
+                {
+                    EntityType entity = await _repository.GetAsync(id);
+                    _logger.LogInformation("Running change function on {Id}", id);
+                    command(entity);
+                    _logger.LogInformation("Ran change function on {Id}", id);
+                    entity = await _repository.UpdateAsync(entity);
+                    await PublishEvents(entity);
+                    return entity;
+                };
+                return await unitOfWorks.RunAsync(retrieveUpdatePublishCmd);
             }
         }
         /// <summary>

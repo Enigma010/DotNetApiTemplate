@@ -33,7 +33,7 @@ namespace Api.Controllers
         /// be null.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="IActionResult"/>
         /// representing the HTTP response.</returns>
-        public static async Task<IActionResult> PutToActionResultsAsync<IdType, ReturnType>(this ControllerBase controller,
+        public static async Task<IActionResult> PostToActionResultsAsync<IdType, ReturnType>(this ControllerBase controller,
             Func<Task<ReturnType>> func)
         {
             return await controller.ToActionResultsAsync<IdType, ReturnType>(func);

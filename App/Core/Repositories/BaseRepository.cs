@@ -31,7 +31,8 @@ namespace App.Core.Repositories
     /// <typeparam name="EntityType">The type of eneity</typeparam>
     /// <typeparam name="IdType">The type of ID</typeparam>
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
-    public class BaseRepository<RepositoryType, EntityType, EntityDtoType, IdType> : IBaseRepository<EntityType, EntityDtoType, IdType>
+    public class BaseRepository<RepositoryType, EntityType, EntityDtoType, IdType>
+        : IBaseRepository<EntityType, EntityDtoType, IdType>
         where EntityDtoType : EntityDto<IdType>
         where EntityType : Entity<EntityDtoType, IdType>
         where IdType : IComparable

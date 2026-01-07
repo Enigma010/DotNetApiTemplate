@@ -18,11 +18,12 @@ namespace App.Services
     /// </summary>
     public interface IConfigService : IBaseService<Config, Guid>
     {
-        Task<Config> CreateAsync(CreateConfigCmd cmd);
+        Task<Config> CreateAsync(ConfigCreateCmd cmd);
         Task<Config> GetAsync(Guid id);
         Task<IEnumerable<Config>> GetAsync(Paging paging);
         Task DeleteAsync(Guid id);
-        Task<Config> ChangeAsync(Guid id, ChangeConfigCmd cmd);
+        Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd);
+        Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd);
     }
     /// <summary>
     /// The configuration service.
@@ -47,7 +48,7 @@ namespace App.Services
         /// </summary>
         /// <param name="cmd">The create config command</param>
         /// <returns>The new configuration object</returns>
-        public async Task<Config> CreateAsync(CreateConfigCmd cmd)
+        public async Task<Config> CreateAsync(ConfigCreateCmd cmd)
         {
             _logger.LogInformationCaller("CreateAsync: command {@cmd}", args: [cmd]);
             using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
@@ -106,25 +107,32 @@ namespace App.Services
         /// Changes or updates a configuration
         /// </summary>
         /// <param name="id">The ID of the configuration</param>
-        /// <param name="change">The change that is occurring</param>
+        /// <param name="cmd">The change that is occurring</param>
         /// <returns>The updated configuration</returns>
-        public async Task<Config> ChangeAsync(Guid id, ChangeConfigCmd change)
+        public async Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd)
         {
-            _logger.LogInformationCaller("ChangeAsync: id: {@id}, change: {@change}", args: [id, change]);
-            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
+            Func<Config, Config> changeFunc = (config) =>
             {
-                return await unitOfWorks.RunAsync(async () =>
-                {
-                    Func<Config, Config> changeFunc = (config) =>
-                    {
-                        config.Change(change);
-                        return config;
-                    };
-                    var config = await RunCommandAsync(id, changeFunc);
-                    await PublishEvents(config);
-                    return config;
-                });
-            }
+                config.Rename(cmd);
+                return config;
+            };
+            return await RunCommandAsync(id, nameof(RenameAsync), changeFunc);
+        }
+
+        /// <summary>
+        /// Changes or updates a configuration
+        /// </summary>
+        /// <param name="id">The ID of the configuration</param>
+        /// <param name="cmd">The change that is occurring</param>
+        /// <returns>The updated configuration</returns>
+        public async Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd)
+        {
+            Func<Config, Config> changeFunc = (config) =>
+            {
+                config.Enablement(cmd);
+                return config;
+            };
+            return await RunCommandAsync(id, nameof(EnablementAsync), changeFunc);
         }
     }
 }

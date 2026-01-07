@@ -32,7 +32,7 @@ namespace Api.Controllers
         /// <returns>The configuration</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostAsync([FromBody] CreateConfigCmd cmd)
+        public async Task<IActionResult> PostAsync([FromBody] ConfigCreateCmd cmd)
         {
             Config config = await _service.CreateAsync(cmd);
             return Ok(config);
@@ -69,13 +69,28 @@ namespace Api.Controllers
         /// <param name="id">The configuration ID</param>
         /// <param name="cmd">The change command</param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPost("{id}/name")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PutAsync([FromRoute] Guid id,
-            [FromBody] ChangeConfigCmd cmd)
+        public async Task<IActionResult> NameAsync([FromRoute] Guid id,
+            [FromBody] ConfigRenameCmd cmd)
         {
-            return await this.PutToActionResultsAsync<Guid, Config>(() => _service.ChangeAsync(id, cmd));
+            return await this.PostToActionResultsAsync<Guid, Config>(() => _service.RenameAsync(id, cmd));
+        }
+
+        /// <summary>
+        /// HTTP PUT to update a specific configuration
+        /// </summary>
+        /// <param name="id">The configuration ID</param>
+        /// <param name="cmd">The change command</param>
+        /// <returns></returns>
+        [HttpPost("{id}/enablement")]
+        [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> EnablementAsync([FromRoute] Guid id,
+            [FromBody] ConfigEnablementCmd cmd)
+        {
+            return await this.PostToActionResultsAsync<Guid, Config>(() => _service.EnablementAsync(id, cmd));
         }
 
         /// <summary>

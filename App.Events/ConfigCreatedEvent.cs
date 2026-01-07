@@ -1,14 +1,16 @@
 ﻿namespace App.Events
 {
     /// <summary>
-    /// Config created state
+    /// Config created event
     /// </summary>
     public class ConfigCreatedEvent
     {
         /// <summary>
-        /// Config created state
+        /// Config created event
         /// </summary>
-        /// <param name="config">The configuration</param>
+        /// <param name="id">The ID of the configuration</param>
+        /// <param name="name">The name of the configuration</param>
+        /// <param name="enabled">Whether the configuration is enabled or not</param>
         public ConfigCreatedEvent(Guid id, string name, bool enabled)
         {
             Id = id;

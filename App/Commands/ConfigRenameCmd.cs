@@ -5,7 +5,7 @@ namespace App.Commands
     /// <summary>
     /// Represents a set of changes that can be done to a configuration
     /// </summary>
-    public class ChangeConfigCmd
+    public class ConfigRenameCmd
     {
         /// <summary>
         /// The name of the configuration
@@ -13,10 +13,6 @@ namespace App.Commands
         /// 
         [Length(1, 50)]
         [Required(AllowEmptyStrings = false)]
-        public string Name { get; set; } = string.Empty;
-        /// <summary>
-        /// Whether or not the configuration is enabled
-        /// </summary>
-        public bool Enabled { get; set; } = false;
+        public string NewName { get; set; } = string.Empty;
     }
 }
