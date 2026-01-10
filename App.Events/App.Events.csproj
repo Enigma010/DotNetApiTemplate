@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Domain.Subdomain.$(MSBuildProjectName)</AssemblyName>
     <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

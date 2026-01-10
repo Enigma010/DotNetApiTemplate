@@ -9,39 +9,43 @@ namespace AppTests.Entities
         [Theory]
         [InlineData("12334")]
         [InlineData("abc")]
-        public void SetName(string newName)
+        public void Rename(string newName)
         {
             Config config = new Config();
+            string oldName = config.Name;
             AssertConfigCreated(config);
             bool enabled = config.Enabled;
             config.Rename(new ConfigRenameCmd()
             {
                 NewName = newName
             });
-            AssertConfigCreatedChange(config);
+            AssertConfigCreatedRenamedEvents(config);
             Assert.Equal(newName, config.Name);
             Assert.Equal(enabled, config.Enabled);
             IReadOnlyCollection<object> stateChanges = config.GetEvents();
-            ConfigCreatedEvent? configCreated = stateChanges.ElementAt(0) as ConfigCreatedEvent;
-            Assert.NotNull(configCreated);
-            // The name of a newly created configuration is always empty
-            Assert.Equal(string.Empty, configCreated.Name);
-            Assert.Equal(config.Enabled, configCreated.Enabled);
+            AssertConfigCreatedEventFromConstructor(stateChanges.ElementAt(0) as ConfigCreatedEvent);
+            ConfigRenamedEvent? configRenamedEvent = stateChanges.ElementAt(1) as ConfigRenamedEvent;
+            Assert.NotNull(configRenamedEvent);
+            Assert.Equal(newName, configRenamedEvent.NewName);
+            Assert.Equal(oldName, configRenamedEvent.OldName);
         }
         [Theory]
         [InlineData(true)]
-        public void SetEnabled(bool enabled)
+        public void Enablement(bool enabled)
         {
             Config config = new Config();
             AssertConfigCreated(config);
-            string name = config.Name;
-            config.Rename(new ConfigRenameCmd()
+            config.Enablement(new ConfigEnablementCmd()
             {
-                NewName = config.Name
+                Enabled = enabled
             });
-            AssertConfigCreatedChange(config);
-            Assert.Equal(name, config.Name);
-            Assert.Equal(enabled, config.Enabled);
+            AssertConfigCreatedEnablementEvents(config);
+            IReadOnlyCollection<object> stateChanges = config.GetEvents();
+            AssertConfigCreatedEventFromConstructor(stateChanges.ElementAt(0) as ConfigCreatedEvent);
+            ConfigEnablementEvent? configEnablementEvent = stateChanges.ElementAt(1) as ConfigEnablementEvent;
+            Assert.NotNull(configEnablementEvent);
+            Assert.Equal(enabled, configEnablementEvent.NewEnabled);
+
         }
         public static Action<object> AssertType<AssertType>()
         {
@@ -56,12 +60,26 @@ namespace AppTests.Entities
             Assert.Collection(config.GetEvents(),
                 AssertType<ConfigCreatedEvent>());
         }
-        private void AssertConfigCreatedChange(Config config)
+        private void AssertConfigCreatedRenamedEvents(Config config)
         {
             Assert.Collection(
                 config.GetEvents(),
                 AssertType<ConfigCreatedEvent>(),
                 AssertType<ConfigRenamedEvent>());
+        }
+        private void AssertConfigCreatedEnablementEvents(Config config)
+        {
+            Assert.Collection(
+                config.GetEvents(),
+                AssertType<ConfigCreatedEvent>(),
+                AssertType<ConfigEnablementEvent>());
+        }
+
+        private void AssertConfigCreatedEventFromConstructor(ConfigCreatedEvent? configCreatedEvent)
+        {
+            Assert.NotNull(configCreatedEvent);
+            Assert.Equal(string.Empty, configCreatedEvent.Name);
+            Assert.False(configCreatedEvent.Enabled);
         }
     }
 }

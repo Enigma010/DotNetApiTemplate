@@ -56,6 +56,16 @@ Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.
 
 There are setups for both the [EventBus](./EventBus/README.md#setup) and the [MongoDB](./Db/README.md#setup), review both of these and complete any necessary steps.
 
+## App.Events Setup
+Open up the **App.Events.csproj** find the **AssemblyName** and change the`Domain.Subdomain` to be the domain and sub-domain for that the project.  After that go to the **main.yml** find the lines:
+
+```
+#    - name: Create packages
+#      run: dotnet nuget push "App.Events\bin\Release\Domain.Subdomain.App.Events.1.0.0.nupkg" --api-key $GITHUBCFG_PAT --source "github" --skip-duplicate
+```
+
+Remove the **#** comment character and change the value `Domain.Subdomain` to be the domain and sub-domain of the project.
+
 ## Running the API
 To run the API you need to do the following:
 

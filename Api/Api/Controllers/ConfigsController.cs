@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController()]
+    [Route("configs")]
     [Produces("application/json", "application/problem+json")]
     public class ConfigsController : ControllerBase
     {
