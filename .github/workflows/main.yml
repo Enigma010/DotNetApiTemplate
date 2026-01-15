@@ -32,3 +32,4 @@ jobs:
         dotnet test --no-build --verbosity normal ./App.UnitTests/App.UnitTests.csproj
 #    - name: Create packages
 #      run: dotnet nuget push "App.Events\bin\Release\Domain.Subdomain.App.Events.1.0.0.nupkg" --api-key $GITHUBCFG_PAT --source "github" --skip-duplicate
+#      run: dotnet nuget push "Api.Client\bin\Release\Domain.SubDomain.Api.Client.1.0.0.nupkg" --api-key $GITHUBCFG_PAT --source "github" --skip-duplicate

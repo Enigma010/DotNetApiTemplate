@@ -25,7 +25,4 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet format $(ProjectFileName)" />
-  </Target>
 </Project>

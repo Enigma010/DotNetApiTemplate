@@ -7,10 +7,15 @@
     <AssemblyName>Domain.Subdomain.$(MSBuildProjectName)</AssemblyName>
     <Version>1.0.0</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/Enigma010/DotNetApiTemplate</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet format $(ProjectFileName)" />
-  </Target>
+  <ItemGroup>
+    <None Include="..\Docs\App.Events\nuget\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>

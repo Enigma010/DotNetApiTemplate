@@ -14,7 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\App.Events\App.Events.csproj" />
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet format $(ProjectFileName)" />
-  </Target>
 </Project>
