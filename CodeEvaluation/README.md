@@ -13,11 +13,7 @@ The following describes guidelines for the architecture.
 * No code should be committed until all unit tests are succeeding.
 * Unit test code coverage should maintain the agreed upon coverage percentage.  
 
-## Running Evaluations
-To run the unit tests and code coverage start a WSL command prompt and run the command:
+## Code Coverage Guideslines
+The following describes guidelines for the architectore.
 
-```
-./lCodeEvaluation.sh
-```
-
-Note that you will need docker running for this.  Once the command runs if any unit tests fail you'll see errors in the command run and you need to fix those first.  If all unit tests pass a browser window will open to show the code coverage of the unit tests.
+* Code coverage should meet 70%+ of the lines of code.

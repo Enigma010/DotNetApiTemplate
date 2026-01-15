@@ -10,14 +10,14 @@ This template consists of the following components:
 * **[App](./App/README.md)** - The application business logic
 * **[App.Events](./App.Events/README.md)** - The events emitted from the application
 * **[App.UnitTests](./App.UnitTests/README.md)** - Unit tests for the application
-* **[EventBus](./EventBus/README.md)** - Infrastructure used to work with the event bus
+* **[Api.UnitTests](./Api.UnitTests/README.md)** - Unit tests for the API
+* **[EventBus](./EventBus/README.md)** - Scripts used to work with the event bus
+* **[Code Evaluation](./CodeEvaluation/README.md)** - Scripts used to evaluate the code. 
 
-## Running the API
-To run the API you need to do the following:
+## Procedures
 
-1. Run the [EventBus](./EventBus/README.md).
-
-2. Open up Visual Studio and open the solution `Api\Api.sln`.  Under the start-up projects select `docker-compose` and press the play button. It should open up a swagger API page that you can use to run HTTP REST commands.
-
-## Code Evaluation
-Code is evaluated by both using [Unit Tests](./AppTests/README.md#unit-tests) and [Test Coverage](./AppTests/README.md#test-coverage).  See the [guidelines](./AppTests/README.md#guidelines) for details.
+| Procedure | Description |
+| - | - | 
+| [Setup](./Docs/Procedures/Setup/README.md) | Steps to run post clone of the template to setup and run the application |
+| [Running The App](./Docs/Procedures/RunningTheApp/README.md) | Steps necessary to run the application |
+| [Code Evaluation](./Docs/Procedures/CodeEvaluation/README.md) | Metircs to evaluate the code |
