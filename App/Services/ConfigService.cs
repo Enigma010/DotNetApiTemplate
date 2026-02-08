@@ -3,12 +3,12 @@ using App.Entities;
 using App.Repositories;
 using App.Repositories.Dtos;
 using DotNetApiAppCore.Services;
-using DotNetApiDb;
+using App.Db;
 using DotNetApiEventBus;
 using DotNetApiLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using DotNetApiUnitOfWork;
+using App.UnitOfWork;
 
 namespace App.Services
 {
@@ -18,11 +18,12 @@ namespace App.Services
     /// </summary>
     public interface IConfigService : IBaseService<Config, Guid>
     {
-        Task<Config> CreateAsync(CreateConfigCmd cmd);
+        Task<Config> CreateAsync(ConfigCreateCmd cmd);
         Task<Config> GetAsync(Guid id);
         Task<IEnumerable<Config>> GetAsync(Paging paging);
         Task DeleteAsync(Guid id);
-        Task<Config> ChangeAsync(Guid id, ChangeConfigCmd cmd);
+        Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd);
+        Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd);
     }
     /// <summary>
     /// The configuration service.
@@ -35,9 +36,9 @@ namespace App.Services
         /// <param name="repository">The repository</param>
         /// <param name="logger">The logger</param>
         public ConfigService(
-            IConfigRepository repository, 
+            IConfigRepository repository,
             ILogger<IConfigService> logger,
-            IEventPublisher eventPublisher) 
+            IEventPublisherUnitOfWork eventPublisher)
             : base(repository, eventPublisher, logger)
         {
         }
@@ -47,20 +48,18 @@ namespace App.Services
         /// </summary>
         /// <param name="cmd">The create config command</param>
         /// <returns>The new configuration object</returns>
-        public async Task<Config> CreateAsync(CreateConfigCmd cmd)
+        public async Task<Config> CreateAsync(ConfigCreateCmd cmd)
         {
-            using (_logger.LogCaller())
+            _logger.LogInformationCaller("CreateAsync: command {@cmd}", args: [cmd]);
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
             {
-                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
+                return await unitOfWorks.RunAsync(async () =>
                 {
-                    return await unitOfWorks.RunAsync(async () =>
-                    {
-                        Config config = new Config(cmd.Name);
-                        await _repository.InsertAsync(config);
-                        await PublishEvents(config);
-                        return config;
-                    });
-                }
+                    Config config = new Config(cmd.Name);
+                    await _repository.InsertAsync(config);
+                    await PublishEvents(config);
+                    return config;
+                });
             }
         }
 
@@ -71,18 +70,15 @@ namespace App.Services
         /// <returns></returns>
         public async Task DeleteAsync(Guid id)
         {
-            using (_logger.LogCaller())
+            _logger.LogInformationCaller("DeleteAsync: id: {@id}", args: [id]);
+            using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
             {
-                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
+                await unitOfWorks.RunAsync(async () =>
                 {
-                    await unitOfWorks.RunAsync(async () =>
-                    {
-                        Config config = await _repository.GetAsync(id);
-                        await _repository.DeleteAsync(config);
-                        await PublishEvents(config);
-                        await unitOfWorks.Commit();
-                    });
-                }
+                    Config config = await _repository.GetAsync(id);
+                    await _repository.DeleteAsync(config);
+                    await PublishEvents(config);
+                });
             }
         }
 
@@ -93,10 +89,8 @@ namespace App.Services
         /// <returns></returns>
         public async Task<Config> GetAsync(Guid id)
         {
-            using (_logger.LogCaller())
-            {
-                return await _repository.GetAsync(id);
-            }
+            _logger.LogInformationCaller("GetAsync: id: {@id}", args: [id]);
+            return await _repository.GetAsync(id);
         }
 
         /// <summary>
@@ -105,37 +99,40 @@ namespace App.Services
         /// <returns></returns>
         public async Task<IEnumerable<Config>> GetAsync([FromQuery] Paging paging)
         {
-            using (_logger.LogCaller())
-            {
-                return await _repository.GetAsync(paging);
-            }
+            _logger.LogInformationCaller("DeleteAsync: paging: {@paging}", args: [paging]);
+            return await _repository.GetAsync(paging);
         }
 
         /// <summary>
         /// Changes or updates a configuration
         /// </summary>
         /// <param name="id">The ID of the configuration</param>
-        /// <param name="change">The change that is occurring</param>
+        /// <param name="cmd">The change that is occurring</param>
         /// <returns>The updated configuration</returns>
-        public async Task<Config> ChangeAsync(Guid id, ChangeConfigCmd change)
+        public async Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd)
         {
-            using (_logger.LogCaller())
+            Func<Config, Config> changeFunc = (config) =>
             {
-                using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
-                {
-                    return await unitOfWorks.RunAsync(async () =>
-                    {
-                        Func<Config, Config> changeFunc = (config) =>
-                        {
-                            config.Change(change);
-                            return config;
-                        };
-                        var config = await ChangeAsync(id, changeFunc);
-                        await PublishEvents(config);
-                        return config;
-                    });
-                }
-            }
+                config.Rename(cmd);
+                return config;
+            };
+            return await RunCommandAsync(id, nameof(RenameAsync), changeFunc);
+        }
+
+        /// <summary>
+        /// Changes or updates a configuration
+        /// </summary>
+        /// <param name="id">The ID of the configuration</param>
+        /// <param name="cmd">The change that is occurring</param>
+        /// <returns>The updated configuration</returns>
+        public async Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd)
+        {
+            Func<Config, Config> changeFunc = (config) =>
+            {
+                config.Enablement(cmd);
+                return config;
+            };
+            return await RunCommandAsync(id, nameof(EnablementAsync), changeFunc);
         }
     }
 }

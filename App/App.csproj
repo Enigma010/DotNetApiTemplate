@@ -1,22 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="DotNetApiAppCore" Version="1.0.0" />
-    <PackageReference Include="DotNetApiEventBus" Version="1.0.0" />
-    <PackageReference Include="DotNetApiLogging" Version="1.0.0" />
-    <PackageReference Include="DotNetApiMongoDb" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="DotNetApiEventBus" Version="3.0.5" />
+    <PackageReference Include="DotNetApiLogging" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+    <PackageReference Include="MongoDB.Bson" Version="3.5.2" />
+    <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\AppEventConsumers\AppEventConsumers.csproj" />
-    <ProjectReference Include="..\AppEvents\AppEvents.csproj" />
+    <ProjectReference Include="..\App.Events\App.Events.csproj" />
   </ItemGroup>
-
 </Project>

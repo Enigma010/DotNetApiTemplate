@@ -1,33 +1,47 @@
 services:
   api:
-    image: ${DOCKER_REGISTRY-}${App}api
+    image: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
     build:
       context: ..
       dockerfile: Api/Api/Dockerfile
+      args:
+        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
+        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
     volumes: [../Output/Log:/log]
     environment:
-      MONGO_USERNAME: ${MONGO_USERNAME}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
       EVENT_BUS_HOST: ${EVENT_BUS_HOST} 
       EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
       EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
+      EVENT_BUS_PORT: ${EVENT_BUS_PORT}
     depends_on:
-      - mongo
+      - appdb
     networks:
       - tmpltnetwork
     extra_hosts:
-    - "host.docker.internal:host-gateway"    
-  mongo:
-    image: ${DOCKER_REGISTRY-}${App}mongo
-    build:
-      context: ..
-      dockerfile: DotNetApiMongoDb/Dockerfile
-    restart: always
-    volumes: [../Output/MongoDb/data:/data/db]
+    - "host.docker.internal:host-gateway"
+  appdb:
+    image: ghcr.io/documentdb/documentdb/documentdb-local:latest
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-appdb
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      APP_DB_PORT: 9712
+      APP_DB_BACKUP_PATH: /usr/documentdb/backup
+      APP_DB_SCRIPTS_PATH: /usr/documentdb/scripts
+    ports:
+      - "10260:10260"
+    command:  ["--username", "$APP_DB_USERNAME", "--password", "$APP_DB_PASSWORD"]
     networks:
       - tmpltnetwork
+
 networks:
-  tmpltnetwork:     
+  tmpltnetwork:  

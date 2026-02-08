@@ -1,13 +1,13 @@
 ﻿using App.Commands;
+using App.Db;
 using App.Entities;
 using App.Services;
-using DotNetApiDb;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController()]
+    [Route("configs")]
     [Produces("application/json", "application/problem+json")]
     public class ConfigsController : ControllerBase
     {
@@ -20,8 +20,8 @@ namespace Api.Controllers
         /// Creates a new configuraiton controller
         /// </summary>
         /// <param name="service">The configuraiton service</param>
-        public ConfigsController(IConfigService service) 
-        { 
+        public ConfigsController(IConfigService service)
+        {
             _service = service;
         }
 
@@ -32,7 +32,7 @@ namespace Api.Controllers
         /// <returns>The configuration</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PostAsync([FromBody]CreateConfigCmd cmd)
+        public async Task<IActionResult> PostAsync([FromBody] ConfigCreateCmd cmd)
         {
             Config config = await _service.CreateAsync(cmd);
             return Ok(config);
@@ -48,14 +48,7 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(await _service.GetAsync(id));
-            }
-            catch (DbEntityNotFoundException<Guid>)
-            {
-                return NotFound();
-            }
+            return await this.GetToActionResultsAsync<Guid, Config>(() => _service.GetAsync(id));
         }
 
         /// <summary>
@@ -64,9 +57,10 @@ namespace Api.Controllers
         /// <returns>The configurations</returns>
         [HttpGet()]
         [ProducesResponseType(typeof(IEnumerable<Config>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync([FromQuery] Paging paging)
         {
-            return Ok(await _service.GetAsync(paging));
+            return await this.GetToActionResultsAsync<Guid, IEnumerable<Config>>(() => _service.GetAsync(paging));
         }
 
         /// <summary>
@@ -75,13 +69,28 @@ namespace Api.Controllers
         /// <param name="id">The configuration ID</param>
         /// <param name="cmd">The change command</param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPost("{id}/name")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PutAsync([FromRoute] Guid id, 
-            [FromBody] ChangeConfigCmd cmd)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> NameAsync([FromRoute] Guid id,
+            [FromBody] ConfigRenameCmd cmd)
         {
-            Config config = await _service.ChangeAsync(id, cmd);
-            return Ok(config);
+            return await this.PostToActionResultsAsync<Guid, Config>(() => _service.RenameAsync(id, cmd));
+        }
+
+        /// <summary>
+        /// HTTP PUT to update a specific configuration
+        /// </summary>
+        /// <param name="id">The configuration ID</param>
+        /// <param name="cmd">The change command</param>
+        /// <returns></returns>
+        [HttpPost("{id}/enablement")]
+        [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> EnablementAsync([FromRoute] Guid id,
+            [FromBody] ConfigEnablementCmd cmd)
+        {
+            return await this.PostToActionResultsAsync<Guid, Config>(() => _service.EnablementAsync(id, cmd));
         }
 
         /// <summary>
@@ -91,10 +100,10 @@ namespace Api.Controllers
         /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> DeleteAsync([FromRoute]Guid id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            await _service.DeleteAsync(id);
-            return Ok();
+            return await this.DeleteToActionResultsAsync<Guid>(() => _service.DeleteAsync(id));
         }
     }
 }
