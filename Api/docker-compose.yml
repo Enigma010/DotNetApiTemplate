@@ -29,6 +29,14 @@ services:
     image: ghcr.io/documentdb/documentdb/documentdb-local:latest
     container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-appdb
     restart: unless-stopped
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      APP_DB_PORT: 9712
+      APP_DB_BACKUP_PATH: /usr/documentdb/backup
+      APP_DB_SCRIPTS_PATH: /usr/documentdb/scripts
     ports:
       - "10260:10260"
     command:  ["--username", "$APP_DB_USERNAME", "--password", "$APP_DB_PASSWORD"]

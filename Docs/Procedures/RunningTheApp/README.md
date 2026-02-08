@@ -1,4 +1,4 @@
-# Running
+# Running The App
 The followng describes running the application.
 
 ## Running the API

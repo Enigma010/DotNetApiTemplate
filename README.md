@@ -20,4 +20,6 @@ This template consists of the following components:
 | - | - | 
 | [Setup](./Docs/Procedures/Setup/README.md) | Steps to run post clone of the template to setup and run the application |
 | [Running The App](./Docs/Procedures/RunningTheApp/README.md) | Steps necessary to run the application |
-| [Code Evaluation](./Docs/Procedures/CodeEvaluation/README.md) | Metircs to evaluate the code |
+| [Code Evaluation](./Docs/Procedures/CodeEvaluation/README.md) | Metrics to evaluate the code |
+| [Db Backup](./Docs/Procedures/DbBackup/README.md) | Steps to backup the database |
+| [Db Restore](./Docs/Procedures//DbBackup/README.md) | Steps to restore a backup to the database |
