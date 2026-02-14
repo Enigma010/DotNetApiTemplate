@@ -3,8 +3,8 @@ services:
     image: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
     container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api
     build:
-      context: ..
-      dockerfile: Api/Api/Dockerfile
+      context: ../..
+      dockerfile: App.Api/Dockerfile
       args:
         GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
         GITHUBCFG_PAT: ${GITHUBCFG_PAT}
