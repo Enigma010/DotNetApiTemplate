@@ -72,7 +72,7 @@ namespace Api.Controllers
             {
                 return controller.Ok(await func());
             }
-            catch (DbEntityNotFoundException<IdType>)
+            catch (Exception ex) when (ex is DbEntityNotFoundException<IdType> || ex is DbSingletonEntityNotFoundException)
             {
                 return controller.NotFound();
             }

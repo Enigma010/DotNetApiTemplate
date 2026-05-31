@@ -11,6 +11,7 @@ This template consists of the following components:
 * **[App.Events](./App.Events/README.md)** - The events emitted from the application
 * **[App.UnitTests](./App.UnitTests/README.md)** - Unit tests for the application
 * **[Api.UnitTests](./Api.UnitTests/README.md)** - Unit tests for the API
+* **[Auth](./Auth/README.md)** - Authentication
 * **[EventBus](./EventBus/README.md)** - Scripts used to work with the event bus
 * **[Code Evaluation](./CodeEvaluation/README.md)** - Scripts used to evaluate the code. 
 

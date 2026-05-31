@@ -49,17 +49,6 @@ namespace Ddd.App.Entities
         }
 
         /// <summary>
-        /// Whether the configuration is active or not
-        /// </summary>
-        public bool Enabled
-        {
-            get
-            {
-                return _dto.Enabled;
-            }
-        }
-
-        /// <summary>
         /// Set the config to be deleted
         /// </summary>
         public override void Deleted()
@@ -78,22 +67,6 @@ namespace Ddd.App.Entities
                 string oldName = Name;
                 _dto.Name = cmd.NewName;
                 AddEvent(new ConfigRenamedEvent(_dto.Id, oldName, _dto.Name));
-            }
-        }
-
-        /// <summary>
-        /// Updates the enabled state of the configuration based on the specified command.
-        /// </summary>
-        /// <remarks>If the enabled state changes, an event is recorded to reflect the update. This method
-        /// does not perform any action if the requested state matches the current state.</remarks>
-        /// <param name="cmd">A command containing the desired enabled state to apply to the configuration.</param>
-        public void Enablement(ConfigEnablementCmd cmd)
-        {
-            if (Enabled != cmd.Enabled)
-            {
-                bool oldEnabled = Enabled;
-                _dto.Enabled = cmd.Enabled;
-                AddEvent(new ConfigEnablementEvent(_dto.Id, oldEnabled, _dto.Enabled));
             }
         }
     }

@@ -1,9 +1,7 @@
 ﻿
 using Ddd.App.Core;
 using Ddd.App.Core.Repositories;
-using Ddd.App.Entities;
 using Ddd.App.UnitOfWork;
-using DotNetApiEventBus;
 using DotNetApiLogging;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
@@ -30,8 +28,11 @@ namespace DotNetApiAppCore.Services
     [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class BaseService<RepositoryType, EntityType, EntityDtoType, IdType>
         : IBaseService<EntityType, IdType>
-        where RepositoryType : IBaseRepository<EntityType, EntityDtoType, IdType>
-        where EntityType : IEntity<EntityDtoType, IdType>
+        
+        where RepositoryType : IGetableRepository<EntityType, EntityDtoType, IdType>, 
+        IUpdatableRepository<EntityType, EntityDtoType, IdType>, 
+        IUnitOfWork
+        where EntityType : Entity<EntityDtoType, IdType>
         where EntityDtoType : EntityDto<IdType>
         where IdType : IComparable
     {

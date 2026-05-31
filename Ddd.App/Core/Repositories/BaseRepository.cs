@@ -12,13 +12,18 @@ namespace Ddd.App.Core.Repositories
     /// </summary>
     /// <typeparam name="EntityType">The entity type</typeparam>
     /// <typeparam name="IdType">The ID type of that entity</typeparam>
-    public interface IBaseRepository<EntityType, EntityDtoType, IdType> : IUnitOfWork
+    public interface IBaseRepository<EntityType, EntityDtoType, IdType> :
+        IGetableRepository<EntityType, EntityDtoType, IdType>,
+        IUpdatableRepository<EntityType, EntityDtoType, IdType>,
+        IUnitOfWork
+
+        where EntityDtoType : EntityDto<IdType>
+        where EntityType : Entity<EntityDtoType, IdType>
+        where IdType : IComparable
     {
-        Task<EntityType> GetAsync(IdType id);
         Task<IEnumerable<EntityType>> GetAsync(Paging paging);
         Task<IEnumerable<EntityType>> GetAsync(Expression<Func<EntityDtoType, bool>> expression, Paging paging);
         Task<EntityType> InsertAsync(EntityType entity);
-        Task<EntityType> UpdateAsync(EntityType entity);
         Task DeleteAsync(EntityType entity);
     }
     /// <summary>

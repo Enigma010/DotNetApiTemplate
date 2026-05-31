@@ -37,34 +37,19 @@ namespace AppTests.Services
         public async Task DeleteAsync()
         {
             Config config = new Config();
-            _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
+            _repository.Setup(m => m.GetAsync()).ReturnsAsync(config);
             config.ClearEvents();
-            await _service.DeleteAsync(config.Id);
+            await _service.DeleteAsync();
             _repository.Verify(m => m.DeleteAsync(config), Times.Once);
         }
         [Fact]
         public async Task GetAsync()
         {
             Config config = new Config();
-            _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
-            Config getConfig = await _service.GetAsync(config.Id);
+            _repository.Setup(m => m.GetAsync()).ReturnsAsync(config);
+            Config getConfig = await _service.GetAsync();
             Assert.Equal(config.Id, getConfig.Id);
-            _repository.Verify(m => m.GetAsync(config.Id), Times.Once);
-        }
-        [Fact]
-        public async Task GetAllAsync()
-        {
-            List<Config> configs = new List<Config>()
-            {
-                new Config(),
-                new Config(),
-                new Config(),
-                new Config()
-            };
-            _repository.Setup(m => m.GetAsync(It.IsAny<Paging>())).ReturnsAsync(configs);
-            IEnumerable<Config> getConfigs = await _service.GetAsync(new Paging());
-            Assert.Equal(configs.Count, getConfigs.Count());
-            _repository.Verify(m => m.GetAsync(It.IsAny<Paging>()), Times.Once);
+            _repository.Verify(m => m.GetAsync(), Times.Once);
         }
         [Fact]
         public async Task ChangeAsync()
@@ -74,7 +59,7 @@ namespace AppTests.Services
             {
                 NewName = Guid.NewGuid().ToString(),
             };
-            _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config);
+            _repository.Setup(m => m.GetAsync()).ReturnsAsync(config);
             _repository.Setup(m => m.UpdateAsync(It.Is<Config>(c => c.Id == config.Id))).ReturnsAsync(config);
             Config changeConfig = await _service.RenameAsync(config.Id, model);
             Assert.Equal(config.Id, changeConfig.Id);

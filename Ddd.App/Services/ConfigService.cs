@@ -3,10 +3,7 @@ using Ddd.App.Entities;
 using Ddd.App.Repositories;
 using Ddd.App.Repositories.Dtos;
 using DotNetApiAppCore.Services;
-using Ddd.App.Db;
-using DotNetApiEventBus;
 using DotNetApiLogging;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Ddd.App.UnitOfWork;
 
@@ -16,19 +13,17 @@ namespace Ddd.App.Services
     /// Configuration service interface, defines what actions you can directly do with a
     /// configuration object
     /// </summary>
-    public interface IConfigService : IBaseService<Config, Guid>
+    public interface IConfigService : IBaseSingletonService<Config, Guid>
     {
         Task<Config> CreateAsync(ConfigCreateCmd cmd);
-        Task<Config> GetAsync(Guid id);
-        Task<IEnumerable<Config>> GetAsync(Paging paging);
-        Task DeleteAsync(Guid id);
+        Task<Config> GetAsync();
+        Task DeleteAsync();
         Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd);
-        Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd);
     }
     /// <summary>
     /// The configuration service.
     /// </summary>
-    public class ConfigService : BaseService<IConfigRepository, Config, ConfigDto, Guid>, IConfigService
+    public class ConfigService : BaseSingletonService<IConfigRepository, Config, ConfigDto, Guid>, IConfigService
     {
         /// <summary>
         /// Creates a configuration service
@@ -68,16 +63,19 @@ namespace Ddd.App.Services
         /// </summary>
         /// <param name="id">The ID of the configuration</param>
         /// <returns></returns>
-        public async Task DeleteAsync(Guid id)
+        public async Task DeleteAsync()
         {
-            _logger.LogInformationCaller("DeleteAsync: id: {@id}", args: [id]);
+            _logger.LogInformationCaller("DeleteAsync");
             using (var unitOfWorks = new UnitOfWorks(_unitOfWorks, _logger))
             {
                 await unitOfWorks.RunAsync(async () =>
                 {
-                    Config config = await _repository.GetAsync(id);
-                    await _repository.DeleteAsync(config);
-                    await PublishEvents(config);
+                    Config? config = await _repository.GetAsync();
+                    if(config != null)
+                    {
+                        await _repository.DeleteAsync(config);
+                        await PublishEvents(config);
+                    }
                 });
             }
         }
@@ -87,20 +85,10 @@ namespace Ddd.App.Services
         /// </summary>
         /// <param name="id">The ID of the configuration</param>
         /// <returns></returns>
-        public async Task<Config> GetAsync(Guid id)
+        public async Task<Config> GetAsync()
         {
-            _logger.LogInformationCaller("GetAsync: id: {@id}", args: [id]);
-            return await _repository.GetAsync(id);
-        }
-
-        /// <summary>
-        /// Gets all of the configurations
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IEnumerable<Config>> GetAsync([FromQuery] Paging paging)
-        {
-            _logger.LogInformationCaller("DeleteAsync: paging: {@paging}", args: [paging]);
-            return await _repository.GetAsync(paging);
+            _logger.LogInformationCaller("GetAsync");
+            return await _repository.GetAsync();
         }
 
         /// <summary>
@@ -116,23 +104,7 @@ namespace Ddd.App.Services
                 config.Rename(cmd);
                 return config;
             };
-            return await RunCommandAsync(id, nameof(RenameAsync), changeFunc);
-        }
-
-        /// <summary>
-        /// Changes or updates a configuration
-        /// </summary>
-        /// <param name="id">The ID of the configuration</param>
-        /// <param name="cmd">The change that is occurring</param>
-        /// <returns>The updated configuration</returns>
-        public async Task<Config> EnablementAsync(Guid id, ConfigEnablementCmd cmd)
-        {
-            Func<Config, Config> changeFunc = (config) =>
-            {
-                config.Enablement(cmd);
-                return config;
-            };
-            return await RunCommandAsync(id, nameof(EnablementAsync), changeFunc);
+            return await RunCommandAsync(nameof(RenameAsync), changeFunc);
         }
     }
 }

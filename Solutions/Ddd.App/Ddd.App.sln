@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36717.8 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11505.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{62078733-1006-4CA5-9B02-1F1DEC2CA1FA}"
 EndProject
@@ -16,6 +16,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Events", "..\..\Ddd.App.Events\Ddd.App.Events.csproj", "{37FC2E22-1C4E-02E4-3738-9BB879740534}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.UnitTests", "..\..\Ddd.App.UnitTests\Ddd.App.UnitTests.csproj", "{7AF7E8FF-A874-4A27-E0FC-E902F22FB755}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Web", "..\..\Ddd.App.Web\Ddd.App.Web\Ddd.App.Web.csproj", "{6DE21F38-6A83-4E18-8EEA-98E3D907117E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Web.Client", "..\..\Ddd.App.Web\Ddd.App.Web.Client\Ddd.App.Web.Client.csproj", "{7CD2552D-3528-4B0C-B7B7-75297FAE899D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Authentication", "..\..\Ddd.App.Authentication\Ddd.App.Authentication.csproj", "{1ABC5A59-DE83-414B-A0C9-83A7E6B44B8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +57,18 @@ Global
 		{7AF7E8FF-A874-4A27-E0FC-E902F22FB755}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF7E8FF-A874-4A27-E0FC-E902F22FB755}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF7E8FF-A874-4A27-E0FC-E902F22FB755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DE21F38-6A83-4E18-8EEA-98E3D907117E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DE21F38-6A83-4E18-8EEA-98E3D907117E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DE21F38-6A83-4E18-8EEA-98E3D907117E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DE21F38-6A83-4E18-8EEA-98E3D907117E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CD2552D-3528-4B0C-B7B7-75297FAE899D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CD2552D-3528-4B0C-B7B7-75297FAE899D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CD2552D-3528-4B0C-B7B7-75297FAE899D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CD2552D-3528-4B0C-B7B7-75297FAE899D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABC5A59-DE83-414B-A0C9-83A7E6B44B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABC5A59-DE83-414B-A0C9-83A7E6B44B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABC5A59-DE83-414B-A0C9-83A7E6B44B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABC5A59-DE83-414B-A0C9-83A7E6B44B8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

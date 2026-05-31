@@ -1,11 +1,10 @@
 ﻿using Ddd.App.Db;
 using Ddd.App.Entities;
+using Ddd.App.Events;
 using Ddd.App.Repositories;
 using Ddd.App.Repositories.Dtos;
-using Ddd.App.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Data;
 using System.Linq.Expressions;
 
 namespace AppTests.Repositories
@@ -22,7 +21,7 @@ namespace AppTests.Repositories
             _repository = new ConfigRepository(_client.Object, _logger.Object);
         }
         [Fact]
-        public async Task ChangeAsync()
+        public async Task InsertAsync()
         {
             Config config = new Config();
             Config changeConfig = await _repository.InsertAsync(config);
@@ -30,53 +29,22 @@ namespace AppTests.Repositories
             _client.Verify(m => m.InsertAsync<ConfigDto, Guid>(config.GetDto()), Times.Once());
         }
         [Fact]
+        public async Task InsertExistingAsync()
+        {
+            Config config = new Config();
+            SetupGetAsync(config);
+            await Assert.ThrowsAsync<DbEntityMultipleSingletonsException<Config>>(() => _repository.InsertAsync(config));
+        }
+        [Fact]
         public async Task GetAsync()
         {
             Config config = new Config();
-            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.Is<Guid>(id => id == config.Id))).ReturnsAsync(config.GetDto());
-            Config changeConfig = await _repository.InsertAsync(config);
-            Assert.Equal(config.Id, changeConfig.Id);
-            Config getConfig = await _repository.GetAsync(config.Id);
+            SetupGetAsync(config);
+            Config getConfig = await _repository.GetAsync();
             Assert.Equal(config.Id, getConfig.Id);
             Assert.Empty(getConfig.GetEvents());
-            _client.Verify(m => m.GetAsync<ConfigDto, Guid>(config.Id), Times.Once);
-        }
-        [Fact]
-        public async Task GetExpressionAsync()
-        {
-            List<Config> configs = new List<Config>()
-            {
-                new Config(),
-                new Config(),
-                new Config()
-            };
-            List<ConfigDto> configDtos = configs.Select(config => config.GetDto()).ToList();
-            Expression<Func<ConfigDto, bool>> filter = (c) => c.Enabled == true;
-            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Expression<Func<ConfigDto, bool>>>(), It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>())).ReturnsAsync(configDtos);
-            IEnumerable<Config> getConfigs = await _repository.GetAsync(filter, new Paging());
-            Assert.Equal(configs.Select(c => c.GetDto()), getConfigs.Select(c => c.GetDto()));
-            getConfigs.ToList().ForEach(getConfig =>
-            {
-                Assert.Empty(getConfig.GetEvents());
-            });
-        }
-        [Fact]
-        public async Task GetAllAsync()
-        {
-            List<Config> configs = new List<Config>()
-            {
-                new Config(),
-                new Config(),
-                new Config()
-            };
-            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>())).ReturnsAsync(configs.Select(c => c.GetDto()));
-            IEnumerable<Config> getConfigs = await _repository.GetAsync(new Paging());
-            Assert.Equal(configs.Count, getConfigs.Count());
-            _client.Verify(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>(), It.IsAny<Expression<Func<ConfigDto, object>>>()), Times.Once);
-            getConfigs.ToList().ForEach(getConfig =>
-            {
-                Assert.Empty(getConfig.GetEvents());
-            });
+            _client.Verify(m => m.GetAsync<ConfigDto, Guid>(It.IsAny<Paging>(),
+                It.IsAny<Expression<Func<ConfigDto, object>>?>()), Times.Once);
         }
         [Fact]
         public async Task UpdateAsync()
@@ -100,6 +68,13 @@ namespace AppTests.Repositories
                 {
                     Assert.IsType<ConfigDeletedEvent>(c);
                 });
+        }
+        private void SetupGetAsync(Config config)
+        {
+            _client.Setup(m => m.GetAsync<ConfigDto, Guid>(
+                It.IsAny<Paging>(),
+                It.IsAny<Expression<Func<ConfigDto, object>>?>()))
+            .ReturnsAsync(new List<ConfigDto>() { config.GetDto() });
         }
     }
 }
