@@ -39,6 +39,8 @@ Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.
 | **GITHUBCFG_USERNAME** | The GitHub username for nuget package retrieval |
 | **GITHUBCFG_PAT** | The GitHub PAT (personal access token) for nuget package retrieval |
 | **GITHUBCFG_NAMESPACE** | The GitHub namespace for nuget package retrieval | For personal GitHub accounts the same as the **GITHUBCFG_USERNAME** |
+| **PG_PASS** | The postgres password for the authentication server | You can generate a default value using the command: openssl rand -base64 36 | tr -d '\n' |
+| **AUTHENTIK_SECRET_KEY** | The authentik secret key | You can generate a default value using the command: openssl rand -base64 60 | tr -d '\n' |
 
 There are setups for both the [EventBus](./EventBus/README.md#setup) and the [MongoDB](./Db/README.md#setup), review both of these and complete any necessary steps.
 
@@ -59,3 +61,52 @@ Open up the **Api.Client.csproj** find the **AssemblyName** and change the`Domai
 ```
 
 Remove the **#** comment character and change the value `Domain.Subdomain` to be the domain and sub-domain of the project.  Also open up the nuget [README.md](./Docs/App.Events/nuget/README.md) and adjust the `Domain.Subdomain` in the file and add any necessary information to it.
+
+# Authentication
+Authentication is handled by the [Authentik](https://goauthentik.io/). 
+
+## Initial Setup
+You will first need to start-up the authentik docker image. You can do this by starting the project in Visual Studio.  Once this is started login to [Autentik Admin](http://localhost:9000). This guide shows how to configure an authentik OAuth2/OpenID Connect application for use with ASP.NET Core.
+
+# 1. Create an Application
+
+Take the value of the **APP_DOMAIN** in the **Solutions\Ddd.App\\.env** next go to the authentik admin panel:
+
+Applications → Applications → Create
+
+Configure:
+
+| Field | Value |
+|---|---|
+| Name | *domain* App |
+| Slug | *domain* |
+
+Click **Next**.
+
+---
+
+# 2. Create an OAuth2/OpenID Provider
+
+Choose:
+
+OAuth2/OpenID Provider
+
+Recommended settings:
+
+| Setting | Value |
+|---|---|
+| Client type | Confidential |
+| Authorization flow | default-provider-authorization-implicit-consent |
+| Signing key | authentik Self-signed Certificate |
+
+---
+
+# 3. Configure Redirect URIs
+
+Add the ASP.NET Core OpenID Connect callback URL.
+
+For local development go to the **Redirect URIs/Origins (RegEx)**, and put in the following:
+
+| Type | Value |
+| - | - |
+| Regex | ^https://localhost:[0-9]+/signin-oidc$ |

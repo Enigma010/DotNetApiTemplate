@@ -34,6 +34,7 @@ namespace Api.Controllers
         /// <returns>The configuration</returns>
         [HttpPost]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> PostAsync([FromBody] ConfigCreateCmd cmd)
         {
             try
@@ -55,6 +56,7 @@ namespace Api.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAsync()
         {
             return await this.GetToActionResultsAsync<Guid, Config>(() => _service.GetAsync());
@@ -69,6 +71,7 @@ namespace Api.Controllers
         [HttpPost("{id}/name")]
         [ProducesResponseType(typeof(Config), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> NameAsync([FromRoute] Guid id,
             [FromBody] ConfigRenameCmd cmd)
         {
@@ -83,6 +86,7 @@ namespace Api.Controllers
         [HttpDelete("")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> DeleteAsync()
         {
             return await this.DeleteToActionResultsAsync<Guid>(() => _service.DeleteAsync());

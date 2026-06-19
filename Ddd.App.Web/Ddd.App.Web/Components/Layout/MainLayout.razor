@@ -1,6 +1,10 @@
 ﻿@using System.Security.Principal
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using Ddd.App.Authentication
+
 @inherits LayoutComponentBase
+@inject IOptions<Authentication> Authentication
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager Navigation
 
@@ -12,23 +16,17 @@
 
     <main>
         <AuthorizeView>
-            
             <NotAuthorized>
                 <div class="top-row px-4">
-                    <NavLink class="btn btn-secondary" href="Account/Register">Register
-                    </NavLink>
                     <NavLink class="btn btn-secondary" href="Account/Login">Login
                     </NavLink>
                 </div>
             </NotAuthorized>
             <Authorized>
                 <div class="top-row px-4">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @identity?.Name
-                    </NavLink>
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="" />
+                    <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @identity?.Name
+                    <AntiforgeryToken />
+                    <form method="post" action="/logout">
                         <button type="submit" class="btn btn-secondary m-2">
                             <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
                         </button>
