@@ -1,11 +1,12 @@
 ﻿using Ddd.App.Commands;
+using Ddd.App.Db;
 using Ddd.App.Entities;
 using Ddd.App.Repositories;
 using Ddd.App.Repositories.Dtos;
+using Ddd.App.UnitOfWork;
 using DotNetApiAppCore.Services;
 using DotNetApiLogging;
 using Microsoft.Extensions.Logging;
-using Ddd.App.UnitOfWork;
 
 namespace Ddd.App.Services
 {
@@ -19,6 +20,7 @@ namespace Ddd.App.Services
         Task<Config> GetAsync();
         Task DeleteAsync();
         Task<Config> RenameAsync(Guid id, ConfigRenameCmd cmd);
+        Task<Config> GetOrCreateAsync();
     }
     /// <summary>
     /// The configuration service.
@@ -36,6 +38,23 @@ namespace Ddd.App.Services
             IEventPublisherUnitOfWork eventPublisher)
             : base(repository, eventPublisher, logger)
         {
+        }
+
+        /// <summary>
+        /// Gets or creates the configuration
+        /// </summary>
+        /// <returns>The configuration</returns>
+        public async Task<Config> GetOrCreateAsync()
+        {
+            _logger.LogInformationCaller($"GetorCreateAsync");
+            try
+            {
+                return await GetAsync();
+            }
+            catch (DbSingletonEntityNotFoundException)
+            {
+                return await CreateAsync(ConfigCreateCmd.Default());
+            }
         }
 
         /// <summary>

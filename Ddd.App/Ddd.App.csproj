@@ -14,4 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Ddd.App.Events\Ddd.App.Events.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Validation\" />
+  </ItemGroup>
 </Project>

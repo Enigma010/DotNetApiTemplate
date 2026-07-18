@@ -326,7 +326,8 @@ namespace Ddd.App.DbMongo
             }
 
             // Check if the only error is a RemoteCertificateNameMismatch
-            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateChainErrors))
+            if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch) ||
+                sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors))
             {
                 // Log the error for debugging if needed, but return true to allow the connection
                 _logger.LogInformationCaller("Hostname mismatch ignored: " + sslPolicyErrors);

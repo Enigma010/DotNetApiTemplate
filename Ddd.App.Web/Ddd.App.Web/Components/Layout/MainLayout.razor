@@ -1,5 +1,4 @@
 ﻿@using System.Security.Principal
-@using Microsoft.AspNetCore.Identity
 @using Microsoft.Extensions.Options
 @using Ddd.App.Authentication
 
@@ -36,9 +35,6 @@
         </AuthorizeView>
         <article class="content px-4">
             @Body
-            <NavLink class="btn btn-secondary" href="Config/Create">
-                Create Config
-            </NavLink>
         </article>
     </main>
 </div>

@@ -11,8 +11,8 @@ namespace Ddd.App.Commands
         /// The name of the configuration
         /// </summary>
         /// 
-        [Length(1, 50)]
-        [Required(AllowEmptyStrings = false)]
+        [Length(1, 50, ErrorMessage = "The name must be between 1 and 50 characters")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "The name is required")]
         public string NewName { get; set; } = string.Empty;
     }
 }

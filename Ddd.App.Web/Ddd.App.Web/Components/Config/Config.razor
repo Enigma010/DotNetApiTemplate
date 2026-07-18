@@ -1,0 +1,105 @@
+﻿@page "/Config"
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@using Ddd.App.Entities
+@using Ddd.App.Commands
+@inject Ddd.App.Services.IConfigService Service
+
+@rendermode InteractiveServer
+
+@attribute [Authorize]
+
+<h3>Configuration</h3>
+<div class="form">
+@if (config != null)
+    {
+        @if (configRenameCmd == null)
+        {
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="Name" aria-label="First name" value="@config.Name" readonly />
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-secondary" @onclick="EditAsync">Edit</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <EditForm EditContext="configRenameCmdContext" OnValidSubmit="RenameAsync" FormName="ConfigRenameCmd">
+                <div class="row">
+                    <div class="col-10">
+                        <input type="text" id="name" class="form-control" placeholder="Name" aria-label="Name" @bind="configRenameCmd.NewName" />
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-secondary" type="submit">Rename</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-secondary" @onclick="CancleAsync">Cancel</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <DataAnnotationsValidator />
+                        <ValidationMessage For="() => configRenameCmd!.NewName" />
+                    </div>
+                </div>
+            </EditForm>
+        }
+    }
+</div>
+@code {
+    private Entities.Config? config { get; set;}
+    [SupplyParameterFromForm]
+    private ConfigRenameCmd? configRenameCmd { get; set; }
+
+    private EditContext? configRenameCmdContext { get; set; }
+    private ValidationMessageStore? configRenameCmdMessageStore { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        config = await Service.GetOrCreateAsync();
+    }
+
+    protected async Task EditAsync()
+    {
+        if (config == null)
+        {
+            return;
+        }
+        configRenameCmd = new ConfigRenameCmd(){
+            NewName = config.Name
+        };
+        configRenameCmdContext = new EditContext(configRenameCmd);
+        configRenameCmdMessageStore = new ValidationMessageStore(configRenameCmdContext);
+        configRenameCmdContext.OnValidationRequested += HandleValidationRequested;
+    }
+
+    protected async Task RenameAsync()
+    {
+        await Service.RenameAsync(config!.Id, configRenameCmd!);
+        config = await Service.GetOrCreateAsync();
+        configRenameCmd = null;
+        configRenameCmdContext = null;
+    }
+
+    protected async Task CancleAsync()
+    {
+        configRenameCmd = null;
+        config = await Service.GetOrCreateAsync();
+    }
+
+    private void HandleValidationRequested(object? sender,
+        ValidationRequestedEventArgs args)
+    {
+        configRenameCmdMessageStore?.Clear();
+    }
+
+    public void Dispose()
+    {
+        if (configRenameCmdContext is not null)
+        {
+            configRenameCmdContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+}
