@@ -1,7 +1,21 @@
 ﻿@page "/"
 
+@using Ddd.App.Core.Services
+
+@inject IAppService AppService
+
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<h1>@AppService.AppConfig.Name</h1>
+<div class="container">
+    <div class="row">
+        <label for="domain" class="col">Domain</label>
+        <div class="col">
+            <input type="text" id="domain" readonly value="@AppService.Domain" />
+        </div>
+        <label for="sub-domain" class="col">Sub-Domain</label>
+        <div class="col">
+            <input type="text" id="sub-domain" readonly value="@AppService.SubDomain" />  
+        </div>
+    </div>
+</div>

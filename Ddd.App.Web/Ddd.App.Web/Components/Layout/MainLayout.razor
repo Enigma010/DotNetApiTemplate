@@ -17,15 +17,18 @@
         <AuthorizeView>
             <NotAuthorized>
                 <div class="top-row px-4">
-                    <NavLink class="btn btn-secondary" href="Account/Login">Login
-                    </NavLink>
+                    <form method="post" action="Account/Login">
+                        <button type="submit" class="btn btn-secondary m-2">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Login
+                        </button>
+                    </form>
                 </div>
             </NotAuthorized>
             <Authorized>
                 <div class="top-row px-4">
                     <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @identity?.Name
                     <AntiforgeryToken />
-                    <form method="post" action="/logout">
+                    <form method="post" action="Account/Logout">
                         <button type="submit" class="btn btn-secondary m-2">
                             <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
                         </button>

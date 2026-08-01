@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Ddd.App.Core
 {
@@ -16,18 +10,17 @@ namespace Ddd.App.Core
     {
         public const string ConfigurationSectionName = "App";
         public const string NameSectionName = "Name";
+        public const string DefaultAppName = "Default App Name";
         /// <summary>
         /// Creates a new app configuration object
         /// </summary>
         /// <param name="configurationManager"></param>
-        public AppConfig(IConfigurationManager configurationManager)
+        public AppConfig()
         {
-            IConfigurationSection section = configurationManager.GetSection(ConfigurationSectionName);
-            Name = section[NameSectionName] ?? string.Empty;
         }
         /// <summary>
         /// The name of the application
         /// </summary>
-        public string Name { get; private set; } = string.Empty;
+        public string Name { get; private set; } = DefaultAppName;
     }
 }

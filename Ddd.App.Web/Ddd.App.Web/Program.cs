@@ -34,7 +34,6 @@ builder.Services.Configure<Authentication>(
     builder.Configuration.GetSection(nameof(Authentication))
 );
 builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 Authentication authentication = builder.Configuration.GetSection(nameof(Authentication)).Get<Authentication>()
     ?? throw new InvalidOperationException("Authentication configuration section is missing.");
 
@@ -148,7 +147,7 @@ app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapPost("/logout", async context =>
+app.MapPost("account/logout", async context =>
 {
     await context.SignOutAsync(
         CookieAuthenticationDefaults.AuthenticationScheme);
@@ -159,6 +158,15 @@ app.MapPost("/logout", async context =>
         {
             RedirectUri = "/"
         });
+});
+
+app.MapPost("account/login", async (HttpContext context) =>
+{
+    // Challenges the OIDC middleware to redirect the user to the Identity Provider
+    await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+    {
+        RedirectUri = "/"
+    });
 });
 
 app.MapGet("/api/token", async (HttpContext context) =>
