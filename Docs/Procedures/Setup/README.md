@@ -69,7 +69,7 @@ Authentication is handled by the [Keycloak](https://www.keycloak.org/). The keyc
 ## Setup
 1. Go to [local Keycloak](http://localhost:8080/).
 1. Login with the credentials you specified for **KEYCLOAK_ADMIN_USERNAME** and **KEYCLOAK_ADMIN_PASSWORD**.
-1. Go **Manage realms** and click **Create realm**. For the realm name use the values from the **Solutions/Ddd.App/.env** for the **${APP_DOMAIN}-${APP_SUBDOMAIN}** values.
+1. Go **Manage realms** and click **Create realm**. For the realm name use the values from the **Solutions/Ddd.App/.env** for the **\$\{APP_DOMAIN\}-\${APP_SUBDOMAIN\}** values.
 1. Click on **Clients** and click **Create client**. The client type should be  **OpenID Connect**. For the **Client ID** get the value from **Ddd.App.Web\appsettings.json** for the **WebAuthentication:ClientId** and put it in for the **Client ID**. Set the **Name** to **${APP_DOMAIN}-${APP_SUBDOMAIN}**, click the **Next** button.
 1. Turn **Client authentication** to **On**. Turn **Authorization** to **On**. For the **Authentication flow** choose: **Standard flow**, **Implicit flow**, **Standard token exchange**, **JWT Authorization Grant**, **OAuth 2.0 Device Authorization Grant**, **OIDC CIBA Grant**, **Direct access grants**, and **Service account roles**. Click **Next**.
 1. Next fill the in the following values:

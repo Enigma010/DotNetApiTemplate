@@ -28,7 +28,7 @@ jobs:
       run: dotnet publish ./Solutions/Ddd.App/Ddd.App.sln
     - name: Test
       run: |
-        dotnet test --no-build --verbosity normal ./Ddd.Api.UnitTests/Ddd.Api.UnitTests.csproj
+        dotnet test --no-build --verbosity normal ./Ddd.Api.UnitTests/Ddd.App.Api.UnitTests.csproj
         dotnet test --no-build --verbosity normal ./Ddd.App.UnitTests/Ddd.App.UnitTests.csproj
 #    - name: Create packages
 #      run: dotnet nuget push "App.Events\bin\Release\Domain.Subdomain.App.Events.1.0.0.nupkg" --api-key $GITHUBCFG_PAT --source "github" --skip-duplicate
