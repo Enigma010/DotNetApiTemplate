@@ -21,11 +21,11 @@ jobs:
       with:
         dotnet-version: 10.0.x
     - name: Restore dependencies
-      run: dotnet restore ./Ddd.Api/Ddd.Api.sln
+      run: dotnet restore ./Solutions/Ddd.App/Ddd.App.sln
     - name: Build
-      run: dotnet build --no-restore ./Ddd.Api/Ddd.Api.sln
+      run: dotnet build --no-restore ./Solutions/Ddd.App/Ddd.App.sln
     - name: Publish
-      run: dotnet publish ./Ddd.Api/Ddd.Api.sln
+      run: dotnet publish ./Solutions/Ddd.App/Ddd.App.sln
     - name: Test
       run: |
         dotnet test --no-build --verbosity normal ./Ddd.Api.UnitTests/Ddd.Api.UnitTests.csproj

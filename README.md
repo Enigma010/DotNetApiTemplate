@@ -24,3 +24,4 @@ This template consists of the following components:
 | [Code Evaluation](./Docs/Procedures/CodeEvaluation/README.md) | Metrics to evaluate the code |
 | [Db Backup](./Docs/Procedures/DbBackup/README.md) | Steps to backup the database |
 | [Db Restore](./Docs/Procedures//DbBackup/README.md) | Steps to restore a backup to the database |
+| [Get A API Token](./Docs/Procedures/GetAApiToken/README.md) | Steps to get a API token |
