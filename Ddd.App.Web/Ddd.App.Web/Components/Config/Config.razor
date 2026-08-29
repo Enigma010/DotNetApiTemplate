@@ -1,7 +1,6 @@
 ﻿@page "/Config"
+
 @using Microsoft.AspNetCore.Authorization
-@using System.ComponentModel.DataAnnotations
-@using Ddd.App.Entities
 @using Ddd.App.Commands
 @inject Ddd.App.Services.IConfigService Service
 
@@ -49,7 +48,7 @@
     }
 </div>
 @code {
-    private Entities.Config? config { get; set;}
+    private Ddd.App.Entities.Config? config { get; set; }
     [SupplyParameterFromForm]
     private ConfigRenameCmd? configRenameCmd { get; set; }
 

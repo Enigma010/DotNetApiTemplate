@@ -1,12 +1,15 @@
-using Ddd.App.Authentication;
 using Ddd.App.Core;
+using Ddd.App.Core.Services;
 using Ddd.App.Di;
 using Ddd.App.Web.Components;
 using Ddd.App.Web.Components.Account;
+using Ddd.App.Web.Entities;
+using Ddd.App.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
@@ -22,20 +25,18 @@ builder.Services.AddCascadingAuthenticationState();
 
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
-builder.Configuration.AddEnvironmentVariables();
-string envConfigPath = builder.Configuration.GetValue<string?>("EnvConfigPath") ?? string.Empty;
-if (!string.IsNullOrEmpty(envConfigPath))
-{
-    EnvConfig envConfig = new EnvConfig(envConfigPath);
-    envConfig.SetEnvironmentVariables();
-}
+
 builder.AddAppDependencies();
-builder.Services.Configure<Authentication>(
-    builder.Configuration.GetSection(nameof(Authentication))
+builder.Services.Configure<WebAuthenticationService>(
+    builder.Configuration.GetSection(nameof(WebAuthenticationService))
 );
 builder.Services.AddScoped<IdentityRedirectManager>();
-Authentication authentication = builder.Configuration.GetSection(nameof(Authentication)).Get<Authentication>()
-    ?? throw new InvalidOperationException("Authentication configuration section is missing.");
+builder.Services.Configure<WebAuthentication>(builder.Configuration.GetSection(WebAuthentication.SectionName));
+
+var serviceProvider = builder.Services.BuildServiceProvider();
+WebAuthenticationService webAuthenticationService = new WebAuthenticationService(builder.Configuration,
+    serviceProvider.GetRequiredService<IOptions<WebAuthentication>>(),
+    serviceProvider.GetRequiredService<IAppService>());
 
 builder.Services
     .AddAuthentication(options =>
@@ -48,16 +49,16 @@ builder.Services
     })
     .AddCookie(options =>
     {
-        options.Cookie.Name = authentication.CookieName;
+        options.Cookie.Name = webAuthenticationService.CookieName;
     })
     .AddOpenIdConnect(options =>
     {
         // Your authentik application/provider URL
-        options.Authority = authentication.Authority; //"https://auth.example.com/application/o/myapp/";
+        options.Authority = webAuthenticationService.Authority;
 
         // From authentik provider settings
-        options.ClientId = authentication.ClientId;
-        options.ClientSecret = authentication.ClientSecret(builder.Configuration);
+        options.ClientId = webAuthenticationService.Authentication.ClientId;
+        options.ClientSecret = webAuthenticationService.ClientSecret;
 
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
@@ -94,20 +95,14 @@ builder.Services
         {
             OnTokenValidated = context =>
             {
-                Console.WriteLine("User authenticated");
-
                 return Task.CompletedTask;
             },
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine(context.Exception);
-
                 return Task.CompletedTask;
             },
             OnRedirectToIdentityProviderForSignOut = context =>
             {
-                Console.WriteLine($"Logout URL: {context.ProtocolMessage.IssuerAddress}");
-                Console.WriteLine($"IdTokenHint: {context.ProtocolMessage.IdTokenHint}");
                 context.ProtocolMessage.Prompt = "login";
                 return Task.CompletedTask;
             }
@@ -165,7 +160,7 @@ app.MapPost("account/login", async (HttpContext context) =>
     // Challenges the OIDC middleware to redirect the user to the Identity Provider
     await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
     {
-        RedirectUri = "/"
+        RedirectUri = "https://localhost:7035/"
     });
 });
 
@@ -175,5 +170,4 @@ app.MapGet("/api/token", async (HttpContext context) =>
 
     return Results.Ok(new { token });
 }).RequireAuthorization();
-
 app.Run();

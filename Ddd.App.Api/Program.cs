@@ -1,8 +1,11 @@
-using Ddd.App.Authentication;
+
+using Ddd.App.Api.Services;
+using Ddd.App.Core.Services;
 using Ddd.App.Di;
+using Ddd.App.Web.Entities;
 using DotNetApiLogging.Di;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,34 +15,55 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.Configure<Authentication>(
-    builder.Configuration.GetSection(nameof(Authentication))
+builder.Configuration.AddJsonFile("appsettings.json");
+builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
+builder.AddAppDependencies();
+builder.Services.Configure<WebAuthenticationService>(
+    builder.Configuration.GetSection(nameof(WebAuthenticationService))
 );
-
-Authentication authentication = builder.Configuration.GetSection(nameof(Authentication)).Get<Authentication>()
-    ?? throw new InvalidOperationException("Authentication configuration section is missing.");
-
-builder.Services
-    .AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
+builder.Services.Configure<WebAuthentication>(builder.Configuration.GetSection(WebAuthentication.SectionName));
+var serviceProvider = builder.Services.BuildServiceProvider();
+WebAuthenticationService webAuthenticationService = new WebAuthenticationService(builder.Configuration,
+    serviceProvider.GetRequiredService<IOptions<WebAuthentication>>(),
+    serviceProvider.GetRequiredService<IAppService>());
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.Authority = authentication.Authority;
-        options.Audience = authentication.ClientId;
-        options.RequireHttpsMetadata = false;
-        /*
-        if (!string.IsNullOrEmpty(authentication.ValidIssuer))
+        // Keycloak realm discovery document URL (no /auth/ prefix in Keycloak 17+)
+        options.Authority = webAuthenticationService.Authority;
+
+        // Must match the 'aud' claim in tokens issued to this client.
+        // For Keycloak, the audience is the client_id unless you add a custom audience mapper.
+        options.Audience = webAuthenticationService.Authentication.ClientId;
+
+        if (builder.Environment.IsDevelopment())
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = authentication.ValidIssuer
-            };
+            options.RequireHttpsMetadata = false; // set false only in local dev
         }
-        */
+        else
+        {
+            options.RequireHttpsMetadata = true; // set false only in local dev
+        }
+
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = webAuthenticationService.Authority,
+            ValidateAudience = true,
+            ValidAudience = webAuthenticationService.Authentication.ValidAudience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+        };
+
+        // Map Keycloak roles into .NET ClaimsPrincipal roles (see section below)
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = ctx =>
+            {
+                ctx.Principal = KeycloakClaimsTransformer.Transform(ctx.Principal!);
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddSwaggerGen(options =>
@@ -69,11 +93,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
-builder.Configuration.AddJsonFile("appsettings.json");
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
-builder.Configuration.AddEnvironmentVariables();
-builder.AddAppDependencies();
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 

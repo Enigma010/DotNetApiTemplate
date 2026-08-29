@@ -39,8 +39,9 @@ Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.
 | **GITHUBCFG_USERNAME** | The GitHub username for nuget package retrieval |
 | **GITHUBCFG_PAT** | The GitHub PAT (personal access token) for nuget package retrieval |
 | **GITHUBCFG_NAMESPACE** | The GitHub namespace for nuget package retrieval | For personal GitHub accounts the same as the **GITHUBCFG_USERNAME** |
-| **PG_PASS** | The postgres password for the authentication server | You can generate a default value using the command: openssl rand -base64 36 | tr -d '\n' |
-| **AUTHENTIK_SECRET_KEY** | The authentik secret key | You can generate a default value using the command: openssl rand -base64 60 | tr -d '\n' |
+| **AUTH_CLIENT_SECRET** | The OIDC client secret |
+| **KEYCLOAK_ADMIN_USERNAME** | The value to use for the keycloak admin username |
+| **KEYCLOAK_ADMIN_PASSWORD** | The value to use for the keycloak admin password |
 
 There are setups for both the [EventBus](./EventBus/README.md#setup) and the [MongoDB](./Db/README.md#setup), review both of these and complete any necessary steps.
 
@@ -63,50 +64,24 @@ Open up the **Api.Client.csproj** find the **AssemblyName** and change the`Domai
 Remove the **#** comment character and change the value `Domain.Subdomain` to be the domain and sub-domain of the project.  Also open up the nuget [README.md](./Docs/App.Events/nuget/README.md) and adjust the `Domain.Subdomain` in the file and add any necessary information to it.
 
 # Authentication
-Authentication is handled by the [Authentik](https://goauthentik.io/). 
+Authentication is handled by the [Keycloak](https://www.keycloak.org/). The keycloak instance is a development instance and the following needs to be manually done each time you start the process.
 
-## Initial Setup
-You will first need to start-up the authentik docker image. You can do this by starting the project in Visual Studio.  Once this is started login to [Autentik Admin](http://localhost:9000). This guide shows how to configure an authentik OAuth2/OpenID Connect application for use with ASP.NET Core.
-
-# 1. Create an Application
-
-Take the value of the **APP_DOMAIN** in the **Solutions\Ddd.App\\.env** next go to the authentik admin panel:
-
-Applications → Applications → Create
-
-Configure:
-
-| Field | Value |
-|---|---|
-| Name | *domain* App |
-| Slug | *domain* |
-
-Click **Next**.
-
----
-
-# 2. Create an OAuth2/OpenID Provider
-
-Choose:
-
-OAuth2/OpenID Provider
-
-Recommended settings:
+## Setup
+1. Go to [local Keycloak](http://localhost:8080/).
+1. Login with the credentials you specified for **KEYCLOAK_ADMIN_USERNAME** and **KEYCLOAK_ADMIN_PASSWORD**.
+1. Go **Manage realms** and click **Create realm**. For the realm name use the values from the **Solutions/Ddd.App/.env** for the **${APP_DOMAIN}-${APP_SUBDOMAIN}** values.
+1. Click on **Clients** and click **Create client**. The client type should be  **OpenID Connect**. For the **Client ID** get the value from **Ddd.App.Web\appsettings.json** for the **WebAuthentication:ClientId** and put it in for the **Client ID**. Set the **Name** to **${APP_DOMAIN}-${APP_SUBDOMAIN}**, click the **Next** button.
+1. Turn **Client authentication** to **On**. Turn **Authorization** to **On**. For the **Authentication flow** choose: **Standard flow**, **Implicit flow**, **Standard token exchange**, **JWT Authorization Grant**, **OAuth 2.0 Device Authorization Grant**, **OIDC CIBA Grant**, **Direct access grants**, and **Service account roles**. Click **Next**.
+1. Next fill the in the following values:
 
 | Setting | Value |
-|---|---|
-| Client type | Confidential |
-| Authorization flow | default-provider-authorization-implicit-consent |
-| Signing key | authentik Self-signed Certificate |
-
----
-
-# 3. Configure Redirect URIs
-
-Add the ASP.NET Core OpenID Connect callback URL.
-
-For local development go to the **Redirect URIs/Origins (RegEx)**, and put in the following:
-
-| Type | Value |
 | - | - |
-| Regex | ^https://localhost:[0-9]+/signin-oidc$ |
+| Root URL | https://localhost:7035 |
+| Home URL | https://localhost:7035 |
+| Valid redirect URIs | https://localhost:7035/signin-oidc |
+| Valid post logout redirect URIs | https://localhost:7035/signout-callback-oidc |
+
+7. Go to the **Credentials** tab and find the **Client Secret**. This needs to match the value in the  **Solutions/Ddd.App/.env** for **AUTH_CLIENT_SECRET** so either adjust the value in the .env file or in **Keycloak**.
+1. Now go to **Users** and click **Create new user**. In the **Username** file in the username.
+1. Now go to **Groups** and click **Create group**.
+1. Click on the user you just created and click **Credentials** and click **Set password** and set **Temporary** to **Off**.

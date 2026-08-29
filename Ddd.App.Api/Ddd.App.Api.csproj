@@ -15,7 +15,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Ddd.App.Authentication\Ddd.App.Authentication.csproj" />
     <ProjectReference Include="..\Ddd.App\Ddd.App.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

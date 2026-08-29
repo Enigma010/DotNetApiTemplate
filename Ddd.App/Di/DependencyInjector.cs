@@ -1,6 +1,5 @@
 ﻿using Ddd.App.Repositories;
 using Ddd.App.Services;
-using DotNetApiAppCore;
 using DotNetApiEventBus.Di;
 using DotNetApiLogging.Di;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +23,10 @@ namespace Ddd.App.Di
         /// <param name="builder">The application host builder</param>
         public static void AddAppDependencies(this IHostApplicationBuilder builder)
         {
+            builder.Services.Configure<EnvConfig>(builder.Configuration.GetSection(EnvConfig.EnvConfigSectionName));
+            builder.Services.Configure<AppConfig>(builder.Configuration.GetSection(AppConfig.ConfigurationSectionName));
+            builder.Configuration.AddEnvironmentVariables();
+            var serviceProvider = builder.Services.BuildServiceProvider();
             builder.AddMongoDbDependencies();
             LogConfig logConfig = builder.Configuration.GetSection(nameof(LogConfig)).Get<LogConfig>() ?? throw new InvalidOperationException($"Missing {nameof(LogConfig)} configuration");
             builder.AddEventBusDependencies(["Ddd.App"]);
@@ -32,7 +35,6 @@ namespace Ddd.App.Di
             builder.Services.AddScoped<IConfigRepository, ConfigRepository>();
             builder.Services.AddScoped<IEventPublisherUnitOfWork, EventPublisherUnitOfWork>();
             builder.Services.AddScoped<IAppService, AppService>();
-            builder.Services.Configure<AppConfig>(builder.Configuration.GetSection(AppConfig.ConfigurationSectionName));
         }
     }
 }

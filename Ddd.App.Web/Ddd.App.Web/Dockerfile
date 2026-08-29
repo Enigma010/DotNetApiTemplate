@@ -19,20 +19,20 @@ ENV GITHUBCFG_NAMESPACE=$GITHUBCFG_NAMESPACE
 WORKDIR /src
 # The .csproj files are copied so they can be read and 
 # the nuget packages restored before the rest of the source code is copied
-COPY ["Ddd.App.Api/Ddd.App.Api.csproj", "Ddd.App.Api/Ddd.App.Api.csproj"]
-COPY ["App/App.csproj", "App/App.csproj"]
+COPY ["Ddd.App.Web\Ddd.App.Web\Ddd.App.Web.csproj", "Ddd.App.Web\Ddd.App.Web\Ddd.App.Web.csproj"]
+COPY ["Ddd.App\Ddd.App.csproj", "Ddd.App\Ddd.App.csproj"]
 COPY ["nuget.config", "nuget.config"]
 RUN echo $GITHUBCFG_NAMESPACE
-RUN dotnet restore "./Ddd.App.Api/Ddd.App.Api.csproj"
+RUN dotnet restore "./Ddd.App.Web\Ddd.App.Web\Ddd.App.Web.csproj"
 COPY . .
-WORKDIR "/src/Ddd.App.Api"
-RUN dotnet build "./Ddd.App.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Ddd.App.Web"
+RUN dotnet build "./Ddd.App.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Ddd.App.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Ddd.App.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 VOLUME [ "/log" ]
-ENTRYPOINT ["dotnet", "Ddd.App.Api.dll"]
+ENTRYPOINT ["dotnet", "Ddd.App.Web.dll"]
