@@ -1,11 +1,10 @@
-
-using Ddd.App.Api.Services;
 using Ddd.App.Core.Services;
 using Ddd.App.Di;
-using Ddd.App.Web.Entities;
+using Ddd.App.Entities;
+using Ddd.App.Presentation.Entities;
+using Ddd.App.Presentation.Services;
 using DotNetApiLogging.Di;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,23 +17,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
 builder.AddAppDependencies();
-builder.Services.Configure<WebAuthenticationService>(
-    builder.Configuration.GetSection(nameof(WebAuthenticationService))
-);
 builder.Services.Configure<WebAuthentication>(builder.Configuration.GetSection(WebAuthentication.SectionName));
-var serviceProvider = builder.Services.BuildServiceProvider();
-WebAuthenticationService webAuthenticationService = new WebAuthenticationService(builder.Configuration,
-    serviceProvider.GetRequiredService<IOptions<WebAuthentication>>(),
-    serviceProvider.GetRequiredService<IAppService>());
+var webAuthentication = builder.Configuration.GetSection(WebAuthentication.SectionName)
+    .Get<WebAuthentication>() ?? throw new InvalidOperationException();
+var variables = AppService.GetVariables(builder.Configuration);
+var authority = variables.Substitute(webAuthentication.Authority);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         // Keycloak realm discovery document URL (no /auth/ prefix in Keycloak 17+)
-        options.Authority = webAuthenticationService.Authority;
+        options.Authority = authority;
 
         // Must match the 'aud' claim in tokens issued to this client.
         // For Keycloak, the audience is the client_id unless you add a custom audience mapper.
-        options.Audience = webAuthenticationService.Authentication.ClientId;
+        options.Audience = webAuthentication.ClientId;
 
         if (builder.Environment.IsDevelopment())
         {
@@ -48,9 +44,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = webAuthenticationService.Authority,
+            ValidIssuer = authority,
             ValidateAudience = true,
-            ValidAudience = webAuthenticationService.Authentication.ValidAudience,
+            ValidAudience = webAuthentication.ValidAudience,
             ValidateLifetime = true,
             ClockSkew = TimeSpan.FromSeconds(30),
         };

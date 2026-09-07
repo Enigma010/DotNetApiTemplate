@@ -1,17 +1,15 @@
-using Ddd.App.Core;
 using Ddd.App.Core.Services;
 using Ddd.App.Di;
 using Ddd.App.Web.Components;
-using Ddd.App.Web.Components.Account;
-using Ddd.App.Web.Entities;
-using Ddd.App.Web.Services;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Ddd.App.Entities;
+using Ddd.App.Presentation.Services;
+using Ddd.App.Presentation.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,16 +25,11 @@ builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true);
 
 builder.AddAppDependencies();
-builder.Services.Configure<WebAuthenticationService>(
-    builder.Configuration.GetSection(nameof(WebAuthenticationService))
-);
-builder.Services.AddScoped<IdentityRedirectManager>();
-builder.Services.Configure<WebAuthentication>(builder.Configuration.GetSection(WebAuthentication.SectionName));
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-WebAuthenticationService webAuthenticationService = new WebAuthenticationService(builder.Configuration,
-    serviceProvider.GetRequiredService<IOptions<WebAuthentication>>(),
-    serviceProvider.GetRequiredService<IAppService>());
+var webAuthentication = builder.Configuration.GetSection(WebAuthentication.SectionName)
+    .Get<WebAuthentication>() ?? throw new InvalidOperationException(); 
+var variables = AppService.GetVariables(builder.Configuration);
+var authority = variables.Substitute(webAuthentication.Authority);
 
 builder.Services
     .AddAuthentication(options =>
@@ -49,16 +42,16 @@ builder.Services
     })
     .AddCookie(options =>
     {
-        options.Cookie.Name = webAuthenticationService.CookieName;
+        options.Cookie.Name = variables.Substitute(webAuthentication.CookieName);
     })
     .AddOpenIdConnect(options =>
     {
         // Your authentik application/provider URL
-        options.Authority = webAuthenticationService.Authority;
+        options.Authority = authority;
 
         // From authentik provider settings
-        options.ClientId = webAuthenticationService.Authentication.ClientId;
-        options.ClientSecret = webAuthenticationService.ClientSecret;
+        options.ClientId = webAuthentication.ClientId;
+        options.ClientSecret = WebAuthenticationService.GetClientSecret(builder.Configuration);
 
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 

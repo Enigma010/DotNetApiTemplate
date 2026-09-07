@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Ddd.App.Presentation\Ddd.App.Presentation.csproj" />
     <ProjectReference Include="..\..\Ddd.App\Ddd.App.csproj" />
     <ProjectReference Include="..\Ddd.App.Web.Client\Ddd.App.Web.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />

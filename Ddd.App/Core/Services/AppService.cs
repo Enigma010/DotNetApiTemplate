@@ -37,9 +37,61 @@ namespace Ddd.App.Core.Services
             [Config<string>(AppSubdomainEnvironmentVariableName)]
             SubDomain
         }
-        public string Domain => Config.Domain.GetRequiredValue<string>(_configuration) ?? string.Empty;
-        public string SubDomain => Config.SubDomain.GetRequiredValue<string>(_configuration) ?? string.Empty;
+        public string Domain => GetDomain(_configuration);
+        public string SubDomain => GetSubDomain(_configuration);
         public AppConfig AppConfig { get; private set; }
+        /// <summary>
+        /// Gets the domain value
+        /// </summary>
+        /// <param name="configuration">The configuration</param>
+        /// <returns>The domain</returns>
+        public static string GetDomain(IConfiguration configuration)
+        {
+            return Config.Domain.GetRequiredValue<string>(configuration) ?? string.Empty;
+        }
+        /// <summary>
+        /// Gets the subdomain
+        /// </summary>
+        /// <param name="configuration">The configuration</param>
+        /// <returns>The subdomain</returns>
+        public static string GetSubDomain(IConfiguration configuration)
+        {
+            return Config.SubDomain.GetRequiredValue<string>(configuration) ?? string.Empty;
+        }
+        /// <summary>
+        /// Gets the variables for the app service
+        /// </summary>
+        /// <param name="configuration">The configuration</param>
+        /// <returns>The list of variables</returns>
+        public static List<Variable> GetVariables(IConfiguration configuration)
+        {
+            return GetVariables(GetDomain(configuration), GetSubDomain(configuration));
+        }
+        /// <summary>
+        /// Gets the list of variables with their corresponding values for the given domain and subdomain.
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="subDomain"></param>
+        /// <returns>The list of variables</returns>
+        public static List<Variable> GetVariables(string domain, string subDomain)
+        {
+            return new List<Variable>()
+            {
+                new Variable() { Name = AppDomainEnvironmentVariableName, Value = domain },
+                new Variable() { Name = AppSubdomainEnvironmentVariableName, Value = subDomain }
+            };
+        }
+        /// <summary>
+        /// Substitutes variable values in a template string with the corresponding environment variable values.
+        /// </summary>
+        /// <param name="template">The template</param>
+        /// <param name="configuration">The configuration</param>
+        /// <returns>The string with variable values substituted</returns>
+        public static string? SubstituteVariableValues(string? template, IConfiguration configuration)
+        {
+            List<Variable> variables = GetVariables(configuration);
+            return variables.Substitute(template);
+        }
         /// <summary>
         /// Substitutes variable values in a template string with the corresponding environment variable values.
         /// </summary>
@@ -47,11 +99,7 @@ namespace Ddd.App.Core.Services
         /// <returns>The string with variable values substituted</returns>
         public string? SubstituteVariableValues(string? template)
         {
-            List<Variable> variables = new List<Variable>()
-            {
-                new Variable() { Name = AppDomainEnvironmentVariableName, Value = Domain },
-                new Variable() { Name = AppSubdomainEnvironmentVariableName, Value = SubDomain }
-            };
+            List<Variable> variables = GetVariables(Domain, SubDomain);
             return variables.Substitute(template);
         }
     }

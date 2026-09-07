@@ -147,6 +147,7 @@ namespace Ddd.App.DbMongo
         /// <exception cref="DbEntityNotFoundException{IdType}">Thrown if the entity isn't found</exception>
         public async Task<EntityType> GetAsync<EntityType, IdType>(IdType id)
         {
+            ArgumentNullException.ThrowIfNull(id, nameof(id));
             _logger.LogInformationCaller("GetAsync {@id}", args: [id]);
             var collection = GetCollectionForEntityType<EntityType>();
             var filter = IdFilter<EntityType, IdType>(id);

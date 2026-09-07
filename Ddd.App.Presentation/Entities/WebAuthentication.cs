@@ -1,4 +1,4 @@
-﻿namespace Ddd.App.Web.Entities
+﻿namespace Ddd.App.Presentation.Entities
 {
     public class WebAuthentication
     {
