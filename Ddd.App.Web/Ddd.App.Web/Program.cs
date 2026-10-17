@@ -1,15 +1,15 @@
 using Ddd.App.Core.Services;
 using Ddd.App.Di;
+using Ddd.App.Entities;
+using Ddd.App.Presentation.Entities;
+using Ddd.App.Presentation.Services;
 using Ddd.App.Web.Components;
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Ddd.App.Entities;
-using Ddd.App.Presentation.Services;
-using Ddd.App.Presentation.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +30,8 @@ var webAuthentication = builder.Configuration.GetSection(WebAuthentication.Secti
     .Get<WebAuthentication>() ?? throw new InvalidOperationException(); 
 var variables = AppService.GetVariables(builder.Configuration);
 var authority = variables.Substitute(webAuthentication.Authority);
+
+Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = webAuthentication.ShowPII;
 
 builder.Services
     .AddAuthentication(options =>
@@ -62,7 +64,7 @@ builder.Services
         options.SaveTokens = true;
 
         // HTTPS required in production
-        options.RequireHttpsMetadata = true;
+        options.RequireHttpsMetadata = webAuthentication.RequireHttpsMetadata;
 
         // Pull additional claims from userinfo endpoint
         options.GetClaimsFromUserInfoEndpoint = true;
@@ -100,10 +102,15 @@ builder.Services
                 return Task.CompletedTask;
             }
         };
-
-        options.RequireHttpsMetadata = false;
     });
 builder.Services.AddAuthorization();
+var dataProtection = builder.Configuration.GetSection(DataProtection.SectionName)
+    .Get<DataProtection>() ?? throw new InvalidOperationException();
+if (string.IsNullOrEmpty(dataProtection.Directory))
+{
+    builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtection.Directory));
+}
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -32,10 +32,6 @@ services:
     build:
       context: ../..
       dockerfile: Ddd.App.Web/Ddd.App.Web/Dockerfile
-      args:
-        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
-        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
-        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
     volumes: [../Output/Log:/log]
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
@@ -72,17 +68,96 @@ services:
       - tmpltnetwork
   auth:
     image: quay.io/keycloak/keycloak:26.7.0
+    build:
+      context: ../..
+      dockerfile: Auth/Dockerfile
     container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-auth
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-    command: start-dev
+    command:
+      - start
+      - --optimized
+      - --http-enabled=true
+      - --health-enabled=true
+      - --metrics-enabled=true
     restart: unless-stopped
+    environment:
+      # Keycloak admin setup
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${AUTH_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${AUTH_ADMIN_PASSWORD}
+      # Keycloak database setup
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://authdb:5432/${APP_DOMAIN}-${APP_SUBDOMAIN}
+      KC_DB_USERNAME: ${AUTH_DB_USER}
+      KC_DB_PASSWORD: ${AUTH_DB_PASSWORD}      
+      # SSL certification setup
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/certs/cert.pem
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/certs/key.pem
+      # Keycloak OIDC configuration${APP_DOMAIN}-${APP_SUBDOMAIN}
+      KC_HOSTNAME: ${AUTH_HOSTNAME}
+      KC_PROXY_HEADERS: xforwarded
+      # HTTP health     
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      # JVM options
+      #JAVA_OPTS_APPEND: >-
+      #  -XX:MaxRAMPercentage=70
+      #  -XX:InitialRAMPercentage=50               
+    expose:
+      - "8080"
+      - "9000"
     ports:
       - "8080:8080"
+      - "9000:9000"
+    volumes:
+      - ../../Output/Certs/:/opt/keycloak/conf/certs/:ro
+    depends_on:
+      authdb:
+        condition: service_healthy
     networks:
       - tmpltnetwork
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL                    
+  authdb:
+    image: postgres:17
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-authdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${APP_DOMAIN}-${APP_SUBDOMAIN}
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+    volumes:
+      - authdb:/var/lib/postgresql/data
+    networks:
+      - tmpltnetwork
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${AUTH_DB_USER} -d ${APP_DOMAIN}-${APP_SUBDOMAIN}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    # Do NOT expose PostgreSQL publicly.
+    # No "ports:" section is intentional.     
 volumes:
+  authdb:
+    name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-authdb
   database:
     driver: local         
 networks:
