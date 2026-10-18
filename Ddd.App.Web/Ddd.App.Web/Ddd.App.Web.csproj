@@ -24,4 +24,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Account\Pages\Manage\" />
+    <Folder Include="Components\Account\Shared\" />
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>
