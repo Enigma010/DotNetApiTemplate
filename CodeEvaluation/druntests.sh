@@ -3,6 +3,7 @@ set -e
 export PATH="$PATH:/root/.dotnet/tools"
 rm -Rf /app/Output/CodeEvaluation
 mkdir -p /app/Output/CodeEvaluation
+find /app -type d \( -name "obj" -o -name "bin" \) -exec rm -rf {} +
 cd /app/Solutions/Ddd.App
 dotnet build Ddd.App.sln
 dotnet test --collect:"XPlat Code Coverage" --results-directory /app/Output/CodeEvaluation/TestResults --settings /app/CodeEvaluation/CodeCoverage.runsettings.xml Ddd.App.sln
