@@ -3,6 +3,7 @@ set -e
 export PATH="$PATH:/root/.dotnet/tools"
 rm -Rf /app/Output/CodeEvaluation
 mkdir -p /app/Output/CodeEvaluation
+# Delete the obj and bin folders as if it was compiled in windows then the linux build will fail due to case sensitivity issues
 find /app -type d \( -name "obj" -o -name "bin" \) -exec rm -rf {} +
 cd /app/Solutions/Ddd.App
 dotnet build Ddd.App.sln
