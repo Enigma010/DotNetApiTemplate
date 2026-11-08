@@ -9,7 +9,8 @@ services:
         GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
         GITHUBCFG_PAT: ${GITHUBCFG_PAT}
         GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
-    volumes: [../Output/Log:/log]
+    volumes: 
+      - ../../Output/Log:/log
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       APP_SUBDOMAIN: ${APP_SUBDOMAIN}
@@ -32,7 +33,12 @@ services:
     build:
       context: ../..
       dockerfile: Ddd.App.Web/Ddd.App.Web/Dockerfile
-    volumes: [../Output/Log:/log]
+      args:
+        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
+        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}      
+    volumes: 
+      - ../../Output/Log:/log
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       APP_SUBDOMAIN: ${APP_SUBDOMAIN}
@@ -78,6 +84,7 @@ services:
       - --http-enabled=true
       - --health-enabled=true
       - --metrics-enabled=true
+      - --https-port=8443
     restart: unless-stopped
     environment:
       # Keycloak admin setup
@@ -89,8 +96,8 @@ services:
       KC_DB_USERNAME: ${AUTH_DB_USER}
       KC_DB_PASSWORD: ${AUTH_DB_PASSWORD}      
       # SSL certification setup
-      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/certs/cert.pem
-      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/certs/key.pem
+      KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/conf/certs/auth-dev.crt
+      KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/conf/certs/auth-dev.key
       # Keycloak OIDC configuration${APP_DOMAIN}-${APP_SUBDOMAIN}
       KC_HOSTNAME: ${AUTH_HOSTNAME}
       KC_PROXY_HEADERS: xforwarded
@@ -104,12 +111,14 @@ services:
       #  -XX:InitialRAMPercentage=50               
     expose:
       - "8080"
+      - "8443"
       - "9000"
     ports:
       - "8080:8080"
+      - "8443:8443"
       - "9000:9000"
     volumes:
-      - ../../Output/Certs/:/opt/keycloak/conf/certs/:ro
+      - ../../Output/Certs/Local:/opt/keycloak/conf/certs/:ro
     depends_on:
       authdb:
         condition: service_healthy
