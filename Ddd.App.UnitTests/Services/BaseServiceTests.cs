@@ -1,0 +1,41 @@
+﻿using DotNetApiAppCore.Services;
+using AppTests.Entities;
+using AppTests.Repositories;
+using DotNetApiEventBus;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Ddd.App.UnitOfWork;
+
+namespace AppTests.Services
+{
+    public class BaseServiceTests
+    {
+        private readonly Mock<ITestEntityRepository> _repository;
+        private readonly Mock<IEventPublisherUnitOfWork> _eventPublisher;
+        private readonly Mock<ILogger<BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid>>> _logger;
+        public BaseServiceTests()
+        {
+            _repository = new Mock<ITestEntityRepository>();
+            _eventPublisher = new Mock<IEventPublisherUnitOfWork>();
+            _logger = new Mock<ILogger<BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid>>>();
+        }
+        [Fact]
+        public async Task ChangeAsync()
+        {
+            TestEntity entity = new TestEntity();
+            _repository.Setup(m => m.GetAsync(It.Is<Guid>(id => id == entity.Id))).ReturnsAsync(entity);
+            _repository.Setup(m => m.UpdateAsync(It.Is<TestEntity>(te => te.Id == entity.Id))).ReturnsAsync(entity);
+            BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid> service
+                = new BaseService<ITestEntityRepository, TestEntity, TestEntityDto, Guid>(_repository.Object, _eventPublisher.Object, _logger.Object);
+            bool changed = false;
+            Func<TestEntity, TestEntity> changeFunc = (entity) =>
+            {
+                changed = true;
+                return entity;
+            };
+            TestEntity changeTestEntity = await service.RunCommandAsync(entity.Id, nameof(ChangeAsync), changeFunc);
+            Assert.True(changed);
+            Assert.Equal(entity.Id, changeTestEntity.Id);
+        }
+    }
+}

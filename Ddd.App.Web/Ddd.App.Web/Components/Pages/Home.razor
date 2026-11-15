@@ -1,0 +1,25 @@
+﻿@page "/"
+
+@using Ddd.App.Core.Services
+
+@inject IAppService AppService
+
+<PageTitle>Home</PageTitle>
+
+<h1>@AppService.AppConfig.Name</h1>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="form-field">
+                <label for="domain" class="form-label">Domain</label>
+                <input type="text" id="domain" class="form-control" readonly value="@AppService.Domain" />
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-field">
+                <label for="sub-domain" class="form-label">Sub-Domain</label>
+                <input type="text" id="sub-domain" class="form-control" readonly value="@AppService.SubDomain" />
+            </div>
+        </div>
+    </div>
+</div>
