@@ -10,41 +10,43 @@
 
 <h3>Configuration</h3>
 <div class="form">
-@if (config != null)
+    @if (config != null)
     {
-        @if (configRenameCmd == null)
-        {
-            <div class="row">
-                <div class="col">
-                    <input type="text" class="form-control" placeholder="Name" aria-label="First name" value="@config.Name" readonly />
-                </div>
-                <div class="col">
-                    <button class="btn btn-outline-secondary" @onclick="EditAsync">Edit</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <EditForm EditContext="configRenameCmdContext" OnValidSubmit="RenameAsync" FormName="ConfigRenameCmd">
+        <div class="container">
+            @if (configRenameCmd == null)
+            {
                 <div class="row">
                     <div class="col-10">
-                        <input type="text" id="name" class="form-control" placeholder="Name" aria-label="Name" @bind="configRenameCmd.NewName" />
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Name" aria-label="Name" value="@config.Name" readonly />
                     </div>
-                    <div class="col">
-                        <button class="btn btn-secondary" type="submit">Rename</button>
-                    </div>
-                    <div class="col">
-                        <button class="btn btn-outline-secondary" @onclick="CancleAsync">Cancel</button>
+                    <div class="col-2 d-flex justify-content-end align-items-end">
+                        <button class="btn btn-outline-secondary" @onclick="EditAsync">Edit</button>
                     </div>
                 </div>
-                <div class="row">
-                    <div>
-                        <DataAnnotationsValidator />
-                        <ValidationMessage For="() => configRenameCmd!.NewName" />
+            }
+            else
+            {
+                <EditForm EditContext="configRenameCmdContext" OnValidSubmit="RenameAsync" FormName="ConfigRenameCmd">
+                    <div class="row">
+                        <div class="col-10">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="Name" aria-label="Name" @bind="configRenameCmd.NewName" />
+                        </div>
+                        <div class="col-2 d-flex justify-content-end align-items-end">
+                            <button class="btn btn-secondary ms-2" type="submit">Rename</button>
+                            <button class="btn btn-outline-secondary ms-2" @onclick="CancleAsync">Cancel</button>
+                        </div>
                     </div>
-                </div>
-            </EditForm>
-        }
+                    <div class="row">
+                        <div>
+                            <DataAnnotationsValidator />
+                            <ValidationMessage For="() => configRenameCmd!.NewName" />
+                        </div>
+                    </div>
+                </EditForm>
+            }
+        </div>
     }
 </div>
 @code {
@@ -66,7 +68,8 @@
         {
             return;
         }
-        configRenameCmd = new ConfigRenameCmd(){
+        configRenameCmd = new ConfigRenameCmd()
+        {
             NewName = config.Name
         };
         configRenameCmdContext = new EditContext(configRenameCmd);

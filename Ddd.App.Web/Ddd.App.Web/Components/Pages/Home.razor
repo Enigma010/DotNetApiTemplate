@@ -9,13 +9,17 @@
 <h1>@AppService.AppConfig.Name</h1>
 <div class="container">
     <div class="row">
-        <label for="domain" class="col">Domain</label>
         <div class="col">
-            <input type="text" id="domain" readonly value="@AppService.Domain" />
+            <div class="form-field">
+                <label for="domain" class="form-label">Domain</label>
+                <input type="text" id="domain" class="form-control" readonly value="@AppService.Domain" />
+            </div>
         </div>
-        <label for="sub-domain" class="col">Sub-Domain</label>
         <div class="col">
-            <input type="text" id="sub-domain" readonly value="@AppService.SubDomain" />  
+            <div class="form-field">
+                <label for="sub-domain" class="form-label">Sub-Domain</label>
+                <input type="text" id="sub-domain" class="form-control" readonly value="@AppService.SubDomain" />
+            </div>
         </div>
     </div>
 </div>
