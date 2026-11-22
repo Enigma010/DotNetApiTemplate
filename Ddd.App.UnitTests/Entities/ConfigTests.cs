@@ -1,4 +1,5 @@
 ﻿using Ddd.App.Commands;
+using Ddd.App.Commands.Config;
 using Ddd.App.Entities;
 using Ddd.App.Events;
 
