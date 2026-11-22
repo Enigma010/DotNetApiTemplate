@@ -1,10 +1,9 @@
 ﻿using DotNetApiEventBus;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ddd.App.UnitOfWork
 {
+    [ExcludeFromCodeCoverage(Justification = "This class is a simple implementation of the IEventPublisherUnitOfWork interface and does not contain any complex logic that requires unit testing.")]
     public class EventPublisherUnitOfWork : IEventPublisherUnitOfWork
     {
         private readonly IEventPublisher _eventPublisher;

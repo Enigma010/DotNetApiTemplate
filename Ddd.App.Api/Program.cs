@@ -2,10 +2,10 @@ using Ddd.App.Core.Services;
 using Ddd.App.Di;
 using Ddd.App.Entities;
 using Ddd.App.Presentation.Entities;
-using Ddd.App.Presentation.Services;
 using DotNetApiLogging.Di;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi;
+using System.Diagnostics.CodeAnalysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,3 +113,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.AddWebLoggingDependencies();
 app.Run();
+
+[ExcludeFromCodeCoverage]
+public partial class Program { }

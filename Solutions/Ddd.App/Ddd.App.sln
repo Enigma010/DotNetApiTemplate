@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Web.Client", "..\..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Presentation", "..\..\Ddd.App.Presentation\Ddd.App.Presentation.csproj", "{2E67FA4D-CE93-1D31-2002-0BAAF9949AB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ddd.App.Presentation.UnitTests", "..\..\Ddd.App.Presentation.UnitTests\Ddd.App.Presentation.UnitTests.csproj", "{792D1E48-71E5-4102-B277-664C7E39F9FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{2E67FA4D-CE93-1D31-2002-0BAAF9949AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E67FA4D-CE93-1D31-2002-0BAAF9949AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E67FA4D-CE93-1D31-2002-0BAAF9949AB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{792D1E48-71E5-4102-B277-664C7E39F9FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{792D1E48-71E5-4102-B277-664C7E39F9FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{792D1E48-71E5-4102-B277-664C7E39F9FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{792D1E48-71E5-4102-B277-664C7E39F9FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
