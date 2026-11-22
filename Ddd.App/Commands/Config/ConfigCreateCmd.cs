@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ddd.App.Commands
+namespace Ddd.App.Commands.Config
 {
     public class ConfigCreateCmd
     {

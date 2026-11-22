@@ -4,7 +4,7 @@ Code is evaluated by both using Unit Tests and Test Coverage. Unit tests are one
 ## Unit Test Guidelines
 The following describes guidelines for the architecture.
 
-* Unit tests should be able to run and succeed with only the source code.  They should not rely on other infrastructure.
+* Unit tests should be able to run and succeed with only the source code. They should not rely on other infrastructure.
 * Infrastructure can be simulated through the use of interfaces and mocking techniques.
 * Unit tests need to be run to be effective.
 * Unit tests must always succeed unless there is problem with the application.

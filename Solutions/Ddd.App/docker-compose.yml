@@ -9,6 +9,7 @@ services:
         GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
         GITHUBCFG_PAT: ${GITHUBCFG_PAT}
         GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
+      target: publish
     volumes: 
       - ../../Output/Log:/log
     environment:
@@ -36,7 +37,8 @@ services:
       args:
         GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
         GITHUBCFG_PAT: ${GITHUBCFG_PAT}
-        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}      
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
+      target: publish      
     volumes: 
       - ../../Output/Log:/log
     environment:

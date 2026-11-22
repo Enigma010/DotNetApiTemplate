@@ -34,6 +34,14 @@ namespace AppTests.Services
             _repository.Verify(m => m.InsertAsync(It.IsAny<Config>()), Times.Once);
         }
         [Fact]
+        public async Task CreateDefaultAsync()
+        {
+            var command = ConfigCreateCmd.Default();
+            Config createConfig = await _service.CreateAsync(command);
+            Assert.Equal(command.Name, createConfig.Name);
+            Assert.Equal(ConfigCreateCmd.DefaultName, createConfig.Name);
+        }
+        [Fact]
         public async Task DeleteAsync()
         {
             Config config = new Config();

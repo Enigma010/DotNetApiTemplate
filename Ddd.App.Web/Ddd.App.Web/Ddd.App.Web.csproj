@@ -12,9 +12,9 @@
     <ProjectReference Include="..\..\Ddd.App.Presentation\Ddd.App.Presentation.csproj" />
     <ProjectReference Include="..\..\Ddd.App\Ddd.App.csproj" />
     <ProjectReference Include="..\Ddd.App.Web.Client\Ddd.App.Web.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.15" />
   </ItemGroup>
 
 </Project>

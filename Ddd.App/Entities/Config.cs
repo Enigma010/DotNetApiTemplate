@@ -1,4 +1,4 @@
-﻿using Ddd.App.Commands;
+﻿using Ddd.App.Commands.Config;
 using Ddd.App.Core;
 using Ddd.App.Events;
 using Ddd.App.Repositories.Dtos;

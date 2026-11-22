@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ddd.App.Commands
+namespace Ddd.App.Commands.Config
 {
     /// <summary>
     /// Represents a set of changes that can be done to a configuration

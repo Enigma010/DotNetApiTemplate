@@ -20,14 +20,17 @@ ENV GITHUBCFG_PAT=$GITHUBCFG_PAT
 ENV GITHUBCFG_NAMESPACE=$GITHUBCFG_NAMESPACE
 
 WORKDIR /src
+USER root
+RUN mkdir -p /app/build /app/publish && \
+    chown -R app:app /app
 # The .csproj files are copied so they can be read and 
 # the nuget packages restored before the rest of the source code is copied
-COPY ["Ddd.App.Web/Ddd.App.Web/Ddd.App.Web.csproj", "Ddd.App.Web/Ddd.App.Web/Ddd.App.Web.csproj"]
-COPY ["Ddd.App/Ddd.App.csproj", "Ddd.App/Ddd.App.csproj"]
-COPY ["Ddd.App.Presentation/Ddd.App.Presentation.csproj", "Ddd.App.Presentation/Ddd.App.Presentation.csproj"]
-COPY ["Ddd.App.Web/Ddd.App.Web.Client/Ddd.App.Web.Client.csproj", "Ddd.App.Web/Ddd.App.Web.Client/Ddd.App.Web.Client.csproj"]
-COPY ["Ddd.App.Events/Ddd.App.Events.csproj", "Ddd.App.Events/Ddd.App.Events.csproj"]
-COPY ["nuget.config", "nuget.config"]
+COPY --chown=app:app ["Ddd.App.Web/Ddd.App.Web/Ddd.App.Web.csproj", "Ddd.App.Web/Ddd.App.Web/Ddd.App.Web.csproj"]
+COPY --chown=app:app ["Ddd.App/Ddd.App.csproj", "Ddd.App/Ddd.App.csproj"]
+COPY --chown=app:app ["Ddd.App.Presentation/Ddd.App.Presentation.csproj", "Ddd.App.Presentation/Ddd.App.Presentation.csproj"]
+COPY --chown=app:app ["Ddd.App.Web/Ddd.App.Web.Client/Ddd.App.Web.Client.csproj", "Ddd.App.Web/Ddd.App.Web.Client/Ddd.App.Web.Client.csproj"]
+COPY --chown=app:app ["Ddd.App.Events/Ddd.App.Events.csproj", "Ddd.App.Events/Ddd.App.Events.csproj"]
+COPY --chown=app:app ["nuget.config", "nuget.config"]
 RUN dotnet restore "./Ddd.App.Web/Ddd.App.Web/Ddd.App.Web.csproj"
 COPY . .
 WORKDIR "/src/Ddd.App.Web/Ddd.App.Web"
@@ -42,3 +45,12 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 VOLUME [ "/log" ]
 ENTRYPOINT ["dotnet", "Ddd.App.Web.dll"]
+
+FROM publish AS test
+USER root
+RUN dotnet tool install -g dotnet-reportgenerator-globaltool
+WORKDIR /src
+COPY --chown=app:app ["Solutions/Ddd.App/druntests.sh", "Solutions/Ddd.App/druntests.sh"]
+COPY --chown=app:app ["Solutions/Ddd.App/CodeCoverage.runsettings.xml", "Solutions/Ddd.App/CodeCoverage.runsettings.xml"]
+COPY --chown=app:app ["Solutions/Ddd.App/Ddd.App.sln", "Solutions/Ddd.App/Ddd.App.sln"]
+ENTRYPOINT ["sh", "/src/Solutions/Ddd.App/druntests.sh"]
