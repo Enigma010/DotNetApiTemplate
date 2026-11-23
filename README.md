@@ -6,11 +6,12 @@ A template that can easily be cloned and modified to quickly stand-up an API.
 ## Components
 This template consists of the following components:
 
-* **[Api](./Api/README.md)** - The application API
-* **[App](./App/README.md)** - The application business logic
-* **[App.Events](./App.Events/README.md)** - The events emitted from the application
-* **[App.UnitTests](./App.UnitTests/README.md)** - Unit tests for the application
-* **[Api.UnitTests](./Api.UnitTests/README.md)** - Unit tests for the API
+* **[Ddd.App.Api](Ddd.App.Api/README.md)** - The application API
+* **[Ddd.App](Ddd.App/README.md)** - The application business logic
+* **[Ddd.App.Events](Ddd.App.Events/README.md)** - The events emitted from the application
+* **[Ddd.App.UnitTests](Ddd.App.UnitTests/README.md)** - Unit tests for the application
+* **[Ddd.Api.UnitTests](Ddd.Api.UnitTests/README.md)** - Unit tests for the API
+* **[Auth](./Auth/README.md)** - Authentication
 * **[EventBus](./EventBus/README.md)** - Scripts used to work with the event bus
 * **[Code Evaluation](./CodeEvaluation/README.md)** - Scripts used to evaluate the code. 
 
@@ -23,3 +24,4 @@ This template consists of the following components:
 | [Code Evaluation](./Docs/Procedures/CodeEvaluation/README.md) | Metrics to evaluate the code |
 | [Db Backup](./Docs/Procedures/DbBackup/README.md) | Steps to backup the database |
 | [Db Restore](./Docs/Procedures//DbBackup/README.md) | Steps to restore a backup to the database |
+| [Get A API Token](./Docs/Procedures/GetAApiToken/README.md) | Steps to get a API token |

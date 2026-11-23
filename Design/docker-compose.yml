@@ -1,0 +1,8 @@
+services:
+  design-workflow:
+    image: ${APP_DOMAIN}-${APP_SUBDOMAIN}-design-workflow
+    container_name: ${APP_DOMAIN}-${APP_SUBDOMAIN}-design-workflow
+    build:
+      dockerfile: Excalidraw/Dockerfile
+    ports:
+      - "5000:80"

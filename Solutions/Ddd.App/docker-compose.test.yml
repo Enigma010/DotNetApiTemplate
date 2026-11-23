@@ -1,0 +1,49 @@
+services:
+  api-unit-test:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-api-unit-test
+    build:
+      context: ../..
+      dockerfile: Ddd.App.Api/Dockerfile
+      args:
+        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
+        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
+      target: test
+    volumes: 
+      - ../../Output/Log:/log
+      - ../../Output/CodeEvaluation/api-unit-test:/app/Output/CodeEvaluation
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      EVENT_BUS_HOST: ${EVENT_BUS_HOST} 
+      EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
+      EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
+      EVENT_BUS_PORT: ${EVENT_BUS_PORT}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}
+  web-unit-test:
+    image: mcr.microsoft.com/dotnet/aspnet:10.0
+    container_name: ${DOCKER_REGISTRY-}${APP_DOMAIN}-${APP_SUBDOMAIN}-web-unit-test
+    build:
+      context: ../..
+      dockerfile: Ddd.App.Web/Ddd.App.Web/Dockerfile
+      args:
+        GITHUBCFG_USERNAME: ${GITHUBCFG_USERNAME}
+        GITHUBCFG_PAT: ${GITHUBCFG_PAT}
+        GITHUBCFG_NAMESPACE: ${GITHUBCFG_NAMESPACE}
+      target: test
+    volumes:       
+      - ../../Output/Log:/log
+      - ../../Output/CodeEvaluation/web-unit-test:/app/Output/CodeEvaluation    
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+      APP_SUBDOMAIN: ${APP_SUBDOMAIN}
+      APP_DB_USERNAME: ${APP_DB_USERNAME}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+      EVENT_BUS_HOST: ${EVENT_BUS_HOST}   
+      EVENT_BUS_USERNAME: ${EVENT_BUS_USERNAME}
+      EVENT_BUS_PASSWORD: ${EVENT_BUS_PASSWORD}
+      EVENT_BUS_PORT: ${EVENT_BUS_PORT}
+      AUTH_CLIENT_SECRET: ${AUTH_CLIENT_SECRET}

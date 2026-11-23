@@ -1,0 +1,56 @@
+﻿@using System.Security.Principal
+
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager Navigation
+
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <AuthorizeView>
+            <NotAuthorized>
+                <div class="top-row px-4">
+                    <form method="post" action="Account/Login">
+                        <button type="submit" class="btn btn-secondary m-2">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Login
+                        </button>
+                    </form>
+                </div>
+            </NotAuthorized>
+            <Authorized>
+                <div class="top-row px-4">
+                    <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @identity?.Name
+                    <AntiforgeryToken />
+                    <form method="post" action="Account/Logout">
+                        <button type="submit" class="btn btn-secondary m-2">
+                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                        </button>
+                    </form>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+
+@code {
+    protected IIdentity? identity;
+    protected async override Task OnInitializedAsync()
+    {
+        var authenticationState = await GetAuthenticationStateAsync.GetAuthenticationStateAsync();
+        identity = authenticationState.User.Identity;
+    }
+}

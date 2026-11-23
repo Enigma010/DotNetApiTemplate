@@ -39,6 +39,9 @@ Next you'll need to create/modify the `Api\.env` file.  This file is a Docker [.
 | **GITHUBCFG_USERNAME** | The GitHub username for nuget package retrieval |
 | **GITHUBCFG_PAT** | The GitHub PAT (personal access token) for nuget package retrieval |
 | **GITHUBCFG_NAMESPACE** | The GitHub namespace for nuget package retrieval | For personal GitHub accounts the same as the **GITHUBCFG_USERNAME** |
+| **AUTH_CLIENT_SECRET** | The OIDC client secret |
+| **KEYCLOAK_ADMIN_USERNAME** | The value to use for the keycloak admin username |
+| **KEYCLOAK_ADMIN_PASSWORD** | The value to use for the keycloak admin password |
 
 There are setups for both the [EventBus](./EventBus/README.md#setup) and the [MongoDB](./Db/README.md#setup), review both of these and complete any necessary steps.
 
@@ -59,3 +62,16 @@ Open up the **Api.Client.csproj** find the **AssemblyName** and change the`Domai
 ```
 
 Remove the **#** comment character and change the value `Domain.Subdomain` to be the domain and sub-domain of the project.  Also open up the nuget [README.md](./Docs/App.Events/nuget/README.md) and adjust the `Domain.Subdomain` in the file and add any necessary information to it.
+
+# Setup
+In powershell run the following script:
+
+```
+./lSetup.ps1
+```
+
+This script will finish any of the automated setup steps. These are required to run before the docker conatiners can be prepared and will function.
+
+# Authentication
+Follow the [Setup](../../../Auth/README.md) guide to finish the setup steps for keycloak.
+

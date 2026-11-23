@@ -1,5 +1,6 @@
 #!/bin/sh
-cd CodeEvaluation
-./lrun.sh
-cd ..
-cmd.exe /C start Output/CodeEvaluation/TestResults/coveragereport/index.html
+cd Solutions/Ddd.App
+docker compose -f docker-compose.test.yml build
+docker compose -f docker-compose.test.yml run --rm api-unit-test
+cd ../..
+./lCodeEvaluationDisp.sh
