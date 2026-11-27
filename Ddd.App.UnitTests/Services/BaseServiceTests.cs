@@ -1,10 +1,10 @@
 ﻿using DotNetApiAppCore.Services;
 using AppTests.Entities;
 using AppTests.Repositories;
-using DotNetApiEventBus;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Ddd.App.UnitOfWork;
+using Ddd.App.UnitTests.Repositories.Dtos;
 
 namespace AppTests.Services
 {

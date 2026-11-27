@@ -1,11 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Ddd.App.Core
+﻿namespace Ddd.App.Core
 {
     /// <summary>
     /// The application configurations
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class AppConfig
     {
         public const string ConfigurationSectionName = "App";

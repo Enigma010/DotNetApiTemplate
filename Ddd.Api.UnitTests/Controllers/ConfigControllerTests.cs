@@ -3,13 +3,8 @@ using Ddd.App.Commands.Config;
 using Ddd.App.Db;
 using Ddd.App.Entities;
 using Ddd.App.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ddd.App.Api.UnitTests.Controllers
 {
@@ -80,7 +75,7 @@ namespace Ddd.App.Api.UnitTests.Controllers
         [Fact]
         public async Task GetAsync_NotFoundResult()
         {
-            _service.Setup(s => s.GetAsync()).ThrowsAsync(new DbSingletonEntityNotFoundException(typeof(Config)));
+            _service.Setup(s => s.GetAsync()).ThrowsAsync(new DbSingletonEntityNotFoundException());
             // Act
             var result = await _controller.GetAsync();
             // Assert
@@ -96,7 +91,7 @@ namespace Ddd.App.Api.UnitTests.Controllers
             {
                 NewName = "NewConfigName"
             };
-            _service.Setup(s => s.RenameAsync(id, cmd)).ThrowsAsync(new DbSingletonEntityNotFoundException(typeof(Config)));
+            _service.Setup(s => s.RenameAsync(id, cmd)).ThrowsAsync(new DbSingletonEntityNotFoundException());
             // Act
             var result = await _controller.NameAsync(id, cmd);
             // Assert
@@ -119,7 +114,7 @@ namespace Ddd.App.Api.UnitTests.Controllers
         public async Task DeleteAsync_NotFoundResult()
         {
             // Arrange
-            _service.Setup(s => s.DeleteAsync()).ThrowsAsync(new DbSingletonEntityNotFoundException(typeof(Config)));
+            _service.Setup(s => s.DeleteAsync()).ThrowsAsync(new DbSingletonEntityNotFoundException());
             // Act
             var result = await _controller.DeleteAsync();
             // Assert

@@ -8,7 +8,7 @@ namespace Ddd.App.Api.UnitTests
     public class KeycloakClaimsTransformerTests
     {
         [Fact]
-        public void Foo()
+        public void ValidateTransformer()
         {
             ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentities(new List<ClaimsIdentity>

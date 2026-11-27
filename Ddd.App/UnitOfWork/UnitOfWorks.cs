@@ -1,6 +1,5 @@
 ﻿using DotNetApiLogging;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
 using System.Transactions;
 
 namespace Ddd.App.UnitOfWork
@@ -17,9 +16,8 @@ namespace Ddd.App.UnitOfWork
     ///         });
     ///     }
     /// </code>
-    /// Note that the example above uses RunAsync but you could also be using Run.
+    /// Note that the example above uses RunAsync but you could also be using RunAsync.
     /// </summary>
-    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class UnitOfWorks : IAsyncDisposable, IDisposable
     {
         private readonly ILogger _logger;
@@ -54,7 +52,7 @@ namespace Ddd.App.UnitOfWork
         /// </summary>
         /// <param name="action">The application logic</param>
         /// <returns></returns>
-        public async Task Run(Action action)
+        public async Task RunAsync(Action action)
         {
             _logger.LogInformationCaller($"Run {nameof(UnitOfWorks)} with action {action.ToString()}");
             try

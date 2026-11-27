@@ -25,7 +25,6 @@ namespace DotNetApiAppCore.Services
     /// <typeparam name="RepositoryType">The repository type</typeparam>
     /// <typeparam name="EntityType">The entity type</typeparam>
     /// <typeparam name="IdType">The ID type</typeparam>
-    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class BaseSingletonService<RepositoryType, EntityType, EntityDtoType, IdType>
         : IBaseSingletonService<EntityType, IdType>
         

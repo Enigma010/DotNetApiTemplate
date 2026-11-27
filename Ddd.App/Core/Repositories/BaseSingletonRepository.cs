@@ -112,7 +112,7 @@ namespace Ddd.App.Core.Repositories
             IEnumerable<EntityType> entities = entityDtos.Select(GetEntity);
             if (!entities.Any())
             {
-                throw new DbSingletonEntityNotFoundException(typeof(EntityType));
+                throw new DbSingletonEntityNotFoundException();
             }
             ClearEvents(entities);
             return entities.First();

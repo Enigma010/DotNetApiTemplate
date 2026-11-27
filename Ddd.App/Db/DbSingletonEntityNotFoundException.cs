@@ -13,14 +13,8 @@ namespace Ddd.App.Db
     /// missing entity, which can be used for error handling or logging purposes.</remarks>
     public class DbSingletonEntityNotFoundException : Exception
     {
-        public DbSingletonEntityNotFoundException(Type entityType) 
+        public DbSingletonEntityNotFoundException() 
         { 
-            EntityType = entityType;
-        }
-        public Type EntityType
-        {
-            get;
-            private set;
         }
     }
 }

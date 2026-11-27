@@ -2,7 +2,6 @@
 using Ddd.App.UnitOfWork;
 using DotNetApiLogging;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace Ddd.App.Core.Repositories
@@ -35,7 +34,6 @@ namespace Ddd.App.Core.Repositories
     /// <typeparam name="RepositoryType">The type of repository</typeparam>
     /// <typeparam name="EntityType">The type of eneity</typeparam>
     /// <typeparam name="IdType">The type of ID</typeparam>
-    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class BaseRepository<RepositoryType, EntityType, EntityDtoType, IdType>
         : IBaseRepository<EntityType, EntityDtoType, IdType>
         where EntityDtoType : EntityDto<IdType>

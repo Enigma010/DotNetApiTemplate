@@ -2,6 +2,7 @@
 using Ddd.App.Db;
 using AppTests.Entities;
 using Microsoft.Extensions.Logging;
+using Ddd.App.UnitTests.Repositories.Dtos;
 
 namespace AppTests.Repositories
 {

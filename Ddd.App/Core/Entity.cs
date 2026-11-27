@@ -7,7 +7,6 @@ namespace Ddd.App.Core
     /// entities will have an ID that is the primary identifier
     /// </summary>
     /// <typeparam name="IdType"></typeparam>
-    [ExcludeFromCodeCoverage(Justification = "Core infrastructure, unit tests would at a lower level")]
     public class Entity<EntityDtoType, IdType> : IEntity<EntityDtoType, IdType>
         where EntityDtoType : EntityDto<IdType>
     {

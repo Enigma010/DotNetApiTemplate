@@ -74,5 +74,29 @@ namespace AppTests.Services
             Assert.Equal(model.NewName, changeConfig.Name);
             _repository.Verify(m => m.UpdateAsync(It.Is<Config>(c => c.Id == config.Id)), Times.Once);
         }
+        [Fact]
+        public async Task GetOrCreateAsync_Get()
+        {
+            Config config = new Config();
+            string newName = "newName";
+            config.Rename(new ConfigRenameCmd() { NewName = newName });
+            config.ClearEvents();
+            _repository.Setup(m => m.GetAsync()).ReturnsAsync(config);
+            Config getConfig = await _service.GetOrCreateAsync();
+            Assert.Equal(config.Id, getConfig.Id);
+            Assert.Equal(newName, getConfig.Name);
+            _repository.Verify(r => r.GetAsync(), Times.Once);
+            _repository.Verify(r => r.InsertAsync(It.IsAny<Config>()), Times.Never);
+        }
+        [Fact]
+        public async Task GetOrCreateAsync_Create()
+        {
+            _repository.Setup(m => m.GetAsync()).ThrowsAsync(new DbSingletonEntityNotFoundException());
+            Config getConfig = await _service.GetOrCreateAsync();
+            Assert.Equal(ConfigCreateCmd.DefaultName, getConfig.Name);
+            _repository.Verify(r => r.GetAsync(), Times.Once);
+            _repository.Verify(r => r.InsertAsync(It.IsAny<Config>()), Times.Once);
+
+        }
     }
 }

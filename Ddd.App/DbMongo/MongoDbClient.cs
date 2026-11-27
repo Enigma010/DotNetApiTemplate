@@ -1,10 +1,8 @@
-﻿using Ddd.App.Core;
-using Ddd.App.Db;
+﻿using Ddd.App.Db;
 using DotNetApiEventBus;
 using DotNetApiLogging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Driver;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
